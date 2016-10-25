@@ -3,10 +3,10 @@
 /**
  * The User Model
  *
- * @author Faizan Ayubi
+ * @author Shreyansh Goel
  */
-namespace Models;
-class User extends Shared\Model {
+namespace models;
+class User extends \Shared\Model {
 
     /**
      * @column
@@ -14,10 +14,10 @@ class User extends Shared\Model {
      * @type text
      * @length 100
      * 
-     * @validate required, alpha, min(3), max(32)
-     * @label first name
+     * @validate required
+     * @label full name
      */
-    protected $_first;
+    protected $_full_name;
 
     /**
      * @column
@@ -25,10 +25,45 @@ class User extends Shared\Model {
      * @type text
      * @length 100
      * 
-     * @validate required, alpha, min(3), max(32)
-     * @label last name
+     * @label mobile number
      */
-    protected $_last;
+    protected $_mobile;
+
+    /**
+     * @column
+     * @readwrite
+     * @type boolean
+     *
+     * @label email address
+     */
+    protected $_mobile_confirm = false;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label mobile number
+     */
+    protected $_designation;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label mobile number
+     */
+    protected $_company_name;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label mobile number
+     */
+    protected $_location;
 
     /**
      * @column
@@ -37,7 +72,19 @@ class User extends Shared\Model {
      * @length 100
      * @uindex
      * 
-     * @validate required, max(100)
+     * @validate required
+     * @label username
+     */
+    protected $_username;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 100
+     * @uindex
+     * 
+     * @validate required
      * @label email address
      */
     protected $_email;
@@ -45,15 +92,29 @@ class User extends Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type boolean
+     */
+    protected $_email_confirm = false;
+
+    /**
+     * @column
+     * @readwrite
      * @type text
-     * @length 100
-     * @index
      * 
-     * @validate required, alpha, min(8), max(32)
+     * @label mobile number
+     */
+    protected $_email_confirm_string;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @validate required
      * @label password
      */
     protected $_password;
-    
+
     /**
     * @column
     * @readwrite

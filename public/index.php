@@ -1,19 +1,16 @@
 <?php
 ob_start();
-define("DEBUG", TRUE);
-
-// 1. define the default path for includes
-define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(__FILE__)));
+define("DEBUG", FALSE);
+define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(dirname(__FILE__))));
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-define("CDN", "/public/assets/");
-
+define("CDN", "//$_SERVER[HTTP_HOST]/assets/");
 date_default_timezone_set('Asia/Kolkata');
 
 try {
-    
+
     // library's class autoloader
-    spl_autoload_register(function($class) {
-        $path = str_replace("\\", DIRECTORY_SEPARATOR, $class);
+    spl_autoload_register(function ($classname) {
+        $path = str_replace("\\", DIRECTORY_SEPARATOR, $classname);
         $file = APP_PATH . "/application/libraries/{$path}.php";
 
         if (file_exists($file)) {
@@ -22,8 +19,20 @@ try {
         }
     });
 
+    if (!function_exists('getallheaders')) { 
+        function getallheaders() { 
+            $headers = ''; 
+            foreach ($_SERVER as $name => $value) { 
+               if (substr($name, 0, 5) == 'HTTP_') { 
+                   $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value; 
+               }
+           }
+           return $headers;
+        }
+    }
+
     // 2. load the Core class that includes an autoloader
-    require("framework/core.php");
+    require_once(APP_PATH. "/framework/core.php");
     Framework\Core::initialize();
 
     // plugins

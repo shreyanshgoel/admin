@@ -29,7 +29,7 @@ class Users extends Controller {
 			if(RequestMethods::post('register')){
 
 				$pass = RequestMethods::post("password");
-				$cpass = RequestMethods::post("confirm");
+				$cpass = RequestMethods::post("confirm_password");
 
 				$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
 		        $cost=10;
@@ -38,13 +38,13 @@ class Users extends Controller {
 
 				$user = new models\User(array(
 		            "full_name" => RequestMethods::post("full_name"),
+		            "username" => RequestMethods::post("username"),
 		            "email" => RequestMethods::post("email"),
-		            "mobile" => RequestMethods::post("mobile"),
 		            "password" => $crypt,
 		            "live" => true
 		        ));
 				$exist = models\User::all(array(
-					'email = ?' => RequestMethods::post("email")
+					'username = ?' => RequestMethods::post("username")
 					));
 
 				if (empty($exist)){
@@ -56,12 +56,10 @@ class Users extends Controller {
 							$user->save();
 
 							$login = models\User::first(array(
-								'email = ?' => RequestMethods::post("email")
+								'username = ?' => RequestMethods::post("username")
 								));
 
 							$this->user = $login;
-
-							self::enroll();
 
 							header("Location: /users/dashboard");
 
@@ -97,7 +95,7 @@ class Users extends Controller {
 
 			if(RequestMethods::post('login')){
 
-				$email = RequestMethods::post("email");
+				$email = RequestMethods::post("username");
 		        $pass = RequestMethods::post("password");
 		        
 		        $login_e = false;
@@ -115,7 +113,7 @@ class Users extends Controller {
 		        if (!$login_e){
 
 		            $user = models\User::first(array(
-		                "email = ?" => $email,
+		                "username = ?" => $email,
 		                "live = ?" => true
 		            ));
 
@@ -160,26 +158,78 @@ class Users extends Controller {
     	$layoutView = $this->getLayoutView();
     	$layoutView->set("seo", Framework\Registry::get("seo"));
 
-    	$layoutView->set('dashboard',1);
+    	$view = $this->getActionView();
+
+    	
+    }
+
+    /**
+	* @before secure_user
+	*/
+    public function taskboard() {
+
+    	$layoutView = $this->getLayoutView();
+    	$layoutView->set("seo", Framework\Registry::get("seo"));
 
     	$view = $this->getActionView();
 
-    	$t_count = models\Table::count(array(
-    		'user_id = ?' => $this->user->id
-    		));
+    	
+    }
 
-    	$e_count = 0;
+    /**
+	* @before secure_user
+	*/
+    public function projects() {
 
-    	$tables = models\Table::all(array(
-    		'user_id = ?' => $this->user->id
-    		));
+    	$layoutView = $this->getLayoutView();
+    	$layoutView->set("seo", Framework\Registry::get("seo"));
 
-		$e_count = models\Entry::count(array(
-			'user_id = ?' => $this->user->id
-			));
+    	$view = $this->getActionView();
 
-    	$view->set('t_count', $t_count)->set('e_count', $e_count)->set('tables', $tables);
+    	
+    }
 
+    /**
+	* @before secure_user
+	*/
+    public function contact_list() {
+
+    	$layoutView = $this->getLayoutView();
+    	$layoutView->set("seo", Framework\Registry::get("seo"));
+
+    	$view = $this->getActionView();
+
+    	
+    }
+
+    /**
+	* @before secure_user
+	*/
+    public function calendar() {
+
+    	$layoutView = $this->getLayoutView();
+    	$layoutView->set("seo", Framework\Registry::get("seo"));
+
+    	$view = $this->getActionView();
+
+    	$layoutView->set('calendar_tab', 1);
+
+    	
+    }
+
+    /**
+	* @before secure_user
+	*/
+    public function profile() {
+
+    	$layoutView = $this->getLayoutView();
+    	$layoutView->set("seo", Framework\Registry::get("seo"));
+
+    	$view = $this->getActionView();
+
+    	$layoutView->set('calendar_tab', 1);
+
+    	
     }
 
 
