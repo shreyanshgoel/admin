@@ -11,9 +11,7 @@ class Db {
 
 		    try {
 		        $dbconf = $configuration->parse("configuration/database")->database->mongodb;
-		        //$mongo = new \MongoDB\Client("mongodb://" .$dbconf->url.":27017/" . $dbconf->dbname);
-
-		        $mongo = new \MongoDB\Client("mongodb://" . $dbconf->dbuser . ":" . $dbconf->password . "@" . $dbconf->url."/" . $dbconf->dbname . "?replicaSet=" . $dbconf->replica . "&ssl=true");
+		        $mongo = new \MongoDB\Client("mongodb://" .$dbconf->url.":27017/" . $dbconf->dbname);
 
 
 		        $mongoDB = $mongo->selectDatabase($dbconf->dbname);

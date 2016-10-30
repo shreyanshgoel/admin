@@ -10,37 +10,26 @@ use Framework\RequestMethods as RequestMethods;
 
 class Users extends Controller {
 
-	public function NotLoggedIn(){
-
-		if($this->user){
-
-			header("Location: /");
-
-		}
-	}
-
 	/**
-	* @before NotLoggedIn
+	* @before _session
+    * @after _csrfToken
 	*/
 	public function register(){
 		$this->setLayout("layouts/empty");
-		;
+
+		$token = RequestMethods::post('token', '');
+		
 		if(!$this->user){
-			if(RequestMethods::post('register')){
+			if(RequestMethods::post('register') && $this->verifyToken($token)){
 
 				$pass = RequestMethods::post("password");
 				$cpass = RequestMethods::post("confirm_password");
-
-				$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
-		        $cost=10;
-				$salt = sprintf("$2a$%02d\$", $cost) . $salt;
-				$crypt = crypt($pass, $salt);
 
 				$user = new models\User(array(
 		            "full_name" => RequestMethods::post("full_name"),
 		            "username" => RequestMethods::post("username"),
 		            "email" => RequestMethods::post("email"),
-		            "password" => $crypt,
+		            "password" => sha1($pass),
 		            "live" => true
 		        ));
 				$exist = models\User::all(array(
@@ -85,18 +74,21 @@ class Users extends Controller {
 
 
 	/**
-	* @before NotLoggedIn
+	* @before _session    * @after _csrfToken
 	*/
 
 	public function login(){
+		
 		$this->setLayout("layouts/empty");
+
+		$token = RequestMethods::post('token', '');
 
 		if(!$this->user){
 
-			if(RequestMethods::post('login')){
+			if(RequestMethods::post('login') && $this->verifyToken($token)){
 
 				$email = RequestMethods::post("username");
-		        $pass = RequestMethods::post("password");
+		        $pass = sha1(RequestMethods::post("password"));
 		        
 		        $login_e = false;
 		        
@@ -117,14 +109,32 @@ class Users extends Controller {
 		                "live = ?" => true
 		            ));
 
-		            if (!empty($user) && strcmp($user->password, crypt($pass, $user->password)) == 0){
+		            try_again:
+
+		            if (!empty($user)){
+
+		            	if($user->password == $pass){
 		            	
 			                $this->user = $user;
 			                header('Location: /users/dashboard');
-			            	            
-		            }else{
+			            }else{
+			            
+			                echo "<script>alert('email and password do not match')</script>";
+			            }
+
+			        }else{
+
+			        	$user = models\User::first(array(
+		                "email = ?" => $email,
+		                "live = ?" => true
+			            ));
+
+			            if(!empty($user)){
+
+			            	goto try_again;
+			            }
 		            
-		                echo "<script>alert('email and password do not match')</script>";
+		                echo "<script>alert('email does not exist')</script>";
 		            } 
 		        
 		        }else{
@@ -140,18 +150,8 @@ class Users extends Controller {
 		
 	}
 
-
-	public function secure_user(){
-
-		if(!$this->user){
-
-			header("Location: /");
-
-		}
-	}
-
 	/**
-	* @before secure_user
+	* @before _secure
 	*/
     public function dashboard() {
 
@@ -164,7 +164,7 @@ class Users extends Controller {
     }
 
     /**
-	* @before secure_user
+	* @before _secure
 	*/
     public function taskboard() {
 
@@ -177,7 +177,7 @@ class Users extends Controller {
     }
 
     /**
-	* @before secure_user
+	* @before _secure
 	*/
     public function projects() {
 
@@ -190,7 +190,7 @@ class Users extends Controller {
     }
 
     /**
-	* @before secure_user
+	* @before 
 	*/
     public function contact_list() {
 
@@ -203,7 +203,7 @@ class Users extends Controller {
     }
 
     /**
-	* @before secure_user
+	* @before _secure
 	*/
     public function calendar() {
 
@@ -218,7 +218,7 @@ class Users extends Controller {
     }
 
     /**
-	* @before secure_user
+	* @before _secure
 	*/
     public function profile() {
 
@@ -234,7 +234,7 @@ class Users extends Controller {
 
 
 	/**
-	* @before secure_user
+	* @before _secure
 	*/
     public function logout(){
         

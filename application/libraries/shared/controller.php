@@ -20,33 +20,6 @@ namespace Shared {
          * @readwrite
          */
         protected $_user;
-
-        /**
-         * @readwrite
-         */
-        protected $_domain = null;
-
-        /**
-         * @readwrite
-         */
-        protected $_org = null;
-
-        public function setOrg($org = null) {
-            $session = Registry::get("session");
-            if ($org) {
-                $session->set("org", $org);
-            } else {
-                $session->erase("org");
-            }
-            $this->_org = $org;
-            return $this;
-        }
-
-        public function getOrg() {
-            $session = Registry::get("session");
-            $this->_org = $session->get("org");
-            return $this->_org;
-        }
         
         public function seo($params = array()) {
             $seo = Registry::get("seo");
@@ -63,8 +36,7 @@ namespace Shared {
         public function _secure() {
             $user = $this->getUser();
             if (!$user) {
-
-                $this->redirect("/home/login");
+                $this->redirect("/");
             }
         }
 
@@ -74,9 +46,7 @@ namespace Shared {
         public function _session() {
             $user = $this->getUser();
             if ($user) {
-                
-                $this->redirect('/home/index');
-
+                $this->redirect('/users/dashboard');
             }
         }
 
@@ -174,7 +144,7 @@ namespace Shared {
                 $controller = Registry::get("controller");
                 $user = $session->get("user");
                 if ($user) {
-                    $controller->user = \User::first(array("id = ?" => $user));
+                    $controller->user = \models\User::first(array("id = ?" => $user));
                 }
             });
 
@@ -226,24 +196,35 @@ namespace Shared {
                     $this->layoutView->set($key, $this->user);
                 }
             }
-            if ($this->org) {
-                if ($this->actionView) {
-                    $key = "org";
-                    if ($this->actionView->get($key, false)) {
-                        $key = "__org";
-                    }
-                    $this->actionView->set($key, $this->org);
-                }
-                if ($this->layoutView) {
-                    $key = "org";
-                    if ($this->layoutView->get($key, false)) {
-                        $key = "__org";
-                    }
-                    $this->layoutView->set($key, $this->org);
-                }
-            }
+           
             parent::render();
         }
+
+        /**
+         * @protected
+         */
+
+        public function _csrfToken() {
+            $session = Registry::get("session");
+        
+            $csrf_token = \Framework\StringMethods::uniqueRandomString(44);
+            $session->set('Auth\Request:$token', $csrf_token);
+
+            if ($this->actionView) {
+                $this->actionView->set('__token', $csrf_token);
+            }
+        }
+
+        public function verifyToken($token = null) {
+            $session = Registry::get("session");
+            $csrf = $session->get('Auth\Request:$token');
+
+            if ($csrf && $csrf === $token) {
+                return true;
+            }
+            return false;
+        }
+
 
     }
 
