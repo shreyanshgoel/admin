@@ -6,15 +6,15 @@ use Framework\Registry as Registry;
  * Static class which sends Mail using different configurations
  */
 class Mail {
-	/**
-	 * Stores the conf
-	 */
-	protected static $_conf = array();
-	
+    /**
+     * Stores the conf
+     */
+    protected static $_conf = array();
+    
     protected static function _mailgun() {
-    	if (isset(self::$_conf['mailgun'])) {
-    		return self::$_conf['mailgun'];
-    	}
+        if (isset(self::$_conf['mailgun'])) {
+            return self::$_conf['mailgun'];
+        }
         $configuration = Registry::get("configuration");
         $mailConf = $configuration->parse("configuration/mail")->mailgun;
 

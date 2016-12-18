@@ -14,7 +14,7 @@ namespace Shared {
         /**
          * @read
          */
-        protected $_types = array("autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array");
+        protected $_types = ["autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array"];
 
         /**
          * @column
@@ -46,8 +46,34 @@ namespace Shared {
          */
         protected $_modified = null;
 
+        /**
+         * @column
+         * @readwrite
+         * @type array
+         */
+        protected $_meta = [];
+
+        public function setLive($val) {
+            $this->_live = (boolean) $val;
+        }
+
         public static function hourly() {
             // override this method to do cron tasks
+        }
+
+        public function display() {
+            $columns = $this->getColumns();
+            $arr = [];
+            foreach ($columns as $key => $value) {
+                $field = "_{$key}";
+                $arr[$key] = $this->$field;
+            }
+            return $arr;
+        }
+
+        public static function displayImg($name = '', $folder = "images") {
+            $file = CDN . 'uploads/' . $folder . '/' . $name;
+            return $file;
         }
 
         public function &getMeta() {
@@ -59,12 +85,29 @@ namespace Shared {
             return [];
         }
 
-        public static function objectArr($arr = [], $fields = []) {
+        /**
+         * Converts array of \Shared\Model objects to array of stdClass objects
+         * Also converts DateTime class to simple string, pass an extra key in
+         * the last parameter to stop this datetime conversion
+         * @return array         Array of Objects
+         */
+        public static function objectArr($arr = [], $fields = [], $opts = []) {
+            if (!is_array($arr)) {
+                $newArr = [];
+                $newArr[] = $arr;
+                $arr = $newArr;
+            }
+
             $results = [];
             foreach ($arr as $key => $a) {
                 $data = [];
                 foreach ($fields as $f) {
-                    $data[$f] = $a->$f;
+                    $convert = $opts['convert'] ?? true;
+                    if ($convert && is_object($a->$f) && is_a($a->$f, 'DateTime')) {
+                        $data[$f] = $a->$f->format('Y-m-d');
+                    } else {
+                        $data[$f] = $a->$f;
+                    }
                 }
 
                 $obj = (object) $data;
@@ -103,10 +146,11 @@ namespace Shared {
                     continue;
                 }
                 $v = $this->_convertToType($current, $value['type']);
-                $v = $this->_preventEmpty($v, $value['type']);
-                if (is_null($v)) {
+                $checkEmpty = $this->_preventEmpty($v, $value['type']);
+                // dont save empty fields when creating a record
+                if (is_null($checkEmpty) && is_null($this->__id)) {
                     continue;
-                } else {
+                } else { // allow empty values when updating
                     $doc[$key] = $v;
                 }
             }
@@ -116,13 +160,13 @@ namespace Shared {
 
             if (empty($this->$raw)) {
                 if (!array_key_exists('created', $doc)) {
-                    $doc['created'] = Db::time();
+                    $this->_created = $doc['created'] = Db::time();
                 }
 
                 $result = $collection->insertOne($doc);
                 $this->__id = $result->getInsertedId();
             } else {
-                $doc['modified'] = Db::time();
+                $this->_modified = $doc['modified'] = Db::time();
 
                 $this->__id = Utils::mongoObjectId($this->__id);
                 $result = $collection->updateOne(['_id' => $this->__id], ['$set' => $doc]);
@@ -239,7 +283,7 @@ namespace Shared {
                     break;
                 
                 default:
-                    $value = (string) $value;
+                    $value = $value;
                     break;
             }
             return $value;
@@ -283,7 +327,12 @@ namespace Shared {
                 if ($key == "id" && !property_exists($this, '_id')) {
                     $key = "_id";
                 }
-                $query[$key] = $this->_convertToType($value, $columns[$key]['type']);
+
+                if (isset($columns[$key])) {
+                    $query[$key] = $this->_convertToType($value, $columns[$key]['type']);   
+                } else {
+                    $query[$key] = $value;
+                }
             }
             return $query;
         }
@@ -317,14 +366,14 @@ namespace Shared {
          * @param int $limit
          * @return array
          */
-        public static function all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
+        public static function all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_all($where, $fields, $order, $direction, $limit, $page);
         }
 
-        protected function _all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
+        protected function _all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
             $collection = $this->getTable();
 
             $opts = Db::opts($fields, $order, $direction, $limit, $page);
@@ -351,14 +400,14 @@ namespace Shared {
          * @param int $limit
          * @return \Shared\Model object | null
          */
-        public static function first($where = array(), $fields = array(), $order = null, $direction = null) {
+        public static function first($where = [], $fields = [], $order = null, $direction = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_first($where, $fields, $order, $direction);
         }
 
-        protected function _first($where = array(), $fields = array(), $order = null, $direction = null) {
+        protected function _first($where = [], $fields = [], $order = null, $direction = null) {
             $collection = $this->getTable();
             $record = null;
 

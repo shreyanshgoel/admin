@@ -34,7 +34,12 @@
         <div class="topbar">
             <!-- LOGO -->
             <div class="topbar-left">
-                <a href="index.html" class="logo"><span>Admin<span>to</span></span><i class="zmdi zmdi-layers"></i></a>
+                <a href="index.html" class="logo">
+                    <span>Admin
+                        <span>to</span>
+                    </span>
+                    <i class="zmdi zmdi-layers"></i>
+                </a>
             </div>
             <!-- Button mobile view to collapse sidebar menu -->
             <div class="navbar navbar-default" role="navigation">
@@ -72,7 +77,9 @@
                         <li class="hidden-xs">
                             <form role="search" class="app-search">
                                 <input type="text" placeholder="Search..." class="form-control">
-                                <a href="index.html"><i class="fa fa-search"></i></a>
+                                <a href="index.html">
+                                    <i class="fa fa-search"></i>
+                                </a>
                             </form>
                         </li>
                     </ul>
@@ -89,9 +96,13 @@
                 <div class="user-box">
                     <div class="user-img">
                         <img src="{echo CDN}images/users/avatar-1.jpg" alt="user-img" title="Mat Helme" class="img-circle img-thumbnail img-responsive">
-                        <div class="user-status offline"><i class="zmdi zmdi-dot-circle"></i></div>
+                        <div class="user-status offline">
+                            <i class="zmdi zmdi-dot-circle"></i>
+                        </div>
                     </div>
-                    <h5><a href="index.html#">{$user->full_name}</a> </h5>
+                    <h5>
+                        <a href="index.html#">{$user->full_name}</a>
+                    </h5>
                     <ul class="list-inline">
                         <li>
                             <a href="index.html#">
@@ -111,21 +122,58 @@
                     <ul>
                         <li class="text-muted menu-title">Navigation</li>
                         <li>
-                            <a href="/users/dashboard" class="waves-effect active"><i class="zmdi zmdi-view-dashboard"></i> <span> Dashboard </span> </a>
+                            <a href="/users/dashboard" class="waves-effect active">
+                                <i class="zmdi zmdi-view-dashboard"></i>
+                                <span> Dashboard </span>
+                            </a>
                         </li>
                         <li>
-                            <a href="/users/taskboard" class="waves-effect"><i class="zmdi zmdi-format-underlined"></i> <span> Taskboard </span> </a>
+                            <a href="/users/profile" class="waves-effect">
+                                <i class="zmdi zmdi-view-dashboard"></i>
+                                <span> Profile </span>
+                            </a>
                         </li>
                         <li>
-                            <a href="/users/projects" class="waves-effect"><i class="zmdi zmdi-format-underlined"></i> <span> Projects</span> </a>
+                            <a class="waves-effect">
+                                <i class="zmdi zmdi-format-underlined"></i>
+                                <span> Departments</span>
+                                <button style="position: absolute; margin-left: 40px; margin-top: -5px" class="btn btn-link" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </a>
+                            <span class="list-unstyled" style="position: absolute;">
+                                <li>
+                                    <a href="form-elements.html">Department 1</a>
+                                </li>
+                                <li>
+                                    <a href="form-advanced.html">Department 2</a>
+                                </li>
+                            </span>
                         </li>
                         <li>
-                            <a href="/users/calendar" class="waves-effect"><i class="zmdi zmdi-format-underlined"></i> <span> Calendar </span> </a>
+                            <a href="/users/taskboard" class="waves-effect">
+                                <i class="zmdi zmdi-format-underlined"></i>
+                                <span> Taskboard </span>
+                            </a>
                         </li>
                         <li>
-                            <a href="/users/contact_list" class="waves-effect"><i class="zmdi zmdi-format-underlined"></i> <span> Contact List </span> </a>
+                            <a href="/users/projects" class="waves-effect">
+                                <i class="zmdi zmdi-format-underlined"></i>
+                                <span> Projects</span>
+                            </a>
                         </li>
-
+                        <li>
+                            <a href="/users/calendar" class="waves-effect">
+                                <i class="zmdi zmdi-format-underlined"></i>
+                                <span> Calendar </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/users/contact_list" class="waves-effect">
+                                <i class="zmdi zmdi-format-underlined"></i>
+                                <span> Contact List </span>
+                            </a>
+                        </li>
                     </ul>
                     <div class="clearfix"></div>
                 </div>
@@ -133,128 +181,142 @@
                 <div class="clearfix"></div>
             </div>
         </div>
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Create New Department</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Some text in the modal.</p>
+                    </div>
+                    <div class="modal-footer">
+    
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Left Sidebar End -->
-    {ayield action}    
-    <!-- content -->
-    <footer class="footer text-right">
-        2016 © Adminto.
-    </footer>
-</div>
-<!-- ============================================================== -->
-<!-- End Right content here -->
-<!-- ============================================================== -->
-<!-- Right Sidebar -->
-<div class="side-bar right-bar">
-    <a href="javascript:void(0);" class="right-bar-toggle">
-        <i class="zmdi zmdi-close-circle-o"></i>
-    </a>
-    <h4 class="">Notifications</h4>
-    <div class="notification-list nicescroll">
-        <ul class="list-group list-no-border user-list">
-            <li class="list-group-item">
-                <a href="index.html#" class="user-list-item">
-                    <div class="avatar">
-                        <img src="{echo CDN}images/users/avatar-2.jpg" alt="">
-                    </div>
-                    <div class="user-desc">
-                        <span class="name">Michael Zenaty</span>
-                        <span class="desc">There are new settings available</span>
-                        <span class="time">2 hours ago</span>
-                    </div>
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="index.html#" class="user-list-item">
-                    <div class="icon bg-info">
-                        <i class="zmdi zmdi-account"></i>
-                    </div>
-                    <div class="user-desc">
-                        <span class="name">New Signup</span>
-                        <span class="desc">There are new settings available</span>
-                        <span class="time">5 hours ago</span>
-                    </div>
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="index.html#" class="user-list-item">
-                    <div class="icon bg-pink">
-                        <i class="zmdi zmdi-comment"></i>
-                    </div>
-                    <div class="user-desc">
-                        <span class="name">New Message received</span>
-                        <span class="desc">There are new settings available</span>
-                        <span class="time">1 day ago</span>
-                    </div>
-                </a>
-            </li>
-            <li class="list-group-item active">
-                <a href="index.html#" class="user-list-item">
-                    <div class="avatar">
-                        <img src="{echo CDN}images/users/avatar-3.jpg" alt="">
-                    </div>
-                    <div class="user-desc">
-                        <span class="name">James Anderson</span>
-                        <span class="desc">There are new settings available</span>
-                        <span class="time">2 days ago</span>
-                    </div>
-                </a>
-            </li>
-            <li class="list-group-item active">
-                <a href="index.html#" class="user-list-item">
-                    <div class="icon bg-warning">
-                        <i class="zmdi zmdi-settings"></i>
-                    </div>
-                    <div class="user-desc">
-                        <span class="name">Settings</span>
-                        <span class="desc">There are new settings available</span>
-                        <span class="time">1 day ago</span>
-                    </div>
-                </a>
-            </li>
-        </ul>
+        {ayield action}
+        <!-- content -->
+        <footer class="footer text-right">
+            2016 © Adminto.
+        </footer>
     </div>
-</div>
-<!-- /Right-bar -->
-</div>
-<!-- END wrapper -->
-<script>
-var resizefunc = [];
-</script>
-<!-- jQuery  -->
-<script src="{echo CDN}js/jquery.min.js"></script>
-<script src="{echo CDN}js/bootstrap.min.js"></script>
-<script src="{echo CDN}js/detect.js"></script>
-<script src="{echo CDN}js/fastclick.js"></script>
-<script src="{echo CDN}js/jquery.blockUI.js"></script>
-<script src="{echo CDN}js/waves.js"></script>
-<script src="{echo CDN}js/jquery.nicescroll.js"></script>
-<script src="{echo CDN}js/jquery.slimscroll.js"></script>
-<script src="{echo CDN}js/jquery.scrollTo.min.js"></script>
-<!-- KNOB JS -->
-<!--[if IE]>
+    <!-- ============================================================== -->
+    <!-- End Right content here -->
+    <!-- ============================================================== -->
+    <!-- Right Sidebar -->
+    <div class="side-bar right-bar">
+        <a href="javascript:void(0);" class="right-bar-toggle">
+            <i class="zmdi zmdi-close-circle-o"></i>
+        </a>
+        <h4 class="">Notifications</h4>
+        <div class="notification-list nicescroll">
+            <ul class="list-group list-no-border user-list">
+                <li class="list-group-item">
+                    <a href="index.html#" class="user-list-item">
+                        <div class="avatar">
+                            <img src="{echo CDN}images/users/avatar-2.jpg" alt="">
+                        </div>
+                        <div class="user-desc">
+                            <span class="name">Michael Zenaty</span>
+                            <span class="desc">There are new settings available</span>
+                            <span class="time">2 hours ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="index.html#" class="user-list-item">
+                        <div class="icon bg-info">
+                            <i class="zmdi zmdi-account"></i>
+                        </div>
+                        <div class="user-desc">
+                            <span class="name">New Signup</span>
+                            <span class="desc">There are new settings available</span>
+                            <span class="time">5 hours ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="index.html#" class="user-list-item">
+                        <div class="icon bg-pink">
+                            <i class="zmdi zmdi-comment"></i>
+                        </div>
+                        <div class="user-desc">
+                            <span class="name">New Message received</span>
+                            <span class="desc">There are new settings available</span>
+                            <span class="time">1 day ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="list-group-item active">
+                    <a href="index.html#" class="user-list-item">
+                        <div class="avatar">
+                            <img src="{echo CDN}images/users/avatar-3.jpg" alt="">
+                        </div>
+                        <div class="user-desc">
+                            <span class="name">James Anderson</span>
+                            <span class="desc">There are new settings available</span>
+                            <span class="time">2 days ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="list-group-item active">
+                    <a href="index.html#" class="user-list-item">
+                        <div class="icon bg-warning">
+                            <i class="zmdi zmdi-settings"></i>
+                        </div>
+                        <div class="user-desc">
+                            <span class="name">Settings</span>
+                            <span class="desc">There are new settings available</span>
+                            <span class="time">1 day ago</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- /Right-bar -->
+    </div>
+    <!-- END wrapper -->
+    <script>
+    var resizefunc = [];
+    </script>
+    <!-- jQuery  -->
+    <script src="{echo CDN}js/jquery.min.js"></script>
+    <script src="{echo CDN}js/bootstrap.min.js"></script>
+    <script src="{echo CDN}js/detect.js"></script>
+    <script src="{echo CDN}js/fastclick.js"></script>
+    <script src="{echo CDN}js/jquery.blockUI.js"></script>
+    <script src="{echo CDN}js/waves.js"></script>
+    <script src="{echo CDN}js/jquery.nicescroll.js"></script>
+    <script src="{echo CDN}js/jquery.slimscroll.js"></script>
+    <script src="{echo CDN}js/jquery.scrollTo.min.js"></script>
+    <!-- KNOB JS -->
+    <!--[if IE]>
         <script type="text/javascript" src="{echo CDN}plugins/jquery-knob/excanvas.js"></script>
         <![endif]-->
-<script src="{echo CDN}plugins/jquery-knob/jquery.knob.js"></script>
-<!--Morris Chart-->
-<script src="{echo CDN}plugins/morris/morris.min.js"></script>
-<script src="{echo CDN}plugins/raphael/raphael-min.js"></script>
-<!-- Dashboard init -->
-<script src="{echo CDN}pages/jquery.dashboard.js"></script>
-<!-- App js -->
-<script src="{echo CDN}js/jquery.core.js"></script>
-<script src="{echo CDN}js/jquery.app.js"></script>
-
-{if isset($calendar_tab) && $calendar_tab == 1}
-
-<!-- Jquery-Ui -->
-<script src="{echo CDN}plugins/jquery-ui/jquery-ui.min.js"></script>
-
-<!-- BEGIN PAGE SCRIPTS -->
-<script src="{echo CDN}plugins/moment/moment.js"></script>
-<script src='{echo CDN}plugins/fullcalendar/dist/fullcalendar.min.js'></script>
-<script src="{echo CDN}pages/jquery.fullcalendar.js"></script>
-
-{/if}
+    <script src="{echo CDN}plugins/jquery-knob/jquery.knob.js"></script>
+    <!--Morris Chart-->
+    <script src="{echo CDN}plugins/morris/morris.min.js"></script>
+    <script src="{echo CDN}plugins/raphael/raphael-min.js"></script>
+    <!-- Dashboard init -->
+    <script src="{echo CDN}pages/jquery.dashboard.js"></script>
+    <!-- App js -->
+    <script src="{echo CDN}js/jquery.core.js"></script>
+    <script src="{echo CDN}js/jquery.app.js"></script>
+    {if isset($calendar_tab) && $calendar_tab == 1}
+    <!-- Jquery-Ui -->
+    <script src="{echo CDN}plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- BEGIN PAGE SCRIPTS -->
+    <script src="{echo CDN}plugins/moment/moment.js"></script>
+    <script src='{echo CDN}plugins/fullcalendar/dist/fullcalendar.min.js'></script>
+    <script src="{echo CDN}pages/jquery.fullcalendar.js"></script>
+    {/if}
 </body>
 
 </html>
