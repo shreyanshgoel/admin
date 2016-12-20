@@ -12,6 +12,12 @@ namespace Shared {
 
     class Model extends \Framework\Model {
         /**
+         * @readwrite
+         * @var boolean
+         */
+        protected $_allowNull = false;
+
+        /**
          * @read
          */
         protected $_types = ["autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array"];
@@ -77,12 +83,10 @@ namespace Shared {
         }
 
         public function &getMeta() {
-            if (property_exists($this, '_meta')) {
-                return $this->_meta;
-            } else if (property_exists($this, 'meta')) {
-                return $this->meta;
+            if (is_null($this->_meta)) {
+                $this->_meta = [];
             }
-            return [];
+            return $this->_meta;
         }
 
         /**
@@ -142,15 +146,17 @@ namespace Shared {
                 $field = $value['raw'];
                 $current = $this->$field;
                 
-                if ((!is_array($current) && !isset($current)) || is_null($current)) {
-                    continue;
-                }
                 $v = $this->_convertToType($current, $value['type']);
                 $checkEmpty = $this->_preventEmpty($v, $value['type']);
-                // dont save empty fields when creating a record
-                if (is_null($checkEmpty) && is_null($this->__id)) {
-                    continue;
-                } else { // allow empty values when updating
+                
+                $allowNull = !is_null($this->__id) || $this->_allowNull;
+                if (is_null($checkEmpty)) {
+                    // check when to save null values
+                    if ($allowNull) {
+                        $doc[$key] = null;
+                    }
+                } else {
+                    $this->$field = $v;
                     $doc[$key] = $v;
                 }
             }
@@ -159,7 +165,9 @@ namespace Shared {
             }
 
             if (empty($this->$raw)) {
-                if (!array_key_exists('created', $doc)) {
+                if (isset($doc['created']) && Db::isType($doc['created'], 'date')) {
+                    $this->_created = $doc['created'];
+                } else {
                     $this->_created = $doc['created'] = Db::time();
                 }
 
@@ -184,6 +192,8 @@ namespace Shared {
                     $v = $val->toDateTime();
                     $v->settimezone($tz);
                     $this->$raw = $v;
+                } else if (Db::isType($val, 'regex')) {
+                    $this->$raw = $val->getPattern();
                 }
             }
         }
@@ -213,6 +223,12 @@ namespace Shared {
                         $value = null;
                     }
                     break;
+
+                case 'mongoid':
+                    if (is_string($value) && strlen(trim($value)) === 0) {
+                        $value = null;
+                    }
+                    break;
             }
             return $value;
         }
@@ -230,7 +246,9 @@ namespace Shared {
 
             switch ($type) {
                 case 'text':
-                    $value = (string) $value;
+                    if (!is_null($value)) {
+                        $value = (string) $value;   
+                    }
                     break;
 
                 case 'integer':
@@ -257,7 +275,7 @@ namespace Shared {
                             $date = $value->format('Y-m-d');
                         }
                         $value = Db::time($date);
-                    } else {
+                    } else if (is_string($value)) {
                         $value = Db::time($value);
                     }
                     break;
