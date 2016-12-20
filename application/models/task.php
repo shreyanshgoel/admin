@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Note extends \Shared\Model {
+class Task extends \Shared\Model {
 
     /**
      * @column

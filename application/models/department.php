@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Note extends \Shared\Model {
+class Department extends \Shared\Model {
 
     /**
      * @column
@@ -14,37 +14,27 @@ class Note extends \Shared\Model {
      * @type text
      * 
      * @validate required
-     * @label state name
+     * @label department name
      */
-    protected $_note_id;
+    protected $_name;
 
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type mongoid
      * 
      * @validate required
-     * @label state name
+     * @label department company
      */
-    protected $_title;
+    protected $_company_id;
 
     /**
      * @column
      * @readwrite
-     * @type text
-     * 
-     * @label state name
-     */
-    protected $_text;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
+     * @type mongoid
      * 
      * @validate required
-     * @label country id
+     * @label head of the department
      */
-    protected $_user_id;
-
+    protected $_head_id;
 }

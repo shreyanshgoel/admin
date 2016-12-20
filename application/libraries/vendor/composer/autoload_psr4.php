@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
+    'MongoDB\\' => array($vendorDir . '/mongodb/mongodb/src'),
     'Http\\Promise\\' => array($vendorDir . '/php-http/promise/src'),
     'Http\\Message\\MultipartStream\\' => array($vendorDir . '/php-http/multipart-stream-builder/src'),
     'Http\\Message\\' => array($vendorDir . '/php-http/message-factory/src', $vendorDir . '/php-http/message/src'),

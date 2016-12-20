@@ -1,0 +1,134 @@
+<ol class="breadcrumb bc-3">
+    <li> <a href="../../dashboard/main/index"><i class="fa fa-home"></i>Home</a> </li>
+    <li class="active"> <strong>Contact Book</strong> </li>
+</ol>
+<div class="row">
+    <div class="col-md-9 col-sm-7">
+        <h2>Contact Book</h2> </div>
+    <div class="col-md-3 col-sm-5">
+        <form method="get" role="form" class="search-form-full">
+            <div class="form-group">
+                <input type="text" class="form-control" name="s" id="search-input" placeholder="Search..." /> <i class="entypo-search"></i> </div>
+        </form>
+    </div>
+</div>
+{if isset($delete_success)}
+<div class="alert alert-success">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Success!</strong> contact is deleted
+</div>
+{/if} {if isset($add_success)}
+<div class="alert alert-success">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Success!</strong> contact is Added
+</div>
+{/if} {if isset($edit_success)}
+<div class="alert alert-success">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Success!</strong> contact details are edited
+</div>
+{/if} 
+<form method="post">
+
+{if !empty($contacts)}
+
+    {foreach $c in $contacts}
+
+        {script $contact = models\User::first(array('id = ?' => $c->second_id))}
+
+        <div class="member-entry">
+            <a href="../timeline/index" class="member-img"> <img src="../../assets/images/member-1.jpg" class="img-rounded" /> <i class="entypo-forward"></i> </a>
+            <div class="member-details">
+                <h4>{$contact->full_name}</h4>
+                <div class="row info-list">
+                    <div class="col-sm-3"> <i class="entypo-mail"></i> <a href="index#">{$contact->email}</a> </div>
+                    <div class="col-sm-3"> <i class="entypo-location"></i> <a href="index#">
+                        {if $contact->address && $contact->state}
+                            {$contact->address}, {$contact->state}
+                        {/if}
+                        {else}
+                            {if $contact->address}
+                                {$contact->address}
+                            {/if}
+                            {else}
+                                {if $contact->state}
+                                    {$contact->state}
+                                {/if}
+                                {else}
+
+                                    No Address
+
+                                {/else}
+
+                            {/else}
+                        {/else}
+
+                        </a> 
+                    </div>
+                    <div class="clear"></div>
+                    <div class="clear"></div>
+                    <div class="col-sm-4" style="float:right">
+                        <button type="submit" name="delete" value="{$contact->id}" class="btn btn-danger btn-sm btn-icon icon-left">
+                            <i class="entypo-cancel"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {/foreach}
+
+{/if}
+
+{else}
+    <br><br><br><br>No contacts Yet<br><br><br><br><br>
+{/else}
+
+</form>
+<!-- TS1465795342312: Xenon - Boostrap Admin Template created by Laborator / Please buy this theme and support the updates -->
+<!-- Footer -->
+<button type="button" data-toggle="modal" data-target="#myModal2" class="btn btn-primary">
+    <i class="entypo-plus"></i> Add Contact
+</button>
+</div>
+
+<form method="post">
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="margin-top: 200px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Add Contact</h4>
+                </div>
+                <div class="modal-body2">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-6">
+                            <input type="email" id="check_email" class="form-control" name="email" required="" placeholder="Enter email">
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" class="btn btn-default" id="check_email_btn">Check</button>
+                        </div>
+                        <div class="col-sm-2" style="display: none" id="check_sign">
+                            <i class="entypo-check" style="color: green; font-size: 22px;"></i>
+                        </div>
+                        <div class="col-sm-2" style="display: none" id="cross_sign">
+                            <i class="entypo-cancel" style="color: red; font-size: 22px;"></i>
+                        </div>
+                        <div class="col-sm-2" style="display: none" id="loading">
+                            <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw margin-bottom" style="color: blue; font-size: 22px;"></i>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action" value="add_sc" class="btn btn-success">ADD</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+</form>

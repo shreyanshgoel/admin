@@ -1,14 +1,673 @@
-<nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
-    <a class="navbar-brand" href="/">SwiftMVC Framework</a>
-    <ul class="nav navbar-nav navbar-right">
-        <li class="nav-item active">
-            <a class="nav-link" href="/home/index">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="https://twitter.com/faizanayubi">Twitter</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="https://github.com/swiftmvc">Github</a>
-        </li>
-    </ul>
-</nav>
+{script $other_tables = models\Table::all(array('user_id = ?' => $user->id, 'type = ?' => 'Other'), array('*'), 'table_name')}
+{script $inventory_tables = models\Table::all(array('user_id = ?' => $user->id, 'type = ?' => 'inventory'), array('*'), 'table_name')}
+<div class="page-container">
+        <!-- TS146579531617524: Xenon - Boostrap Admin Template created by Laborator / Please buy this theme and support the updates -->
+        <div class="sidebar-menu">
+            <div class="sidebar-menu-inner">
+                <header class="logo-env">
+                    <!-- logo -->
+                    <div class="logo">
+                        <a href="index">
+                            <img src="{echo CDN}images/logo@2x.png" width="120" alt="" />
+                        </a>
+                    </div>
+                    <!-- logo collapse icon -->
+                    <div class="sidebar-collapse">
+                        <a href="index#" class="sidebar-collapse-icon">
+                            <!-- add class "with-animation" if you want sidebar to have animation during expanding/collapsing transition -->
+                            <i class="entypo-menu"></i>
+                        </a>
+                    </div>
+                    <!-- open/close menu icon (do not remove if you want to enable menu on mobile devices) -->
+                    <div class="sidebar-mobile-menu visible-xs">
+                        <a href="index#" class="with-animation">
+                            <!-- add class "with-animation" to support animation -->
+                            <i class="entypo-menu"></i>
+                        </a>
+                    </div>
+                </header>
+                <ul id="main-menu" class="main-menu">
+                    <li {if isset($dashboard)} class = "active" {/if}>
+                        <a href="/users/dashboard">
+                            <i class="entypo-gauge"></i>
+                            <span class="title">Dashboard</span>
+                        </a>
+                    </li>
+                    <li {if isset($profile)} class = "active" {/if}>
+                        <a href="/users/profile">
+                            <i class="entypo-user"></i>
+                            <span class="title">Profile</span>
+                        </a>
+                    </li>
+                    <li {if isset($inventory)} class = "has-sub active opened" {/if} {else} class="has-sub" {/else}>
+                        <a href="">
+                            <i class="entypo-menu"></i>
+                            <span class="title">Inventory</span>
+                        </a>
+                        <ul>
+
+                            {if !empty($inventory_tables)} {foreach $t in $inventory_tables}
+
+                            <li {if isset($table_name) && $table_name == $t->table_name} class = "active" {/if}>
+                                <a href="/table/inventory/{$t->id}">
+                                    <span class="title">{echo ucfirst($t->table_name)}</span>
+                                </a>
+                            </li>
+                            {/foreach} {/if} {else}
+                            <li>
+                                <a>
+                                    <span class="title">No Tables Yet</span>
+                                </a>
+                            </li>
+                            {/else}
+                        </ul>
+                    </li>
+                    <li {if isset($customers_nav)} class = "active" {/if}>
+                        <a href="/users/customers">
+                            <i class="fa fa-group"></i>
+                            <span class="title">Customers</span>
+                        </a>
+                    </li>
+                    <li {if isset($suppliers_nav)} class = "active" {/if}>
+                        <a href="/users/suppliers">
+                            <i class="entypo-book"></i>
+                            <span class="title">Suppliers</span>
+                        </a>
+                    </li>
+                    <li {if isset($invoice_nav)} class = "has-sub active opened" {/if} {else} class="has-sub" {/else}>
+                        <a href="">
+                            <i class="fa fa-paper-plane"></i>
+                            <span class="title">Invoice</span>
+                        </a>
+                        <ul>
+                            <li {if isset($purchase_nav)} class = "active root-level" {/if}>
+                                <a href="/invoice/purchase">
+                                    <span class="title">Purchase Invoice</span>
+                                </a>
+                            </li>
+                            <li {if isset($sales_nav)} class = "active" {/if}>
+                                <a href="/invoice/sales">
+                                    <span class="title">Sales Invoice</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li {if isset($other_tables_nav)} class = "has-sub active opened" {/if} {else} class="has-sub" {/else}>
+                        <a href="">
+                            <i class="entypo-window"></i>
+                            <span class="title">Other Tables</span>
+                        </a>
+                        <ul>
+                            {if !empty($other_tables)} {foreach $t in $other_tables}
+                            <li {if isset($table_name) && $table_name == $t->table_name} class = "active" {/if}>
+                                <a href="/table/other_tables/{$t->id}">
+                                    <span class="title">{echo ucfirst($t->table_name)}</span>
+                                </a>
+                            </li>
+                            {/foreach} {/if} {else}
+                            <li>
+                                <a>
+                                    <span class="title">No Tables Yet</span>
+                                </a>
+                            </li>
+                            {/else}
+                        </ul>
+                    </li>
+                    <li class="has-sub">
+                        <a href="">
+                            <i class="entypo-mail"></i>
+                            <span class="title">Mailbox</span>
+                        </a>
+                        <ul>
+                            <li id="">
+                                <a href="/mail/mailbox">
+                                    <span class="title">Add Mail</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/users/contact_book">
+                            <i class="entypo-book-open"></i>
+                            <span class="title">Contact Book</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/users/calendar">
+                            &nbsp;<i class="fa fa-calendar-plus-o"></i>
+                            <span class="title">&nbsp;Calendar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/users/notes">
+                            <i class="entypo-pencil"></i>
+                            <span class="title">Personal Notes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/users/wallet">
+                            <i class="fa fa-wallet"></i>
+                            <span class="title">Wallet</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/table/create_table">
+                            <i class="entypo-plus"></i>
+                            <span class="title">Create Table</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/users/search_in_tables">
+                            <i class="entypo-search"></i>
+                            <span class="title">Search In Tables</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- TS146579531610421: Xenon - Boostrap Admin Template created by Laborator / Please buy this theme and support the updates -->
+            <div class="row hidden-print">
+                <!-- Profile Info and Notifications -->
+                <div class="col-md-6 col-sm-8 clearfix">
+                    <ul class="user-info pull-left pull-none-xsm">
+                        <!-- Profile Info -->
+                        <li class="profile-info dropdown">
+                            <!-- add class "pull-right" if you want to place this from right -->
+                            <a href="/users/dashboard">
+                            {script $name = ucfirst($user->full_name)}
+                                {if empty($user->logo_ext)}
+                                    <img src="{echo CDN}uploads/logo/{$user->id}.{$user->logo_ext}" class="img-circle" style="height: 44px; width: 44px" alt="" /> 
+                                {/if}
+                                {else}
+                                    <img src="{echo CDN}images/thumb-1@2x.png" alt="" class="img-circle" width="44">
+                                {/else}
+                            {$name}
+                            </a>
+                            
+                        </li>
+                    </ul>
+                    <ul class="user-info pull-left pull-right-xs pull-none-xsm">
+                        <!-- Raw Notifications -->
+                        <li class="notifications dropdown">
+                            <a href="index#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                <i class="entypo-attention"></i>
+                                <span class="badge badge-info">6</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- TS146579531612594: Xenon - Boostrap Admin Template created by Laborator / Please buy this theme and support the updates -->
+                                <li class="top">
+                                    <p class="small">
+                                        <a href="index#" class="pull-right">Mark all Read</a> You have
+                                        <strong>3</strong> new notifications.
+                                    </p>
+                                </li>
+                                <li>
+                                    <ul class="dropdown-menu-list scroller">
+                                        <li class="unread notification-success">
+                                            <a href="index#">
+                                                <i class="entypo-user-add pull-right"></i>
+                                                <span class="line">
+                                                    <strong>New user registered</strong>
+                                                </span>
+                                                <span class="line small">
+                                                    30 seconds ago
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="unread notification-secondary">
+                                            <a href="index#">
+                                                <i class="entypo-heart pull-right"></i>
+                                                <span class="line">
+                                                    <strong>Someone special liked this</strong>
+                                                </span>
+                                                <span class="line small">
+                                                    2 minutes ago
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="notification-primary">
+                                            <a href="index#">
+                                                <i class="entypo-user pull-right"></i>
+                                                <span class="line">
+                                                    <strong>Privacy settings have been changed</strong>
+                                                </span>
+                                                <span class="line small">
+                                                    3 hours ago
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="notification-danger">
+                                            <a href="index#">
+                                                <i class="entypo-cancel-circled pull-right"></i>
+                                                <span class="line">
+                                                    John cancelled the event
+                                                </span>
+                                                <span class="line small">
+                                                    9 hours ago
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="notification-info">
+                                            <a href="index#">
+                                                <i class="entypo-info pull-right"></i>
+                                                <span class="line">
+                                                    The server is status is stable
+                                                </span>
+                                                <span class="line small">
+                                                    yesterday at 10:30am
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="notification-warning">
+                                            <a href="index#">
+                                                <i class="entypo-rss pull-right"></i>
+                                                <span class="line">
+                                                    New comments waiting approval
+                                                </span>
+                                                <span class="line small">
+                                                    last week
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="external">
+                                    <a href="index#">View all notifications</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Message Notifications -->
+                        <li class="notifications dropdown">
+                            <a href="index#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                <i class="entypo-mail"></i>
+                                <span class="badge badge-secondary">10</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- TS14657953162288: Xenon - Boostrap Admin Template created by Laborator / Please buy this theme and support the updates -->
+                                <li>
+                                    <form class="top-dropdown-search">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Search anything..." name="s" /> </div>
+                                    </form>
+                                    <ul class="dropdown-menu-list scroller">
+                                        <li class="active">
+                                            <a href="index#">
+                                                <span class="image pull-right">
+                                                    <img src="{echo CDN}images/thumb-1@2x.png" width="44" alt="" class="img-circle" /> </span>
+                                                <span class="line">
+                                                    <strong>Luc Chartier</strong>
+                                                    - yesterday
+                                                </span>
+                                                <span class="line desc small">
+                                                    This ain’t our first item, it is the best of the rest.
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="active">
+                                            <a href="index#">
+                                                <span class="image pull-right">
+                                                    <img src="{echo CDN}images/thumb-2@2x.png" width="44" alt="" class="img-circle" /> </span>
+                                                <span class="line">
+                                                    <strong>Salma Nyberg</strong>
+                                                    - 2 days ago
+                                                </span>
+                                                <span class="line desc small">
+                                                    Oh he decisively impression attachment friendship so if everything.
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="index#">
+                                                <span class="image pull-right">
+                                                    <img src="{echo CDN}images/thumb-3@2x.png" width="44" alt="" class="img-circle" /> </span>
+                                                <span class="line">
+                                                    Hayden Cartwright - a week ago
+                                                </span>
+                                                <span class="line desc small">
+                                                    Whose her enjoy chief new young. Felicity if ye required likewise so doubtful.
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="index#">
+                                                <span class="image pull-right">
+                                                    <img src="{echo CDN}images/thumb-4@2x.png" width="44" alt="" class="img-circle" /> </span>
+                                                <span class="line">
+                                                    Sandra Eberhardt - 16 days ago
+                                                </span>
+                                                <span class="line desc small">
+                                                    On so attention necessary at by provision otherwise existence direction.
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="external">
+                                    <a href="../../mailbox/main/index">All Messages</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Task Notifications -->
+                        <li class="notifications dropdown">
+                            <a href="index#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                <i class="entypo-list"></i>
+                                <span class="badge badge-warning">1</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- TS14657953164201: Xenon - Boostrap Admin Template created by Laborator / Please buy this theme and support the updates -->
+                                <li class="top">
+                                    <p>You have 6 pending tasks</p>
+                                </li>
+                                <li>
+                                    <ul class="dropdown-menu-list scroller">
+                                        <li>
+                                            <a href="index#">
+                                                <span class="task">
+                                                    <span class="desc">Procurement</span>
+                                                    <span class="percent">27%</span>
+                                                </span>
+                                                <span class="progress">
+                                                    <span style="width: 27%;" class="progress-bar progress-bar-success">
+                                                        <span class="sr-only">27% Complete</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="index#">
+                                                <span class="task">
+                                                    <span class="desc">App Development</span>
+                                                    <span class="percent">83%</span>
+                                                </span>
+                                                <span class="progress progress-striped">
+                                                    <span style="width: 83%;" class="progress-bar progress-bar-danger">
+                                                        <span class="sr-only">83% Complete</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="index#">
+                                                <span class="task">
+                                                    <span class="desc">HTML Slicing</span>
+                                                    <span class="percent">91%</span>
+                                                </span>
+                                                <span class="progress">
+                                                    <span style="width: 91%;" class="progress-bar progress-bar-success">
+                                                        <span class="sr-only">91% Complete</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="index#">
+                                                <span class="task">
+                                                    <span class="desc">Database Repair</span>
+                                                    <span class="percent">12%</span>
+                                                </span>
+                                                <span class="progress progress-striped">
+                                                    <span style="width: 12%;" class="progress-bar progress-bar-warning">
+                                                        <span class="sr-only">12% Complete</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="index#">
+                                                <span class="task">
+                                                    <span class="desc">Backup Create Progress</span>
+                                                    <span class="percent">54%</span>
+                                                </span>
+                                                <span class="progress progress-striped">
+                                                    <span style="width: 54%;" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">54% Complete</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="index#">
+                                                <span class="task">
+                                                    <span class="desc">Upgrade Progress</span>
+                                                    <span class="percent">17%</span>
+                                                </span>
+                                                <span class="progress progress-striped">
+                                                    <span style="width: 17%;" class="progress-bar progress-bar-important">
+                                                        <span class="sr-only">17% Complete</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="external">
+                                    <a href="index#">See all tasks</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Raw Links -->
+                <div class="col-md-6 col-sm-4 clearfix hidden-xs">
+                    <ul class="list-inline links-list pull-right">
+                        <li class="dropdown language-selector">
+                            Theme: &nbsp;
+                            <a href="" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
+                            
+                            {script $color = $user->theme_color}
+                            {if $color == 'default'}
+                                {script $color = '#303641'}
+                            {/if}
+                            {if $color == 'facebook'}
+                                {script $color = '#3B5998'}
+                            {/if}
+                            {if $color == 'cafe'}
+                                {script $color = '#5a524a'}
+                            {/if}
+
+                                <div style="background: {$color}; position: absolute; margin-left: -5px; margin-top: -5px; {if $color == 'white'}border-color: black; border-style: solid; border-width: 1px {/if}" class="circle"></div> </a>
+                            <ul class="dropdown-menu pull-right">
+                                <li>
+                                    <a href="/users/dashboard?theme=default">
+                                        <div style="background: #303641;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Default</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=black">
+                                        <div style="background: black;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Black</span>
+                                    </a>
+                                </li>
+                                <li >
+                                    <a href="/users/dashboard?theme=blue">
+                                        <div style="background: blue;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Blue</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=cafe">
+                                        <div style="background: #5a524a;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Cafe</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=facebook">
+                                        <div style="background: #3B5998;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Facebook</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=green">
+                                        <div style="background: green;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Green</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=purple">
+                                        <div style="background: purple;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Purple</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=red">
+                                        <div style="background: red;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Red</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=white">
+                                        <div style="background: white;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>White</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/users/dashboard?theme=yellow">
+                                        <div style="background: yellow;" class="circle"></div>
+                                        &nbsp;&nbsp;<span>Yellow</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sep"></li>
+                        <li>
+                            <a href="index.html#" data-toggle="chat" data-collapse-sidebar="1"> <i class="entypo-chat"></i> Chat
+                                <span class="badge badge-success chat-notifications-badge is-hidden">0</span> </a>
+                        </li>
+                        <li class="sep"></li>
+                        <li>
+                            <a href="/users/logout">
+                                Log Out
+                                <i class="entypo-logout right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="hidden-print" /> {ayield action}
+            <!-- TS146579531619082: Xenon - Boostrap Admin Template created by Laborator / Please buy this theme and support the updates -->
+            <!-- Footer -->
+        </div>
+        <div id="chat" class="fixed" data-current-user="Art Ramadani" data-order-by-status="1" data-max-chat-history="25">
+            <div class="chat-inner">
+                <h2 class="chat-header">
+                    <a href="index.html#" class="chat-close">
+                        <i class="entypo-cancel"></i>
+                    </a>
+                    <i class="entypo-users"></i>
+                    Chat
+                    <span class="badge badge-success is-hidden">0</span>
+                </h2>
+                <div class="chat-group" id="group-1">
+                    <strong>Favorites</strong>
+                    <a href="index.html#" id="sample-user-123" data-conversation-history="#sample_history">
+                        <span class="user-status is-online"></span>
+                        <em>Catherine J. Watkins</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-online"></span>
+                        <em>Nicholas R. Walker</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-busy"></span>
+                        <em>Susan J. Best</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-offline"></span>
+                        <em>Brandon S. Young</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-idle"></span>
+                        <em>Fernando G. Olson</em>
+                    </a>
+                </div>
+                <div class="chat-group" id="group-2">
+                    <strong>Work</strong>
+                    <a href="index.html#">
+                        <span class="user-status is-offline"></span>
+                        <em>Robert J. Garcia</em>
+                    </a>
+                    <a href="index.html#" data-conversation-history="#sample_history_2">
+                        <span class="user-status is-offline"></span>
+                        <em>Daniel A. Pena</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-busy"></span>
+                        <em>Rodrigo E. Lozano</em>
+                    </a>
+                </div>
+                <div class="chat-group" id="group-3">
+                    <strong>Social</strong>
+                    <a href="index.html#">
+                        <span class="user-status is-busy"></span>
+                        <em>Velma G. Pearson</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-offline"></span>
+                        <em>Margaret R. Dedmon</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-online"></span>
+                        <em>Kathleen M. Canales</em>
+                    </a>
+                    <a href="index.html#">
+                        <span class="user-status is-offline"></span>
+                        <em>Tracy J. Rodriguez</em>
+                    </a>
+                </div>
+            </div>
+            <!-- conversation template -->
+            <div class="chat-conversation">
+                <div class="conversation-header">
+                    <a href="index.html#" class="conversation-close">
+                        <i class="entypo-cancel"></i>
+                    </a>
+                    <span class="user-status"></span>
+                    <span class="display-name"></span>
+                    <small></small>
+                </div>
+                <ul class="conversation-body"> </ul>
+                <div class="chat-textarea">
+                    <textarea class="form-control autogrow" placeholder="Type your message"></textarea>
+                </div>
+            </div>
+        </div>
+        <!-- Chat Histories -->
+        <ul class="chat-history" id="sample_history">
+            <li>
+                <span class="user">Art Ramadani</span>
+                <p>Are you here?</p>
+                <span class="time">09:00</span>
+            </li>
+            <li class="opponent">
+                <span class="user">Catherine J. Watkins</span>
+                <p>This message is pre-queued.</p>
+                <span class="time">09:25</span>
+            </li>
+            <li class="opponent">
+                <span class="user">Catherine J. Watkins</span>
+                <p>Whohoo!</p>
+                <span class="time">09:26</span>
+            </li>
+            <li class="opponent unread">
+                <span class="user">Catherine J. Watkins</span>
+                <p>Do you like it?</p>
+                <span class="time">09:27</span>
+            </li>
+        </ul>
+        <!-- Chat Histories -->
+        <ul class="chat-history" id="sample_history_2">
+            <li class="opponent unread">
+                <span class="user">Daniel A. Pena</span>
+                <p>I am going out.</p>
+                <span class="time">08:21</span>
+            </li>
+            <li class="opponent unread">
+                <span class="user">Daniel A. Pena</span>
+                <p>Call me when you see this message.</p>
+                <span class="time">08:27</span>
+            </li>
+        </ul>
+    </div>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>INSPINIA | Login 2</title>
+
+    <link href="{echo CDN}css/bootstrap.css" rel="stylesheet">
+    <link href="{echo CDN}main/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <link href="{echo CDN}main/css/animate.css" rel="stylesheet">
+    <link href="{echo CDN}main/css/style.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+
+    <div class="loginColumns animated fadeInDown">
+        <div class="row">
+
+            <div class="col-md-3">
+             
+            </div>
+            <div class="col-md-6">
+                <div class="ibox-content">
+                    <form class="m-t" role="form" method="post">
+                        <input type="hidden" name="token" value="{echo $__token}">
+                        
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Full Name" name="full_name" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Mobile" name="mobile" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Email" name="email" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" placeholder="Password" name="password" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" placeholder="Confirm Password" name="confirm" required="">
+                        </div>
+                        <button type="submit" name="register" value="hehe" class="btn btn-primary block full-width m-b">Register</button>
+
+                        <p class="text-muted text-center">
+                            <small>Already have an account?</small>
+                        </p>
+                        <a class="btn btn-sm btn-white btn-block" href="/users/login">Log In</a>
+                    </form>
+                    <p class="m-t">
+                        <small>Inspinia we app framework base on Bootstrap 3 &copy; 2014</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-md-3">
+                
+            </div>
+            <div class="col-md-6 text-right">
+               Copyright Example Company<small>© 2014-2015</small>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

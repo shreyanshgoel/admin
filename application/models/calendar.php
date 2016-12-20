@@ -12,8 +12,7 @@ class Calendar extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
-     * @length 100
+     * @type mongoid
      * 
      * @validate required
      * @label short form
@@ -34,8 +33,7 @@ class Calendar extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
-     * @length 100
+     * @type datetime
      * 
      * @validate required
      * @label short form
@@ -45,7 +43,7 @@ class Calendar extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type datetime
      *
      * @label short form
      */
@@ -55,7 +53,7 @@ class Calendar extends \Shared\Model {
      * @column
      * @readwrite
      * @type text
-     * @length 100
+     * @length 10
      * 
      * @validate required
      * @label short form

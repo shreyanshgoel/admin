@@ -12,7 +12,7 @@ class Company extends \Shared\Model {
      * @column
      * @readwrite
      * @type text
-     * @length 100
+     * @length 30
      * 
      * @validate required
      * @label state name
@@ -22,9 +22,10 @@ class Company extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type mongoid
      * 
-     * @label admin/Manager/employee
+     * @validate required
+     * @label company founder
      */
     protected $_user_id;
 
@@ -33,7 +34,7 @@ class Company extends \Shared\Model {
      * @readwrite
      * @type text
      * 
-     * @label mobile number
+     * @label company address
      */
     protected $_location;
 

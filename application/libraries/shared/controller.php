@@ -89,7 +89,7 @@ namespace Shared {
         public function logout() {
             $this->setUser(false);
             session_destroy();
-            self::redirect("/index.html");
+            self::redirect("/");
         }
         
         public function noview() {
@@ -109,27 +109,42 @@ namespace Shared {
          */
         protected function _upload($name, $type = "images", $opts = []) {
             if (isset($_FILES[$name])) {
+
                 $file = $_FILES[$name];
                 $path = APP_PATH . "/public/assets/uploads/{$type}/";
                 $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
+                $size = $file["size"];
 
                 if (isset($opts['extension'])) {
                     $ex = $opts['extension'];
 
                     if (!preg_match("/^".$ex."$/", $extension)) {
+                        echo "extension doesnt match";
+                        return false;
+                    }
+                }
+
+                 if (isset($opts['size'])) {
+                    $s = $opts['size'];
+
+                    if ($size > $s) {
+                        echo "size is big";
                         return false;
                     }
                 }
 
                 if (isset($opts['name'])) {
-                    $filename = $opts['name'];
+                    $filename = $opts['name'] . ".{$extension}";
                 } else {
                     $filename = uniqid() . ".{$extension}";
                 }
-                if (move_uploaded_file($file["tmp_name"], $path . $filename)) {
-                    return $filename;
+
+                if(move_uploaded_file($file["tmp_name"], $path . $filename)){
+
+                    return $extension;
                 }
             }
+            echo "something went wrong";
             return FALSE;
         }
 

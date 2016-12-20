@@ -12,7 +12,7 @@ class Home extends Controller {
 
     public function index() {
 
-        $this->setLayout("layouts/empty");
+        $this->setLayout('layouts/empty');
 
         /*
 

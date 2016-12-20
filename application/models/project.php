@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Note extends \Shared\Model {
+class Project extends \Shared\Model {
 
     /**
      * @column
@@ -14,9 +14,19 @@ class Note extends \Shared\Model {
      * @type text
      * 
      * @validate required
+     * @label project name
+     */
+    protected $_name;
+
+    /**
+     * @column
+     * @readwrite
+     * @type mongoid
+     * 
+     * @validate required
      * @label state name
      */
-    protected $_note_id;
+    protected $_department_id;
 
     /**
      * @column
@@ -24,27 +34,17 @@ class Note extends \Shared\Model {
      * @type text
      * 
      * @validate required
-     * @label state name
-     */
-    protected $_title;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @label state name
-     */
-    protected $_text;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @validate required
-     * @label country id
+     * @label project made by
      */
     protected $_user_id;
+    
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
+     * @label state name
+     */
+    protected $_members[];
 
 }

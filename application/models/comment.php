@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Note extends \Shared\Model {
+class Comment extends \Shared\Model {
 
     /**
      * @column
@@ -14,36 +14,17 @@ class Note extends \Shared\Model {
      * @type text
      * 
      * @validate required
-     * @label state name
-     */
-    protected $_note_id;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @validate required
-     * @label state name
-     */
-    protected $_title;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @label state name
+     * @label comment text
      */
     protected $_text;
 
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type mongoid
      * 
      * @validate required
-     * @label country id
+     * @label commented by
      */
     protected $_user_id;
 

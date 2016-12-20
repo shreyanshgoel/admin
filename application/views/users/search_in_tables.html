@@ -1,0 +1,142 @@
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="text-center"><i class="entypo-search"></i>Search</h1>
+            <form class="form-inline text-center" method="get">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="sr-only">Keyword</label>
+                        <input type="text" style="width: 300px" name="search" class="form-control" {if !empty($search)} value="{$search}" {/if} placeholder="keywords..." value="" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            <hr>
+        </div>
+    </div>
+
+   <table class="table table-bordered datatable" id="table-1">
+        <thead>
+            
+            <th>S No.</th>
+            <th>Entry 1</th>
+            <th>Entry 2</th>
+            <th>Entry 3</th>
+            <th>Entry 4</th>
+            <th>Entry 5</th>
+            <th>Entry 6</th>
+            <th>Entry 7</th>
+            <th>Entry 8</th>
+            <th>Entry 9</th>
+            <th>Entry 10</th>
+            <th>Table </th>
+
+        </thead>
+        <tbody>
+    
+        {if !empty($search_result)}
+            
+            {script $i = 1} 
+
+            {foreach $id in $search_result}
+
+            {script $entry = models\Entry::first(array('id = ?' => $id))}
+
+                {script $e1 = $entry->entry1}
+                {script $e2 = $entry->entry2}
+                {script $e3 = $entry->entry3}
+                {script $e4 = $entry->entry4}
+                {script $e5 = $entry->entry5}
+                {script $e6 = $entry->entry6}
+                {script $e7 = $entry->entry7}
+                {script $e8 = $entry->entry8}
+                {script $e9 = $entry->entry9}
+                {script $e10 = $entry->entry10}
+                <tr>
+                    <td>{$i}</td>
+                    {foreach $n in $numbers}
+                    {script $e = 'e' . $n}
+                    
+                        {script $op = models\Operation::first(array('result_col = ?' => $n, 'table_id = ?' => $entry->table_id))}
+                        
+                        {if !empty($op) && empty($$e)}
+                            
+                            {script $t1 = $op->o_col_1}
+                            {script $t2 = $op->o_col_2}
+                            {script $t3 = $op->o_col_3}
+                            {script $t4 = $op->o_col_4}
+                            {script $t5 = $op->o_col_5}
+                            {script $t6 = $op->o_col_6}
+                            {script $t7 = $op->o_col_7}
+                            {script $t8 = $op->o_col_8}
+                            {script $t9 = $op->o_col_9}
+
+                            {script $o1 = $op->operation_1}
+                            {script $o2 = $op->operation_2}
+                            {script $o3 = $op->operation_3}
+                            {script $o4 = $op->operation_4}
+                            {script $o5 = $op->operation_5}
+                            {script $o6 = $op->operation_6}
+                            {script $o7 = $op->operation_7}
+                            {script $o8 = $op->operation_8}
+
+                            {script $temp = 'e' . $t1}
+
+                            {script $res = $$temp}
+
+                            {foreach $n2 in $numbers}
+                                {if $n2 == 9}
+                                    {script break}
+                                {/if}
+                                {script $o = 'o' . $n2}
+                                
+                                {script $temp = $n2 + 1}
+                                
+                                {script $t = 't' . $temp}
+
+                                {script $t_2 = 'e' . $$t}
+
+                                {if $$o != -1}
+                                    
+                                    {if $$o == 1} {script $res = $res + $$t_2}{/if}
+                                    {if $$o == 2} {script $res = $res - $$t_2}{/if}
+                                    {if $$o == 3} {script $res = $res * $$t_2}{/if}
+                                    {if $$o == 4} {script $res = $res / $$t_2}{/if}
+
+
+                                {/if}
+
+                            {/foreach}
+                            
+                            <td>{$res}</td>
+
+                        {/if}
+                        {else}
+                        
+                            <td>{$$e}</td>
+
+                        {/else}
+
+                        {script $t = models\Table::first(array('id = ?' => $entry->table_id))}
+
+
+            
+                        
+                {/foreach}
+
+                <td>{$t->table_name}</td>
+
+                </tr>
+
+{script $i++}
+{/foreach}
+
+        {/if}
+                            
+        
+        </tbody>
+       
+    </table>
+</div>
+
+              

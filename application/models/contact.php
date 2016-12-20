@@ -11,20 +11,20 @@ class Contact extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type mongoid
      * 
      * @validate required
-     * @label category name
+     * @label contact added by
      */
     protected $_first_id;
 
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type mongoid
      * 
      * @validate required
-     * @label short form
+     * @label this contact is requested
      */
     protected $_second_id;
 
@@ -34,17 +34,16 @@ class Contact extends \Shared\Model {
      * @type boolean
      * 
      * @validate required
-     * @label short form
+     * @label acceptance of first contact
      */
-    protected $_first_id_status = false;
+    protected $_first_id_status = true;
 
     /**
      * @column
      * @readwrite
      * @type boolean
      * 
-     * @validate required
-     * @label short form
+     * @label acceptance of second contact
      */
     protected $_second_id_status = false;
 

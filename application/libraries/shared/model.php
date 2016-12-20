@@ -12,15 +12,9 @@ namespace Shared {
 
     class Model extends \Framework\Model {
         /**
-         * @readwrite
-         * @var boolean
-         */
-        protected $_allowNull = false;
-
-        /**
          * @read
          */
-        protected $_types = ["autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array"];
+        protected $_types = array("autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array");
 
         /**
          * @column
@@ -83,10 +77,12 @@ namespace Shared {
         }
 
         public function &getMeta() {
-            if (is_null($this->_meta)) {
-                $this->_meta = [];
+            if (property_exists($this, '_meta')) {
+                return $this->_meta;
+            } else if (property_exists($this, 'meta')) {
+                return $this->meta;
             }
-            return $this->_meta;
+            return [];
         }
 
         /**
@@ -146,17 +142,15 @@ namespace Shared {
                 $field = $value['raw'];
                 $current = $this->$field;
                 
+                if ((!is_array($current) && !isset($current)) || is_null($current)) {
+                    continue;
+                }
                 $v = $this->_convertToType($current, $value['type']);
                 $checkEmpty = $this->_preventEmpty($v, $value['type']);
-                
-                $allowNull = !is_null($this->__id) || $this->_allowNull;
-                if (is_null($checkEmpty)) {
-                    // check when to save null values
-                    if ($allowNull) {
-                        $doc[$key] = null;
-                    }
-                } else {
-                    $this->$field = $v;
+                // dont save empty fields when creating a record
+                if (is_null($checkEmpty) && is_null($this->__id)) {
+                    continue;
+                } else { // allow empty values when updating
                     $doc[$key] = $v;
                 }
             }
@@ -165,9 +159,7 @@ namespace Shared {
             }
 
             if (empty($this->$raw)) {
-                if (isset($doc['created']) && Db::isType($doc['created'], 'date')) {
-                    $this->_created = $doc['created'];
-                } else {
+                if (!array_key_exists('created', $doc)) {
                     $this->_created = $doc['created'] = Db::time();
                 }
 
@@ -192,8 +184,6 @@ namespace Shared {
                     $v = $val->toDateTime();
                     $v->settimezone($tz);
                     $this->$raw = $v;
-                } else if (Db::isType($val, 'regex')) {
-                    $this->$raw = $val->getPattern();
                 }
             }
         }
@@ -223,12 +213,6 @@ namespace Shared {
                         $value = null;
                     }
                     break;
-
-                case 'mongoid':
-                    if (is_string($value) && strlen(trim($value)) === 0) {
-                        $value = null;
-                    }
-                    break;
             }
             return $value;
         }
@@ -246,9 +230,7 @@ namespace Shared {
 
             switch ($type) {
                 case 'text':
-                    if (!is_null($value)) {
-                        $value = (string) $value;   
-                    }
+                    $value = (string) $value;
                     break;
 
                 case 'integer':
@@ -275,7 +257,7 @@ namespace Shared {
                             $date = $value->format('Y-m-d');
                         }
                         $value = Db::time($date);
-                    } else if (is_string($value)) {
+                    } else {
                         $value = Db::time($value);
                     }
                     break;
@@ -384,14 +366,14 @@ namespace Shared {
          * @param int $limit
          * @return array
          */
-        public static function all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
+        public static function all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_all($where, $fields, $order, $direction, $limit, $page);
         }
 
-        protected function _all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
+        protected function _all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
             $collection = $this->getTable();
 
             $opts = Db::opts($fields, $order, $direction, $limit, $page);
@@ -418,14 +400,14 @@ namespace Shared {
          * @param int $limit
          * @return \Shared\Model object | null
          */
-        public static function first($where = [], $fields = [], $order = null, $direction = null) {
+        public static function first($where = array(), $fields = array(), $order = null, $direction = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_first($where, $fields, $order, $direction);
         }
 
-        protected function _first($where = [], $fields = [], $order = null, $direction = null) {
+        protected function _first($where = array(), $fields = array(), $order = null, $direction = null) {
             $collection = $this->getTable();
             $record = null;
 

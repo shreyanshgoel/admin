@@ -6,36 +6,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Note extends \Shared\Model {
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @validate required
-     * @label state name
-     */
-    protected $_note_id;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @validate required
-     * @label state name
-     */
-    protected $_title;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @label state name
-     */
-    protected $_text;
+class Module extends \Shared\Model {
 
     /**
      * @column

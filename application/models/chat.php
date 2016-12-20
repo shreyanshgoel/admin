@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Note extends \Shared\Model {
+class Chat extends \Shared\Model {
 
     /**
      * @column
@@ -16,35 +16,28 @@ class Note extends \Shared\Model {
      * @validate required
      * @label state name
      */
-    protected $_note_id;
+    protected $_msg;
 
     /**
      * @column
      * @readwrite
-     * @type text
+     * @type mongoid
      * 
      * @validate required
      * @label state name
      */
-    protected $_title;
+    protected $_from_id;
 
     /**
      * @column
      * @readwrite
-     * @type text
-     * 
-     * @label state name
-     */
-    protected $_text;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
+     * @type mongoid
      * 
      * @validate required
-     * @label country id
+     * @label state name
      */
-    protected $_user_id;
+    protected $_to_id;
+
+
 
 }
