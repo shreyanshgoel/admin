@@ -21,6 +21,25 @@ class Project extends \Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type text
+     * 
+     * @validate required
+     * @label details of the project
+     */
+    protected $_details;
+
+    /**
+     * @column
+     * @readwrite
+     * @type datetime
+     * 
+     * @label deadline
+     */
+    protected $_deadline;
+
+    /**
+     * @column
+     * @readwrite
      * @type mongoid
      * 
      * @validate required
@@ -43,7 +62,7 @@ class Project extends \Shared\Model {
      * @readwrite
      * @type array
      * 
-     * @label state name
+     * @label team of the project excluding who made it
      */
     protected $_members[];
 

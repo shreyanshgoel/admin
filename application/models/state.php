@@ -22,7 +22,7 @@ class State extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type monogid
+     * @type mongoid
      *
      * @label country id
      */

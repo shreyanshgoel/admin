@@ -14,28 +14,9 @@ class Subtask extends \Shared\Model {
      * @type text
      * 
      * @validate required
-     * @label state name
-     */
-    protected $_note_id;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @validate required
-     * @label state name
+     * @label subtask title
      */
     protected $_title;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @label state name
-     */
-    protected $_text;
 
     /**
      * @column
@@ -45,6 +26,6 @@ class Subtask extends \Shared\Model {
      * @validate required
      * @label country id
      */
-    protected $_user_id;
+    protected $_task_id;
 
 }

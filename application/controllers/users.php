@@ -20,6 +20,14 @@ class Users extends Controller {
 
     	$view = $this->getActionView();
 
+        if(RequestMethods::get('theme')){
+
+            $this->user->theme_color = RequestMethods::get('theme');
+            $this->user->save();
+
+            $this->redirect('/users/dashboard');
+        }
+
     	
     }
 
@@ -80,16 +88,114 @@ class Users extends Controller {
     /**
 	* @before _secure
 	*/
-    public function profile() {
+    public function profile($success = -1){
 
-    	$layoutView = $this->getLayoutView();
-    	$layoutView->set("seo", Framework\Registry::get("seo"));
+        $layoutView = $this->getLayoutView();
+        $layoutView->set("seo", Framework\Registry::get("seo"));
 
-    	$view = $this->getActionView();
+        $layoutView->set('profile',1);
 
-    	$layoutView->set('calendar_tab', 1);
+        $view = $this->getActionView();
 
-    	
+        $cp = 1;
+
+        $view->set('update_success', $success);
+
+        if(RequestMethods::post('profile_update')){
+
+            $user = models\User::first(array(
+                'id = ?' => $this->user->id
+                ));
+
+            // $exist = models\User::first(array(
+            //     'id = ?' => ['$ne' => $this->user->id],
+            //     'email = ?' => RequestMethods::post('email')
+            //     ));
+
+            //if(empty($exist)){
+
+                $user->full_name = RequestMethods::post('full_name');
+
+                // if(RequestMethods::post('change_email')){
+
+                //     $user->tmp_email = null;
+                // }
+
+                // if(RequestMethods::post('email') != $user->email){
+
+                //     $user->tmp_email = RequestMethods::post('email');
+
+                //     $string = \Framework\StringMethods::uniqueRandomString(44);
+                //     $user->email_confirm_string = $string;
+
+                // }
+
+                $user->state = RequestMethods::post('state');
+                $user->address = RequestMethods::post('address');
+
+                if($user->validate()){
+
+                    $user->save();
+
+                    //mail the url to confirm the email
+
+                    $this->redirect('/users/profile/1');
+
+
+                }else{
+
+                    $view->set('validation', 1);
+                }
+            // }else{
+
+            //     $view->set('exist', 1);
+            // }
+
+        }
+
+        if(RequestMethods::post('change_password')){
+
+            $cp = 2;
+
+            $old = sha1(RequestMethods::post('old'));
+
+            if($this->user->password == $old){
+
+                $pass = RequestMethods::post('new');
+                $confirm = RequestMethods::post('confirm');
+
+                if($pass == $confirm){
+
+                    $user = models\User::first(array('id = ?' => $this->user->id));
+
+                    $user->password = sha1($pass);
+
+                    $user->save();
+
+                    $message = "Password Changed<strong>Successfully!</strong>";
+
+                    $view->set('cp_success', 1);
+
+                }else{
+
+                    $message = "New passwords do not match!";
+                }
+
+            }else{
+
+                $message = "Wrong Old Password!";
+            }
+
+            $view->set('message', $message);
+
+
+        }
+
+        $state = models\State::all();
+
+        $view->set('cp', $cp)->set('state', $state);
+       
+        
     }
 
     /**

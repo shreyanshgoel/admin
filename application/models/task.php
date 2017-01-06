@@ -14,17 +14,7 @@ class Task extends \Shared\Model {
      * @type text
      * 
      * @validate required
-     * @label state name
-     */
-    protected $_note_id;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @validate required
-     * @label state name
+     * @label task title
      */
     protected $_title;
 
@@ -33,18 +23,8 @@ class Task extends \Shared\Model {
      * @readwrite
      * @type text
      * 
-     * @label state name
-     */
-    protected $_text;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
      * @validate required
-     * @label country id
+     * @label project id
      */
-    protected $_user_id;
-
+    protected $_project_id;
 }

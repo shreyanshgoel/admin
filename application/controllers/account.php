@@ -11,12 +11,23 @@ use Framework\Registry as Registry;
 
 class Account extends Controller {
 
+	/**
+	* @before _session
+	*/
+
 	public function register_success(){
 
+		$this->setLayout("layouts/empty");
 
 	}
 
+	/**
+	* @before _session
+	* @after _csrfToken
+	*/
+
 	public function register(){
+
 		$this->setLayout("layouts/empty");
 		
 		$token = RequestMethods::post('token', '');
@@ -26,9 +37,9 @@ class Account extends Controller {
 			$pass = \Framework\StringMethods::uniqueRandomString(10);
 			$user = new models\User(array(
 	            "full_name" => RequestMethods::post("full_name"),
-	            "email" => RequestMethods::post("email"),
 	            "mobile" => RequestMethods::post("mobile"),
-	            "password" => $pass,
+	            "email" => RequestMethods::post("email"),
+	            "password" => sha1($pass),
 	            "email_confirm" => true,
 	            "live" => true
 	        ));
@@ -44,15 +55,7 @@ class Account extends Controller {
 
 						//mail te password to the user
 
-						$login = models\User::first(array(
-							'email = ?' => RequestMethods::post("email")
-							));
-
-						$this->user = $login;
-
-						self::enroll();
-
-						$this->redirect("/account/register_success");
+						$this->redirect("/account/register_success/$pass");
 
 					}else{
 
@@ -76,7 +79,9 @@ class Account extends Controller {
 
 		$token = RequestMethods::post('token', '');
 
-		if(RequestMethods::post('login') && $this->verifyToken($token)){
+		if(RequestMethods::post('login')){
+
+			echo "string";
 
 			$email = RequestMethods::post("email");
 	        $pass = sha1(RequestMethods::post("password"));

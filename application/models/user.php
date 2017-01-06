@@ -25,6 +25,7 @@ class User extends \Shared\Model {
      * @type text
      * @length 100
      * 
+     * @validate required
      * @label mobile number
      */
     protected $_mobile;
@@ -42,40 +43,21 @@ class User extends \Shared\Model {
      * @column
      * @readwrite
      * @type text
+     * @length 100
      * 
-     * @label mobile number
+     * @label logo extension
      */
-    protected $_designation;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @label mobile number
-     */
-    protected $_company_name;
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @label mobile number
-     */
-    protected $_location;
+    protected $_logo_ext;
 
     /**
      * @column
      * @readwrite
      * @type text
      * @length 100
-     * @uindex
      * 
-     * @validate required
-     * @label username
+     * @label mobile number
      */
-    protected $_username;
+    protected $_theme_color = 'default';
 
     /**
      * @column
@@ -121,5 +103,16 @@ class User extends \Shared\Model {
     * @type boolean
     */
     protected $_admin = false;
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
+     * @validate required
+     * @label project id
+     */
+    protected $_creative[];
+
 
 }
