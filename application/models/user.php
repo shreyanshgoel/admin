@@ -104,15 +104,4 @@ class User extends \Shared\Model {
     */
     protected $_admin = false;
 
-    /**
-     * @column
-     * @readwrite
-     * @type array
-     * 
-     * @validate required
-     * @label project id
-     */
-    protected $_creative[];
-
-
 }

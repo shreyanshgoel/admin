@@ -60,7 +60,7 @@ class Users extends Controller {
     /**
 	* @before 
 	*/
-    public function contact_list() {
+    public function contact_book() {
 
     	$layoutView = $this->getLayoutView();
     	$layoutView->set("seo", Framework\Registry::get("seo"));

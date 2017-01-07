@@ -64,6 +64,6 @@ class Project extends \Shared\Model {
      * 
      * @label team of the project excluding who made it
      */
-    protected $_members[];
+    protected $_members = [];
 
 }
