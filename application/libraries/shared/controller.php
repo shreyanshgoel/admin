@@ -12,7 +12,6 @@ namespace Shared {
     use Framework\Router as Router;
     use Framework\Registry as Registry;
     use Framework\RequestMethods as RequestMethods;
-    use Aws\S3\S3Client;
 
     class Controller extends \Framework\Controller {
 
@@ -20,6 +19,11 @@ namespace Shared {
          * @readwrite
          */
         protected $_user;
+
+        /**
+         * @readwrite
+         */
+        protected $_company_id;
         
         public function seo($params = array()) {
             $seo = Registry::get("seo");
@@ -158,8 +162,15 @@ namespace Shared {
                 $session = Registry::get("session");
                 $controller = Registry::get("controller");
                 $user = $session->get("user");
+                $company = $session->get("company");
                 if ($user) {
                     $controller->user = \models\User::first(array("id = ?" => $user));
+                    $ids = $controller->user->company_ids;
+                    if($ids && in_array($company, $ids)){
+                        $controller->company_id = $company;
+                    }else{
+                        $controller->company_id = $ids[0];
+                    }
                 }
             });
 
@@ -202,6 +213,7 @@ namespace Shared {
                         $key = "__user";
                     }
                     $this->actionView->set($key, $this->user);
+                    $this->actionView->set("company_id", $this->company_id);
                 }
                 if ($this->layoutView) {
                     $key = "user";
@@ -209,6 +221,12 @@ namespace Shared {
                         $key = "__user";
                     }
                     $this->layoutView->set($key, $this->user);
+                    $this->layoutView->set("company_id", $this->company_id);
+
+                    $members = \models\User::all([
+                        "company_ids" => ['$elemMatch' => ['$eq' => $this->company_id]]
+                        ]);
+                    $this->layoutView->set("members", $members);
                 }
             }
            
@@ -238,6 +256,10 @@ namespace Shared {
                 return true;
             }
             return false;
+        }
+
+        public function layoutFunction($token = null) {
+    
         }
 
 

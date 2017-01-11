@@ -18,7 +18,7 @@ class Users extends Controller {
     	$layoutView = $this->getLayoutView();
     	$layoutView->set("seo", Framework\Registry::get("seo"));
 
-    	$view = $this->getActionView();
+        $view = $this->getActionView();
 
         if(RequestMethods::get('theme')){
 
@@ -27,7 +27,6 @@ class Users extends Controller {
 
             $this->redirect('/users/dashboard');
         }
-
     	
     }
 

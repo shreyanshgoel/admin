@@ -27,7 +27,7 @@ class Company extends \Shared\Model {
      * @validate required
      * @label company founder
      */
-    protected $_user_id;
+    protected $_founder_id;
 
     /**
      * @column

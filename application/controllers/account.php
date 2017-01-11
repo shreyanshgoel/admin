@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 use Shared\Controller as Controller;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 use Framework\Registry as Registry;
 
 class Account extends Controller {
@@ -26,26 +26,40 @@ class Account extends Controller {
 	public function register(){
 
 		$this->setLayout("layouts/empty");	
-		$token = RequestMethods::post('token', '');
+		$token = RM::post('token', '');
 
-		if(RequestMethods::post('register') && $this->verifyToken($token)){
+		if(RM::post('register') && $this->verifyToken($token)){
 			$pass = \Framework\StringMethods::uniqueRandomString(10);
 			$user = new models\User([
-	            "full_name" => RequestMethods::post("full_name"),
-	            "mobile" => RequestMethods::post("mobile"),
-	            "email" => RequestMethods::post("email"),
+	            "full_name" => RM::post("full_name"),
+	            "mobile" => RM::post("mobile"),
+	            "email" => RM::post("email"),
 	            "password" => sha1($pass),
 	            "email_confirm" => true,
 	            "live" => true
 	        ]);
-			$exist = models\User::all(array(
-				'email = ?' => RequestMethods::post("email")
+
+	        $exist = models\User::all(array(
+				'email = ?' => RM::post("email")
 				));
 
 			if (empty($exist)){
 
-					if($user->validate()){
+					if($user->validate() && !empty(RM::post('company'))){
 						
+						$user->save();
+
+						$company = new models\Company([
+				        	"name" => RM::post('company'),
+				        	"founder_id" => $user->id,
+				            "live" => true
+				        ]);
+						
+						$company->save();
+
+						$ids = array($company->id);
+						$user->company_ids = $ids;
+
 						$user->save();
 
 						//mail te password to the user
@@ -66,12 +80,12 @@ class Account extends Controller {
 
 	public function login(){
 		$this->setLayout("layouts/empty");
-		$token = RequestMethods::post('token', '');
+		$token = RM::post('token', '');
 
-		if(RequestMethods::post('login') && $this->verifyToken($token)){
+		if(RM::post('login') && $this->verifyToken($token)){
 
-			$email = RequestMethods::post("email");
-	        $pass = sha1(RequestMethods::post("password"));
+			$email = RM::post("email");
+	        $pass = sha1(RM::post("password"));
 	        
 	        $login_e = false;
 	        

@@ -31,10 +31,29 @@ class Department extends \Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type text
+     * 
+     * @label department company
+     */
+    protected $_description;
+
+    /**
+     * @column
+     * @readwrite
      * @type mongoid
      * 
      * @validate required
      * @label head of the department
      */
     protected $_head_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type mongoid
+     * 
+     * @validate required
+     * @label head of the department
+     */
+    protected $_created_by_id;
 }
