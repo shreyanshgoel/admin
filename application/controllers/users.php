@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 use Shared\Controller as Controller;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 
 class Users extends Controller {
 
@@ -20,9 +20,9 @@ class Users extends Controller {
 
         $view = $this->getActionView();
 
-        if(RequestMethods::get('theme')){
+        if(RM::get('theme')){
 
-            $this->user->theme_color = RequestMethods::get('theme');
+            $this->user->theme_color = RM::get('theme');
             $this->user->save();
 
             $this->redirect('/users/dashboard');
@@ -57,14 +57,52 @@ class Users extends Controller {
     }
 
     /**
-	* @before 
+	* @before _secure
 	*/
-    public function contact_book() {
+    public function members() {
+
+        $this->user->designations = [$this->company_id => ["founder", "hehe"]];
+
+        $this->user->save();
 
     	$layoutView = $this->getLayoutView();
     	$layoutView->set("seo", Framework\Registry::get("seo"));
 
     	$view = $this->getActionView();
+
+        if(RM::post('action') == 'add_contact'){
+
+            $exist = models\User::first(['email' => RM::post('email')]);
+
+            if(!$exist){
+
+                $user = new models\User([
+                    "email" => RM::post('email'),
+                    "designations" => [
+                        $this->company_id => [
+                            RM::post('designation')
+                            ]],
+                    "company_ids" => [$this->company_id],
+                    "live" => false
+                    ]);
+
+                $user->save();
+
+                //@todo Send mail to the new user and let him fill the details
+                //@todo A cronjob that deletes users which do not register after all
+            }else{
+
+                $ids = $exist->company_ids;
+                array_push($ids, $this->company_id);
+                $exist->company_ids = $ids;
+
+                $d = $exist->designations;
+                array_push($d, RM::post('designation'));
+                $exist->designations = $d;
+
+                $exist->save();
+            }
+        }
 
     	
     }
@@ -100,7 +138,7 @@ class Users extends Controller {
 
         $view->set('update_success', $success);
 
-        if(RequestMethods::post('profile_update')){
+        if(RM::post('profile_update')){
 
             $user = models\User::first(array(
                 'id = ?' => $this->user->id
@@ -108,29 +146,29 @@ class Users extends Controller {
 
             // $exist = models\User::first(array(
             //     'id = ?' => ['$ne' => $this->user->id],
-            //     'email = ?' => RequestMethods::post('email')
+            //     'email = ?' => RM::post('email')
             //     ));
 
             //if(empty($exist)){
 
-                $user->full_name = RequestMethods::post('full_name');
+                $user->full_name = RM::post('full_name');
 
-                // if(RequestMethods::post('change_email')){
+                // if(RM::post('change_email')){
 
                 //     $user->tmp_email = null;
                 // }
 
-                // if(RequestMethods::post('email') != $user->email){
+                // if(RM::post('email') != $user->email){
 
-                //     $user->tmp_email = RequestMethods::post('email');
+                //     $user->tmp_email = RM::post('email');
 
                 //     $string = \Framework\StringMethods::uniqueRandomString(44);
                 //     $user->email_confirm_string = $string;
 
                 // }
 
-                $user->state = RequestMethods::post('state');
-                $user->address = RequestMethods::post('address');
+                $user->state = RM::post('state');
+                $user->address = RM::post('address');
 
                 if($user->validate()){
 
@@ -152,16 +190,16 @@ class Users extends Controller {
 
         }
 
-        if(RequestMethods::post('change_password')){
+        if(RM::post('change_password')){
 
             $cp = 2;
 
-            $old = sha1(RequestMethods::post('old'));
+            $old = sha1(RM::post('old'));
 
             if($this->user->password == $old){
 
-                $pass = RequestMethods::post('new');
-                $confirm = RequestMethods::post('confirm');
+                $pass = RM::post('new');
+                $confirm = RM::post('confirm');
 
                 if($pass == $confirm){
 
@@ -212,12 +250,12 @@ class Users extends Controller {
 
         switch ($id) {
             case 'new':
-                if(RequestMethods::post('action') == 'save'){
+                if(RM::post('action') == 'save'){
 
                     $note = new models\Note(array(
                         'note_id' => uniqid(),
-                        'title' => RequestMethods::post('title'),
-                        'text' => RequestMethods::post('text'),
+                        'title' => RM::post('title'),
+                        'text' => RM::post('text'),
                         'user_id' => $this->user->id
                         ));
 
@@ -257,10 +295,10 @@ class Users extends Controller {
 
                 if($note){
 
-                    if(RequestMethods::post('action') == 'save'){
+                    if(RM::post('action') == 'save'){
 
-                        $note->title = RequestMethods::post('title');
-                        $note->text = RequestMethods::post('text');
+                        $note->title = RM::post('title');
+                        $note->text = RM::post('text');
 
                         if($note->validate()){
                             $note->save();
@@ -268,7 +306,7 @@ class Users extends Controller {
 
                     }
 
-                    if(RequestMethods::post('action') == 'delete'){
+                    if(RM::post('action') == 'delete'){
 
                         $note->delete();
                         $this->redirect('/users/notes');

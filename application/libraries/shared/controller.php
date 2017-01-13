@@ -206,6 +206,10 @@ namespace Shared {
             /* if the user and view(s) are defined, 
              * assign the user session to the view(s)
              */
+            $members = \models\User::all([
+                "company_ids" => ['$elemMatch' => ['$eq' => $this->company_id]]
+                ]);
+
             if ($this->user) {
                 if ($this->actionView) {
                     $key = "user";
@@ -213,7 +217,10 @@ namespace Shared {
                         $key = "__user";
                     }
                     $this->actionView->set($key, $this->user);
+                    
                     $this->actionView->set("company_id", $this->company_id);
+                    $this->actionView->set("members", $members);
+
                 }
                 if ($this->layoutView) {
                     $key = "user";
@@ -221,15 +228,14 @@ namespace Shared {
                         $key = "__user";
                     }
                     $this->layoutView->set($key, $this->user);
-                    $this->layoutView->set("company_id", $this->company_id);
 
-                    $members = \models\User::all([
-                        "company_ids" => ['$elemMatch' => ['$eq' => $this->company_id]]
-                        ]);
-                    $this->layoutView->set("members", $members);
+                    
+                    $this->layoutView->set("company_id", $this->company_id);
+                $this->layoutView->set("members", $members);
                 }
+                $this->layoutFunction();           
             }
-           
+
             parent::render();
         }
 
@@ -259,7 +265,19 @@ namespace Shared {
         }
 
         public function layoutFunction($token = null) {
-    
+            if(RequestMethods::post('action') == 'add_dept'){
+                $dept = new \models\Department([
+                    'name' => RequestMethods::post('name'),
+                    'company_id' => $this->company_id,
+                    'created_by' => $this->user->id,
+                    'head_id' => RequestMethods::post('head'),
+                    'description' => RequestMethods::post('desc')
+                    ]);
+
+                if($dept->validate()){
+                    $dept->save();
+                }
+            }
         }
 
 

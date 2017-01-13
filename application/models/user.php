@@ -102,6 +102,25 @@ class User extends \Shared\Model {
      * @readwrite
      * @type array
      * 
+     * @validate required
+     * @label key is company id and points to permission (1=Admin, 2=Manager, 3=user)
+     */
+    protected $_permissions = [];
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
+     * @label key is company id and points to array of designation
+     */
+    protected $_designations = [];
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
      * @label company id
      */
     protected $_company_ids = [];

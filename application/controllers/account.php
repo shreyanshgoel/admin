@@ -57,8 +57,8 @@ class Account extends Controller {
 						
 						$company->save();
 
-						$ids = array($company->id);
-						$user->company_ids = $ids;
+						$user->company_ids = [$company->id];
+						$user->designations = [$company->id => ["founder"]];
 
 						$user->save();
 
@@ -68,7 +68,28 @@ class Account extends Controller {
 
 					}else echo "<script>alert('validation not good')</script>";
 
-			}else echo "<script>alert('User exists')</script>";
+			}else{
+
+				$added = models\User::all(array(
+					'email = ?' => RM::post("email"),
+					'live = ?' => false
+					));
+
+				if($added){
+
+					$added->name = RM::post('full_name');
+					$added->mobile = RM::post('mobile');
+					$added->password = sha1($pass);
+
+					$added->live = true;
+
+					$this->redirect("/account/register_success/$pass");
+
+					$added->save();
+				}else{
+					echo "<script>alert('User exists')</script>";
+				}
+			} 
 		}
 
 	}

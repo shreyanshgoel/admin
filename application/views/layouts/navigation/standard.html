@@ -38,21 +38,21 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/users/contact_book">
+                    <a href="/users/taskboard">
                         <i class="entypo-book-open"></i>
                         <span class="title">My Taskboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/users/contact_book">
+                    <a href="/project/index">
                         <i class="entypo-book-open"></i>
                         <span class="title">My Projects</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/users/contact_book">
-                        <i class="entypo-book-open"></i>
-                        <span class="title">Users</span>
+                    <a href="/users/members">
+                        &nbsp;<i class="fa fa-users"></i>
+                        <span class="title" style="margin-left: 3px">Members</span>
                     </a>
                 </li>
                 <li>
@@ -64,16 +64,20 @@
                         </span>
                     </a>
                 </li>
-                <li style="margin-left: 40px">
+                <li style="">
                     {script $depts = models\Department::all(['company_id' => $company_id])}
-                    {foreach $dept in $depts}
-                        <a href="/department/info/">
-                            <span class="title">No Departments Yet</span>
+                    {if $depts}
+                        {foreach $dept in $depts}
+                            <a href="/department/info/{$dept->id}">
+                                <span class="title" style="margin-left: 40px">{$dept->name}</span>
+                            </a>
+                        {/foreach}
+                    {/if}
+                    {else}
+                        <a href="">
+                            <span class="title" style="margin-left: 40px">No Departments Yet</span>
                         </a>
-                    {/foreach}
-                    <a href="">
-                        <span class="title">No Departments Yet</span>
-                    </a>
+                    {/else}
                 </li>
                 <li class="has-sub">
                     <a href="">
@@ -89,16 +93,9 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="/users/contact_book">
-                        <i class="entypo-book-open"></i>
-                        <span class="title">Contact Book</span>
-                    </a>
-                </li>
-                <li>
                     <a href="/users/calendar">
-                        &nbsp;
-                        <i class="fa fa-calendar-plus-o"></i>
-                        <span class="title">&nbsp;Calendar</span>
+                        &nbsp;<i class="fa fa-calendar-plus-o"></i>
+                        <span class="title" style="margin-left: 3px">Calendar</span>
                     </a>
                 </li>
                 <li>
@@ -119,17 +116,17 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Create New Department</h4>
                 </div>
-                <form class="form-inline">
+                <form class="form-inline" method="post">
                     <div class="modal-body">
                         <div class="form-group" style="margin-left: 40px">
                             <label>Name: </label>
-                            <input type="text" class="form-control" placeholder="Jane Doe" style="margin-left: 30px; width: 300px" required="">
+                            <input type="text" class="form-control" name="name" placeholder="Jane Doe" style="margin-left: 30px; width: 300px" required="">
                         </div>
                         <br><br>
                         <div class="form-group" style="margin-left: 40px">
                             <label>Head: </label>
-                            <select class="form-control" style="margin-left: 30px; width: 300px" required="">
-                                <option>Select the head</option>
+                            <select class="form-control" name="head" style="margin-left: 30px; width: 300px" required="">
+                                <option value="">Select the head</option>
                                 {foreach $m in $members}
                                     <option value="{$m->id}">{$m->full_name}</option>
                                 {/foreach}
@@ -138,13 +135,13 @@
                         <br><br>
                         <div class="form-group" style="margin-left: 40px">
                             <label>Description: </label>
-                            <textarea class="form-control" placeholder="About the Department" style="margin-left: 30px; width: 300px; resize: none">
+                            <textarea class="form-control" name="desc" placeholder="About the Department" style="margin-left: 30px; width: 300px; resize: none">
                             </textarea>
                         </div>
                         <br><br>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-default">Send invitation</button>
+                        <button type="submit" name="action" value="add_dept" class="btn btn-default">Add</button>
                     </div>
                 </form>
             </div>

@@ -55,5 +55,5 @@ class Department extends \Shared\Model {
      * @validate required
      * @label head of the department
      */
-    protected $_created_by_id;
+    protected $_created_by;
 }
