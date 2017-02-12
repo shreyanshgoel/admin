@@ -231,7 +231,7 @@ namespace Shared {
 
                     
                     $this->layoutView->set("company_id", $this->company_id);
-                $this->layoutView->set("members", $members);
+                    $this->layoutView->set("members", $members);
                 }
                 $this->layoutFunction();           
             }

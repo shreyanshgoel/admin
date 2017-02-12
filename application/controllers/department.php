@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 use Shared\Controller as Controller;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 
 class Department extends Controller {
 
@@ -14,33 +14,43 @@ class Department extends Controller {
 	* @before _secure
 	*/
 	public function info($id = ''){
-
 		$view = $this->getActionView();
-
 		$dept = models\Department::first([
-			'id' => $id
+			'id' => $id,
+			'company_id' => $this->company_id
 			]);
 
 		if(!$dept){
 			$this->redirect('/404');
 		}
 
-		if(RequestMethods::post('action') == 'create_project'){
+		if(RM::post('action') == 'create_project'){
 
 			$p = new models\Project([
+				"name" => RM::post('name'),
+				"team" => RM::post('team'),
+				"head" => RM::post('head'),
+				"details" => RM::post('details'),
+				"department_id" => $id,
+				"created_by" => $this->user->id
 				]);
 			if($p->validate()){
 				$p->save();
 			}
 		}
-
 		$projects = models\Project::all([
 			'department_id' => $id
 			]);
 
 		$view->set('projects', $projects);
+	}
 
-
+	/**
+	* @before _secure
+	*/
+	public function project($id = ''){
+		$view = $this->getActionView();
+		
 	}
 
 	/**
@@ -49,6 +59,4 @@ class Department extends Controller {
 	public function tasks(){
 
 	}
-
-
 }

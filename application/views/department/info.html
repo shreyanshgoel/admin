@@ -17,16 +17,20 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
-    <link rel="stylesheet" href="{echo CDN}js/select2/select2-bootstrap.css" id="style-resource-1">
-    <link rel="stylesheet" href="{echo CDN}js/select2/select2.css" id="style-resource-2">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+
     
 </head>
 <!-- Start content -->
 <div class="content">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
-                <div class="panel" data-collapsed="0">
+            <div class="col-md-13">
+                <div class="panel">
                     <!-- setting the attribute data-collapsed="1" will collapse the panel -->
                     <!-- panel head -->
                     <div class="panel-heading">
@@ -34,9 +38,18 @@
                         <a href="index.html#tasks" data-toggle="tab" class="panel-title">Tasks</a>
                         <a href="index.html#files" data-toggle="tab" class="panel-title">Files</a>
                         <div class="panel-options">
-                            <a href="index.html#" data-rel="collapse">
-                                <i class="entypo-down-open"></i>
-                            </a>
+                            <a href="extras-taskdetail.html#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="entypo-down-open"></i>
+                                </a>
+                            <div class="dropdown pull-right">
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="">Edit</a></li>
+                                    <li><a href="">View Tasks</a></li>
+                                    <li><a href="">About</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="">Delete</a></li>
+                                </ul>
+                            </div>
                             <a href="index.html#" data-rel="reload">
                                 <i class="entypo-arrows-ccw"></i>
                             </a>
@@ -44,7 +57,7 @@
                     </div>
                     <!-- panel body -->
                     <div class="panel-body">
-                        <div class="scrollable" data-height="700" data-scroll-position="right" data-rail-color="#fff" data-rail-opacity=".9" data-rail-width="8" data-rail-radius="10" data-autohide="0">
+                        <div class="scrollable" data-height="900" data-scroll-position="right" data-rail-color="#fff" data-rail-opacity=".9" data-rail-width="8" data-rail-radius="10" data-autohide="0">
                             <div class="tab-content" style="border: none">
                                 <div class="tab-pane active" id="projects">
                                     <div class="row">
@@ -83,15 +96,29 @@
                                         {if $projects}
                                         {foreach $p in $projects}
                                             <div class="col-lg-4">
-                                                <div class="card-box project-box">
-                                                    <div class="label label-success">Completed</div>
+                                                <div class="card-box">
+                                                    <div class="dropdown pull-right">
+                                                        <a href="extras-taskdetail.html#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                                                            <i class="zmdi zmdi-more-vert"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu" role="menu">
+                                                            <li><a href="extras-taskdetail.html#">Edit</a></li>
+                                                            <li><a href="extras-taskdetail.html#">View Tasks</a></li>
+                                                            <li><a href="extras-taskdetail.html#">About</a></li>
+                                                            <li class="divider"></li>
+                                                            <li><a href="extras-taskdetail.html#">Delete</a></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="label label-success pull-right">Completed</div>
                                                     <h4 class="m-t-0 m-b-5">
-                                                        <a href="extras-projects.html" class="text-inverse">New Admin Design</a>
+                                                        <a href="/department/project/{$p->id}" class="text-inverse">{$p->name}</a>
                                                     </h4>
-                                                    <p class="text-success text-uppercase m-b-20 font-13">Web Design</p>
-                                                    <p class="text-muted font-13">Lorem Ipsum is simply dummy text of the printing and typesetting industry. When an unknown printer took a galley of type and scrambled it...
-                                                        <a href="extras-projects.html#" class="font-600 text-muted">view more</a>
-                                                    </p>
+                                                    <p class="text-success text-uppercase m-b-20 font-13">{$p->type}</p>
+                                                    {if $p->details}
+                                                        <p class="text-muted font-13">{$p->details}
+                                                            <a href="extras-projects.html#" class="font-600 text-muted">view more</a>
+                                                        </p>
+                                                    {/if}
                                                     <ul class="list-inline">
                                                         <li>
                                                             <h3 class="m-b-0">56</h3>
@@ -131,6 +158,7 @@
                                                     <!-- /.progress .no-rounded -->
                                                 </div>
                                             </div>
+
                                         {/foreach}
                                         {/if}
                                         {else}
@@ -182,7 +210,6 @@
     </div>
     <!-- container -->
 </div>
-</div>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal2" aria-labelledby="myModalLabel">
@@ -199,19 +226,18 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Name:</label>
                         <div class="col-sm-6">
-                            <input type="email" class="form-control" name="name" placeholder="Project Name">
+                            <input type="name" class="form-control" name="name" placeholder="Project Name" required="">
                         </div>
                     </div>
                     <br><br><br><br>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Assignees:</label>
                         <div class="col-sm-5">
-                            <select name="test" class="select2 select2-multiple" multiple data-placeholder="Choose ...">
-                                <option value="3">Ohaio</option>
-                                <option value="2">Boston</option>
-                                <option value="5">Washington</option>
-                                <option value="1">Alabama</option>
-                                <option value="15">Washington II</option>
+                            <select name="team[]" class="selectpicker" title="Choose..." required="" multiple="">
+                                {foreach $m in $members}
+                                    <option value="{$m->id}">{$m->full_name}</option>
+                                    <option value="sdsd">sdsd</option>
+                                {/foreach}
                             </select>
                         </div>
                     </div>
@@ -219,9 +245,18 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Head:</label>
                         <div class="col-sm-6">
-                            <select name="permission" class="form-control" required="">
-                                <option>Self</option>
+                            <select name="head" class="selectpicker" required="" title="Select Team Head...">
+                                {foreach $m in $members}
+                                    <option value="{$m->id}">{$m->full_name}</option>
+                                {/foreach}
                             </select>
+                        </div>
+                    </div>
+                    <br><br><br>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Details:</label>
+                        <div class="col-sm-6">
+                            <textarea name="desc" class="form-control" style="resize: none" placeholder="Details of the project..."></textarea>
                         </div>
                     </div>
                     <br><br>

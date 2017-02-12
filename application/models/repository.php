@@ -4,7 +4,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Department extends \Shared\Model {
+class Repository extends \Shared\Model {
 
     /**
      * @column
@@ -12,28 +12,48 @@ class Department extends \Shared\Model {
      * @type text
      * 
      * @validate required
-     * @label department name
+     * @label country name
      */
     protected $_name;
 
     /**
      * @column
      * @readwrite
-     * @type mongoid
+     * @type text
      * 
      * @validate required
-     * @label department company
+     * @label country name
      */
-    protected $_company_id;
+    protected $_bare_name;
 
     /**
      * @column
      * @readwrite
      * @type text
      * 
-     * @label department company
+     * @validate required
+     * @label country name
      */
-    protected $_description;
+    protected $_key;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label country name
+     */
+    protected $_clone_name;
+
+    /**
+     * @column
+     * @readwrite
+     * @type integer
+     * 
+     * @validate required
+     * @label 1=company, 2=personal
+     */
+    protected $_type;
 
     /**
      * @column
@@ -41,17 +61,8 @@ class Department extends \Shared\Model {
      * @type mongoid
      * 
      * @validate required
-     * @label head of the department
+     * @label country name
      */
-    protected $_head_id;
+    protected $_user_id;
 
-    /**
-     * @column
-     * @readwrite
-     * @type mongoid
-     * 
-     * @validate required
-     * @label head of the department
-     */
-    protected $_created_by;
 }

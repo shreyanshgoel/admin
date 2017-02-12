@@ -61,10 +61,6 @@ class Users extends Controller {
 	*/
     public function members() {
 
-        $this->user->designations = [$this->company_id => ["founder", "hehe"]];
-
-        $this->user->save();
-
     	$layoutView = $this->getLayoutView();
     	$layoutView->set("seo", Framework\Registry::get("seo"));
 
@@ -82,6 +78,9 @@ class Users extends Controller {
                         $this->company_id => [
                             RM::post('designation')
                             ]],
+                    "permissions" => [
+                        $this->company_id => RM::post('permission')
+                        ],
                     "company_ids" => [$this->company_id],
                     "live" => false
                     ]);
@@ -97,8 +96,12 @@ class Users extends Controller {
                 $exist->company_ids = $ids;
 
                 $d = $exist->designations;
-                array_push($d, RM::post('designation'));
+                $d[$this->company_id] = [RM::post('designation')];
                 $exist->designations = $d;
+
+                $p = $exist->permissions;
+                $p[$this->company_id] = RM::post('permission');
+                $exist->permissions = $p;
 
                 $exist->save();
             }
@@ -166,10 +169,6 @@ class Users extends Controller {
                 //     $user->email_confirm_string = $string;
 
                 // }
-
-                $user->state = RM::post('state');
-                $user->address = RM::post('address');
-
                 if($user->validate()){
 
                     $user->save();
@@ -209,7 +208,7 @@ class Users extends Controller {
 
                     $user->save();
 
-                    $message = "Password Changed<strong>Successfully!</strong>";
+                    $message = "Password Changed <strong>Successfully!</strong>";
 
                     $view->set('cp_success', 1);
 

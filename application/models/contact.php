@@ -1,8 +1,6 @@
 <?php
 
 /**
- * The Contact Model
- *
  * @author Shreyansh Goel
  */
 namespace models;

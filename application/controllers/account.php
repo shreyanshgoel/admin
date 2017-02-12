@@ -59,6 +59,7 @@ class Account extends Controller {
 
 						$user->company_ids = [$company->id];
 						$user->designations = [$company->id => ["founder"]];
+						$user->permissions = [$company->id => 1];
 
 						$user->save();
 

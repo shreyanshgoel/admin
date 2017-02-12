@@ -1,8 +1,6 @@
 <?php
 
 /**
- * The Payment Model
- *
  * @author Shreyansh Goel
  */
 namespace models;

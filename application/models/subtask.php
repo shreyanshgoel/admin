@@ -1,8 +1,6 @@
 <?php
 
 /**
- * The State Model
- *
  * @author Shreyansh Goel
  */
 namespace models;

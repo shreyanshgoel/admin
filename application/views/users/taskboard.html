@@ -1,138 +1,84 @@
-<head>
-    <link href="{echo CDN}theme/css/core.css" rel="stylesheet" type="text/css" />
-    <link href="{echo CDN}theme/css/components.css" rel="stylesheet" type="text/css" />
-    <link href="{echo CDN}theme/css/icons.css" rel="stylesheet" type="text/css" />
-    <link href="{echo CDN}theme/css/pages.css" rel="stylesheet" type="text/css" />
-    <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
-
-</head>
-<div class="content">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card-box taskboard-box">
-                    <div class="dropdown pull-right">
-                        <a href="extras-taskboard.html#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
-                            <i class="zmdi zmdi-more-vert"></i>
+<div class="col-md-6">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th width="50%">Simple</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="padding-lg">
+                    <div class="list-group">
+                        <a href="index.html#" class="list-group-item active">
+                            <span class="badge badge-primary">5</span>
+                            Cras justo odio
                         </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href="extras-taskboard.html#">Action</a>
-                            </li>
-                            <li>
-                                <a href="extras-taskboard.html#">Another action</a>
-                            </li>
-                            <li>
-                                <a href="extras-taskboard.html#">Something else here</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="extras-taskboard.html#">Separated link</a>
-                            </li>
-                        </ul>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-info">14</span>
+                            Dapibus ac facilisis in
+                        </a>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-danger">11</span>
+                            Morbi leo risus
+                        </a>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-success">3</span>
+                            Porta ac consectetur ac
+                        </a>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-warning">7</span>
+                            Vestibulum at eros
+                        </a>
                     </div>
-                    <h4 class="header-title m-t-0 m-b-30 text-primary">Upcoming</h4>
-                    <ul class="list-unstyled task-list" id="drag-upcoming">
-                        <li>
-                            <div class="card-box kanban-box">
-                                <div class="checkbox-wrapper">
-                                    <div class="checkbox checkbox-success checkbox-single">
-                                        <input type="checkbox" id="singleCheckbox5" value="option2" aria-label="Single checkbox Two">
-                                        <label></label>
-                                    </div>
-                                </div>
-                                <div class="kanban-detail">
-                                    <span class="label label-danger pull-right">Urgent</span>
-                                    <h4>
-                                        <a href="extras-taskboard.html">Code HTML email template for welcome email</a>
-                                    </h4>
-                                    <ul class="list-inline m-b-0">
-                                        <li>
-                                            <a href="extras-taskboard.html" data-toggle="tooltip" data-placement="top" title="" data-original-title="Username">
-                                                <img src="{echo CDN}theme/images/users/avatar-6.jpg" alt="img" class="thumb-sm img-circle">
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="extras-taskboard.html" data-toggle="tooltip" data-placement="top" title="" data-original-title="5 Tasks">
-                                                <i class="zmdi zmdi-format-align-left"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="extras-taskboard.html" data-toggle="tooltip" data-placement="top" title="" data-original-title="3 Comments">
-                                                <i class="zmdi zmdi-comment-outline"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="#custom-modal" class="btn btn-default btn-md waves-effect waves-light" data-animation="fadein" data-plugin="custommodal" data-overlaySpeed="200" data-overlayColor="#36404a">
-                            <i class="zmdi zmdi-plus"></i> Add New
-                        </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="col-md-6">
+    <div class="panel panel-primary" data-collapsed="0">
+        <!-- panel head -->
+        <div class="panel-heading" style="height: 50px">
+            <div class="panel-title">Info Panel</div>
+            <div class="form-group" style="position: absolute; margin-left: 100px; margin-top: 7px">
+                <div>
+                    <div class="input-group">
+                        <input type="text" class="form-control datepicker add-ranges" data-format="D, dd MM yyyy" id="date">
+                        <div class="input-group-addon">
+                            <a href="index.html#">
+                                <i class="entypo-calendar"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="panel-options">
+                <a href="index.html#sample-modal" data-toggle="modal" data-target="#sample-modal-dialog-1" class="bg">
+                    <i class="entypo-cog"></i>
+                </a>
+                <a href="index.html#" data-rel="reload">
+                    <i class="entypo-arrows-ccw"></i>
+                </a>
+                <a href="index.html#" data-rel="close">
+                    <i class="entypo-cancel"></i>
+                </a>
             </div>
         </div>
-        <!-- end row -->
-    </div>
-    <!-- container -->
-</div>
-</div>
-
-<!-- Modal -->
-<div id="custom-modal" class="modal-demo">
-    <button type="button" class="close" onclick="Custombox.close();">
-        <span>&times;</span>
-        <span class="sr-only">Close</span>
-    </button>
-    <h4 class="custom-modal-title">Add New</h4>
-    <div class="custom-modal-text text-left">
-        <form role="form">
-            <div class="form-group">
-                <label for="name">Task Name</label>
-                <input type="text" class="form-control" id="name" placeholder="">
+        <!-- panel body -->
+        <div class="panel-body" style="height: 400px">
+            <p>Article evident arrived express highest men did boy. Mistress sensible entirely am so. Quick can manor smart money hopes worth too. Comfort produce husband boy her had hearing. Law others theirs passed but wishes. You day real less till dear read. Considered use dispatched melancholy sympathize discretion led. Oh feel if up to till like.</p>
+            <div style="margin-top: 200px;margin-left: -15px; margin-right: -15px; background-color: #ebebeb; height:117px">
+                <hr style="">
+                <textarea class="form-control" rows="5" cols="5" style="resize: none; width: 200px; height: 80px; margin-left: 250px" placeholder="Write a comment..."></textarea>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="assign">Assign to</label>
-                        <input type="text" class="form-control" id="assign" placeholder="">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="priority">Priority</label>
-                        <input type="text" class="form-control" id="priority" placeholder="">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="Sdate">Start Date</label>
-                        <input type="text" class="form-control" id="Sdate" placeholder="">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="Ddate">Due Date</label>
-                        <input type="text" class="form-control" id="Ddate" placeholder="">
-                    </div>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-success waves-effect waves-light">Save</button>
-            <button type="button" class="btn btn-danger waves-effect waves-light m-l-5">Cancel</button>
-        </form>
+        </div>
     </div>
 </div>
-<!-- ============================================================== -->
-<!-- End Right content here -->
-<!-- ============================================================== -->
-<!-- jQuery  -->
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+        $('#date').datepicker({
+            format: "D, dd MM yyyy",
+            autoclose: true
+        });
+ });
+</script>

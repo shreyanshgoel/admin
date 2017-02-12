@@ -1,8 +1,6 @@
 <?php
 
 /**
- * The User Model
- *
  * @author Shreyansh Goel
  */
 namespace models;

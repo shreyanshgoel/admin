@@ -1,5 +1,5 @@
 $('#calendar').fullCalendar({
-    events: "http://clutchmanage.tk/ajax/calendar_events",
+    events: "http://clutchstart.tk/ajax/calendar_events",
 
     droppable: true,
 
