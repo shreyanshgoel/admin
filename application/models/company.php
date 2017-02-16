@@ -34,6 +34,15 @@ class Company extends \Shared\Model {
      * 
      * @label company address
      */
+    protected $_git_folder_name;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label company address
+     */
     protected $_location;
 
 }

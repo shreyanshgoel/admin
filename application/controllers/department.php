@@ -17,7 +17,7 @@ class Department extends Controller {
 		$view = $this->getActionView();
 		$dept = models\Department::first([
 			'id' => $id,
-			'company_id' => $this->company_id
+			'company_id' => $this->company->id
 			]);
 
 		if(!$dept){
@@ -50,7 +50,6 @@ class Department extends Controller {
 	*/
 	public function project($id = ''){
 		$view = $this->getActionView();
-		
 	}
 
 	/**

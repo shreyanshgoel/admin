@@ -37,19 +37,19 @@
                         <span class="title">Profile</span>
                     </a>
                 </li>
-                <li>
+                <li {if isset($taskboard)} class="active" {/if}>
                     <a href="/users/taskboard">
                         <i class="entypo-book-open"></i>
                         <span class="title">My Taskboard</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/project/index">
+                <li {if isset($projects)} class="active" {/if}>
+                    <a href="/users/projects">
                         <i class="entypo-book-open"></i>
                         <span class="title">My Projects</span>
                     </a>
                 </li>
-                <li>
+                <li {if isset($profile)} class="active" {/if}>
                     <a href="/users/members">
                         &nbsp;<i class="fa fa-users"></i>
                         <span class="title" style="margin-left: 3px">Members</span>
@@ -65,7 +65,7 @@
                     </a>
                 </li>
                 <li style="">
-                    {script $depts = models\Department::all(['company_id' => $company_id])}
+                    {script $depts = models\Department::all(['company_id' => $company->id])}
                     {if $depts}
                         {foreach $dept in $depts}
                             <a href="/department/info/{$dept->id}">
@@ -98,13 +98,13 @@
                         </li>
                     </ul>
                 </li>
-                <li>
+                <li {if isset($calendar_tab)} class="active" {/if}>
                     <a href="/users/calendar">
                         &nbsp;<i class="fa fa-calendar-plus-o"></i>
                         <span class="title" style="margin-left: 3px">Calendar</span>
                     </a>
                 </li>
-                <li>
+                <li {if isset($notes)} class="active" {/if}>
                     <a href="/users/notes">
                         <i class="entypo-pencil"></i>
                         <span class="title">Personal Notes</span>

@@ -10,10 +10,12 @@
             <tr>
                 <td class="padding-lg">
                     <div class="list-group">
-                        <a href="index.html#" class="list-group-item active">
-                            <span class="badge badge-primary">5</span>
-                            Cras justo odio
-                        </a>
+                        {foreach $r in $all_repos}
+                            <a href="index.html#" class="list-group-item active">
+                                <span class="badge badge-primary">5</span>
+                                {$r->name}
+                            </a>
+                        {/foreach}
                         <a href="index.html#" class="list-group-item">
                             <span class="badge badge-info">14</span>
                             Dapibus ac facilisis in
@@ -36,9 +38,7 @@
         </tbody>
     </table>
 </div>
-{foreach $r in $all_repos}
-    {$r->key} {$r->name}
-{/foreach}
+
 <!-- Modal -->
 <div id="myModal2" class="modal fade" role="dialog">
     <div class="modal-dialog" style="width: 500px; margin-top: 100px">

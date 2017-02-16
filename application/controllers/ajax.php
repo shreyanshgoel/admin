@@ -88,7 +88,6 @@ class Ajax extends Controller {
         $check = models\User::all(array(
             'email = ?' => RequestMethods::post('email')
             ));
-
         if(!empty($check)){
             $view->set(array(1));
         }else{

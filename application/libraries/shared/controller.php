@@ -23,7 +23,7 @@ namespace Shared {
         /**
          * @readwrite
          */
-        protected $_company_id;
+        protected $_company;
         
         public function seo($params = array()) {
             $seo = Registry::get("seo");
@@ -164,12 +164,15 @@ namespace Shared {
                 $user = $session->get("user");
                 $company = $session->get("company");
                 if ($user) {
-                    $controller->user = \models\User::first(array("id = ?" => $user));
+                    $controller->user = \models\User::first(["id" => $user]);
                     $ids = $controller->user->company_ids;
                     if($ids && in_array($company, $ids)){
-                        $controller->company_id = $company;
+                        $controller->company = $company;
                     }else{
-                        $controller->company_id = $ids[0];
+                        $c = \models\Company::first(['id' => $ids[0]]);
+                        if($c){
+                            $controller->company = $c;
+                        }
                     }
                 }
             });
@@ -207,7 +210,7 @@ namespace Shared {
              * assign the user session to the view(s)
              */
             $members = \models\User::all([
-                "company_ids" => ['$elemMatch' => ['$eq' => $this->company_id]]
+                "company_ids" => ['$elemMatch' => ['$eq' => $this->company->id]]
                 ]);
 
             if ($this->user) {
@@ -218,7 +221,7 @@ namespace Shared {
                     }
                     $this->actionView->set($key, $this->user);
                     
-                    $this->actionView->set("company_id", $this->company_id);
+                    $this->actionView->set("company", $this->company);
                     $this->actionView->set("members", $members);
 
                 }
@@ -230,7 +233,7 @@ namespace Shared {
                     $this->layoutView->set($key, $this->user);
 
                     
-                    $this->layoutView->set("company_id", $this->company_id);
+                    $this->layoutView->set("company", $this->company);
                     $this->layoutView->set("members", $members);
                 }
                 $this->layoutFunction();           
@@ -268,7 +271,7 @@ namespace Shared {
             if(RequestMethods::post('action') == 'add_dept'){
                 $dept = new \models\Department([
                     'name' => RequestMethods::post('name'),
-                    'company_id' => $this->company_id,
+                    'company_id' => $this->company->id,
                     'created_by' => $this->user->id,
                     'head_id' => RequestMethods::post('head'),
                     'description' => RequestMethods::post('desc')

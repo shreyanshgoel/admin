@@ -4,7 +4,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class Repository extends \Shared\Model {
+class ExtraSite extends \Shared\Model {
 
     /**
      * @column
@@ -12,19 +12,19 @@ class Repository extends \Shared\Model {
      * @type text
      * 
      * @validate required
-     * @label country name
+     * @label department name
      */
     protected $_name;
 
     /**
      * @column
      * @readwrite
-     * @type integer
+     * @type mongoid
      * 
      * @validate required
-     * @label 1=company, 2=personal
+     * @label department company
      */
-    protected $_type;
+    protected $_url;
 
     /**
      * @column
@@ -32,18 +32,7 @@ class Repository extends \Shared\Model {
      * @type mongoid
      * 
      * @validate required
-     * @label country name
+     * @label head of the department
      */
     protected $_user_id;
-
-    /**
-     * @column
-     * @readwrite
-     * @type mongoid
-     * 
-     * @validate required
-     * @label country name
-     */
-    protected $_company_id;
-
 }

@@ -15,7 +15,6 @@ class Account extends Controller {
 	* @before _session
 	*/
 	public function register_success(){
-
 		$this->setLayout("layouts/empty");
 	}
 
@@ -39,23 +38,23 @@ class Account extends Controller {
 	            "live" => true
 	        ]);
 
-	        $exist = models\User::all(array(
-				'email = ?' => RM::post("email")
-				));
+	        $exist = models\User::all(['email = ?' => RM::post("email")]);
 
 			if (empty($exist)){
 
 					if($user->validate() && !empty(RM::post('company'))){
-						
 						$user->save();
-
+						
+						$git_folder_name = uniqid();
 						$company = new models\Company([
 				        	"name" => RM::post('company'),
 				        	"founder_id" => $user->id,
+				        	"git_folder_name" => $git_folder_name,
 				            "live" => true
 				        ]);
-						
 						$company->save();
+						shell_exec('mkdir /var/www/admin/public/assets/uploads/bare-repositories/' . $git_folder_name);
+						shell_exec('mkdir /var/www/admin/public/assets/uploads/clone-repositories/' . $git_folder_name);
 
 						$user->company_ids = [$company->id];
 						$user->designations = [$company->id => ["founder"]];
@@ -70,11 +69,10 @@ class Account extends Controller {
 					}else echo "<script>alert('validation not good')</script>";
 
 			}else{
-
-				$added = models\User::all(array(
-					'email = ?' => RM::post("email"),
-					'live = ?' => false
-					));
+				$added = models\User::all([
+					'email' => RM::post("email"),
+					'live' => false
+					]);
 
 				if($added){
 
@@ -85,21 +83,18 @@ class Account extends Controller {
 					$added->live = true;
 
 					$this->redirect("/account/register_success/$pass");
-
 					$added->save();
 				}else{
 					echo "<script>alert('User exists')</script>";
 				}
 			} 
 		}
-
 	}
 
 	/**
 	* @before _session
 	* @after _csrfToken
 	*/
-
 	public function login(){
 		$this->setLayout("layouts/empty");
 		$token = RM::post('token', '');
@@ -110,31 +105,21 @@ class Account extends Controller {
 	        $pass = sha1(RM::post("password"));
 	        
 	        $login_e = false;
-	        
-	        if (empty($email)) $login_e = "Empty email";
-	        
+	        if (empty($email)) $login_e = "Empty email";  
 	        if (empty($pass)) $login_e = "Empty password";
 	        
 	        if (!$login_e){
-
 	            $user = models\User::first([
 	                "email = ?" => $email,
 	                "live = ?" => true
 	            ]);
-
 	            if (!empty($user)){
-
 	            	if($user->password == $pass){
-	            	
 		                $this->user = $user;
 		                $this->redirect('/users/dashboard');
-		            
 		            }else echo "<script>alert('email and password do not match')</script>";    	
-		            	            
 	            }else echo "<script>alert('email does not exist')</script>";
-	        
 	        }else echo "<script>alert($login_e)</script>";
 		}
-		
 	}
 }
