@@ -15,12 +15,12 @@ class Git extends Controller {
 
 		if(RM::post('action') == 'create_repo'){
 
-			$bare = uniqid();	
 			$name = RM::post('name');
 			$repo = new models\Repository([
 				'name' => $name,
 				'type' => RM::post('type'),
-				'user_id' => $this->user->id
+				'user_id' => $this->user->id,
+				'company_id' => $this->company->id
 				]);
 			if($repo->validate()){
 				$repo->save();
@@ -28,6 +28,8 @@ class Git extends Controller {
 				shell_exec('mkdir /var/www/admin/public/assets/uploads/bare-repositories/' . $this->company->git_folder_name . '/' . $name . '.git');
 				shell_exec('cd /var/www/admin/public/assets/uploads/bare-repositories/' . $this->company->git_folder_name . '/' . $name . '.git; git init --bare; git update-info-server; echo "[http]
 			receivepack = true" >> config');
+			}else{
+				echo "nopes";
 			}
 		}
 
