@@ -23,6 +23,16 @@ class User extends \Shared\Model {
      * @type text
      * @length 100
      * 
+     * @label Status
+     */
+    protected $_status = 'Hi!';
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * @length 100
+     * 
      * @validate required
      * @label mobile number
      */

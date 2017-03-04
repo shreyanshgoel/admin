@@ -53,8 +53,8 @@ class Account extends Controller {
 				            "live" => true
 				        ]);
 						$company->save();
-						shell_exec('mkdir /var/www/admin/public/assets/uploads/bare-repositories/' . $git_folder_name);
-						shell_exec('mkdir /var/www/admin/public/assets/uploads/clone-repositories/' . $git_folder_name);
+						shell_exec('mkdir ' . APP_PATH . '/public/assets/uploads/bare-repositories/' . $git_folder_name);
+						shell_exec('mkdir ' . APP_PATH . '/public/assets/uploads/clone-repositories/' . $git_folder_name);
 
 						$user->company_ids = [$company->id];
 						$user->designations = [$company->id => ["founder"]];

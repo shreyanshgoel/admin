@@ -25,8 +25,8 @@ class Git extends Controller {
 			if($repo->validate()){
 				$repo->save();
 
-				shell_exec('mkdir /var/www/admin/public/assets/uploads/bare-repositories/' . $this->company->git_folder_name . '/' . $name . '.git');
-				shell_exec('cd /var/www/admin/public/assets/uploads/bare-repositories/' . $this->company->git_folder_name . '/' . $name . '.git; git init --bare; git update-info-server; echo "[http]
+				shell_exec('mkdir ' . APP_PATH . '/public/assets/uploads/bare-repositories/' . $this->company->git_folder_name . '/' . $name . '.git');
+				shell_exec('cd ' . APP_PATH . '/public/assets/uploads/bare-repositories/' . $this->company->git_folder_name . '/' . $name . '.git; git init --bare; git update-info-server; echo "[http]
 			receivepack = true" >> config');
 			}else{
 				echo "nopes";

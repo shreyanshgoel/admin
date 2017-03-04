@@ -132,6 +132,7 @@ class Users extends Controller {
             //if(empty($exist)){
 
                 $user->full_name = RM::post('full_name');
+                $user->status = RM::post('status');
 
                 // if(RM::post('change_email')){
 

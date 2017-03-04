@@ -1,16 +1,6 @@
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-    <meta name="author" content="Coderthemes">
-    <!-- App CSS -->
-
     <link href="{echo CDN}theme/css/core.css" rel="stylesheet" type="text/css" />
     <link href="{echo CDN}theme/css/components.css" rel="stylesheet" type="text/css" />
-    <link href="{echo CDN}theme/css/icons.css" rel="stylesheet" type="text/css" />
-    <link href="{echo CDN}theme/css/pages.css" rel="stylesheet" type="text/css" />
-    <link href="{echo CDN}theme/css/menu.css" rel="stylesheet" type="text/css" />
-    <link href="{echo CDN}theme/css/responsive.css" rel="stylesheet" type="text/css" />
     <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -19,200 +9,251 @@
         <![endif]-->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
-
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
-
+    <style type="text/css">
+    .btn-default {
+        background-color: white;
+    }
     
+    .modal-backdrop {
+        z-index: 100;
+    }
+
+    .active .tabs{
+        color: lightgreen;
+    }
+    </style>
 </head>
 <!-- Start content -->
 <div class="content">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-13">
-                <div class="panel">
-                    <!-- setting the attribute data-collapsed="1" will collapse the panel -->
-                    <!-- panel head -->
-                    <div class="panel-heading">
-                        <a href="index.html#projects" data-toggle="tab" class="panel-title">Projects</a>
-                        <a href="index.html#tasks" data-toggle="tab" class="panel-title">Tasks</a>
-                        <a href="index.html#files" data-toggle="tab" class="panel-title">Files</a>
-                        <div class="panel-options">
-                            <a href="extras-taskdetail.html#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
-                                    <i class="entypo-down-open"></i>
-                                </a>
-                            <div class="dropdown pull-right">
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="">Edit</a></li>
-                                    <li><a href="">View Tasks</a></li>
-                                    <li><a href="">About</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="">Delete</a></li>
-                                </ul>
+    <div class="row">
+        <div class="col-md-12" style="width: 100%">
+            <!-- setting the attribute data-collapsed="1" will collapse the panel -->
+            <!-- panel head -->
+            <ul style="list-style: none; color:red; margin-left: -40px">
+                <li style="float: left;" class="active">
+                    <a href="#projects" class="tabs"  data-toggle="tab">Projects</a>
+                </li>
+                <li style="float: left; margin-left: 10px">
+                    <a href="#tasks" class="tabs" data-toggle="tab">Tasks</a>
+                </li>
+                <li style="float: left; margin-left: 10px">
+                    <a href="#files" class="tabs" data-toggle="tab">Files</a>
+                </li>
+            </ul>
+            <div class="tab-content" style="border: none">
+                <div class="tab-pane active" id="projects">
+                    <div style="margin-top: -20px;">
+                        <div class="row project-sort pull-right">
+                            <div class="project-sort-item" style="margin-right: 10px">
+                                <form class="form-inline">
+                                    <button type="button" data-toggle="modal" data-target="#create_project" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create Project</button>
+                                    <div class="form-group">
+                                        <label>Phase :</label>
+                                        <select class="form-control input-sm">
+                                            <option {if isset($all)} selected="" {/if}>All Projects(6)</option>
+                                            <option {if isset($completed)} selected="" {/if}>Completed</option>
+                                            <option {if isset($inprogress)} selected="" {/if}>In Progress</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="margin-left: 5px">
+                                        <label>Sort :</label>
+                                        <select class="form-control input-sm">
+                                            <option>Date</option>
+                                            <option>Name</option>
+                                            <option>End date</option>
+                                            <option>Start Date</option>
+                                        </select>
+                                    </div>
+                                </form>
                             </div>
-                            <a href="index.html#" data-rel="reload">
-                                <i class="entypo-arrows-ccw"></i>
-                            </a>
                         </div>
                     </div>
-                    <!-- panel body -->
-                    <div class="panel-body">
-                        <div class="scrollable" data-height="900" data-scroll-position="right" data-rail-color="#fff" data-rail-opacity=".9" data-rail-width="8" data-rail-radius="10" data-autohide="0">
-                            <div class="tab-content" style="border: none">
-                                <div class="tab-pane active" id="projects">
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <button type="button" data-toggle="modal" data-target="#myModal2" class="btn btn-purple btn-rounded w-md waves-effect waves-light m-b-20">Create Project</button>
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <div class="project-sort pull-right">
-                                                <div class="project-sort-item">
-                                                    <form class="form-inline">
-                                                        <div class="form-group">
-                                                            <label>Phase :</label>
-                                                            <select class="form-control input-sm">
-                                                                <option>All Projects(6)</option>
-                                                                <option>Complated</option>
-                                                                <option>Progress</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Sort :</label>
-                                                            <select class="form-control input-sm">
-                                                                <option>Date</option>
-                                                                <option>Name</option>
-                                                                <option>End date</option>
-                                                                <option>Start Date</option>
-                                                            </select>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- end col-->
+                    <!-- end row -->
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <form method="post">
+                            {if $projects} {script $i = 1}{foreach $p in $projects}
+                            <div class="col-lg-4" style="height: 260px">
+                                <div class="card-box">
+                                    <div class="dropdown pull-right">
+                                        <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" style="margin-right: -10px; margin-top: 3px;">
+                                            <i class="glyphicon glyphicon-option-vertical" style="font-size: 15px"></i>
+                                        </a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li>
+                                                <a href="">Edit</a>
+                                            </li>
+                                            <li>
+                                                <a href="/project/tasks/{$p->id}">View Tasks</a>
+                                            </li>
+                                            <li>
+                                                <a href="/project/info/{$p->id}">See Details</a>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="#" data-toggle="modal" data-target="#status">Change status</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Mark Complete</a>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <button type="submit" hidden="" name="delete" value="{$p->id}" id="s_button{$i}"></button>
+                                            <li>
+                                                <a href="#" onclick="submitform({$i})"> Delete </a>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    <!-- end row -->
-                                    <div class="row">
-                                        {if $projects}
-                                        {foreach $p in $projects}
-                                            <div class="col-lg-4">
-                                                <div class="card-box">
-                                                    <div class="dropdown pull-right">
-                                                        <a href="extras-taskdetail.html#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
-                                                            <i class="zmdi zmdi-more-vert"></i>
-                                                        </a>
-                                                        <ul class="dropdown-menu" role="menu">
-                                                            <li><a href="extras-taskdetail.html#">Edit</a></li>
-                                                            <li><a href="extras-taskdetail.html#">View Tasks</a></li>
-                                                            <li><a href="extras-taskdetail.html#">About</a></li>
-                                                            <li class="divider"></li>
-                                                            <li><a href="extras-taskdetail.html#">Delete</a></li>
-                                                        </ul>
-                                                    </div>
-                                                    <div class="label label-success pull-right">Completed</div>
-                                                    <h4 class="m-t-0 m-b-5">
-                                                        <a href="/department/project/{$p->id}" class="text-inverse">{$p->name}</a>
-                                                    </h4>
-                                                    <p class="text-success text-uppercase m-b-20 font-13">{$p->type}</p>
-                                                    {if $p->details}
-                                                        <p class="text-muted font-13">{$p->details}
-                                                            <a href="extras-projects.html#" class="font-600 text-muted">view more</a>
-                                                        </p>
-                                                    {/if}
-                                                    <ul class="list-inline">
-                                                        <li>
-                                                            <h3 class="m-b-0">56</h3>
-                                                            <p class="text-muted">Questions</p>
-                                                        </li>
-                                                        <li>
-                                                            <h3 class="m-b-0">452</h3>
-                                                            <p class="text-muted">Comments</p>
-                                                        </li>
-                                                    </ul>
-                                                    <div class="project-members m-b-20">
-                                                        <span class="m-r-5 font-600">Team :</span>
-                                                        <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Mat Helme">
-                                                            <img src="{echo CDN}theme/images/users/avatar-1.jpg" class="img-circle thumb-sm" alt="friend" />
-                                                        </a>
-                                                        <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Michael Zenaty">
-                                                            <img src="{echo CDN}theme/images/users/avatar-2.jpg" class="img-circle thumb-sm" alt="friend" />
-                                                        </a>
-                                                        <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="James Anderson">
-                                                            <img src="{echo CDN}theme/images/users/avatar-3.jpg" class="img-circle thumb-sm" alt="friend" />
-                                                        </a>
-                                                        <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Mat Helme">
-                                                            <img src="{echo CDN}theme/images/users/avatar-4.jpg" class="img-circle thumb-sm" alt="friend" />
-                                                        </a>
-                                                        <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Username">
-                                                            <img src="{echo CDN}theme/images/users/avatar-5.jpg" class="img-circle thumb-sm" alt="friend" />
-                                                        </a>
-                                                    </div>
-                                                    <p class="font-600 m-b-5">Progress
-                                                        <span class="text-success pull-right">80%</span>
-                                                    </p>
-                                                    <div class="progress progress-bar-success-alt progress-sm m-b-5">
-                                                        <div class="progress-bar progress-bar-success progress-animated wow animated animated" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%; visibility: visible; animation-name: animationProgress;">
-                                                        </div>
-                                                        <!-- /.progress-bar .progress-bar-danger -->
-                                                    </div>
-                                                    <!-- /.progress .no-rounded -->
-                                                </div>
-                                            </div>
-
-                                        {/foreach}
+                                    {script $temp = $p->status}
+                                    {script $status = $temp[0]}
+                                    {if $status == 'urgent'}
+                                    <div class="label label-danger pull-right">Urgent</div>
+                                    {/if}
+                                    <h4 class="m-t-0 m-b-5">
+                                        <a href="/project/info/{$p->id}" class="text-inverse">{echo ucfirst($p->name)}</a>
+                                    </h4>
+                                    {if $p->details}
+                                    <p class="text-muted font-13">{$p->details}
+                                        <a href="extras-projects.html#" class="font-600 text-muted">view more</a>
+                                    </p>
+                                    {/if}
+                                    <ul class="list-inline">
+                                        <li>
+                                            <h3 class="m-b-0">0</h3>
+                                            <p class="text-muted">Comments</p>
+                                        </li>
+                                        {if $p->due_date}
+                                        <li style="margin-left: 10px">
+                                            <h3 class="m-b-0">{$p->due_date->format('Y-M-d')}</h3>
+                                            <p class="text-muted">Due Date</p>
+                                        </li>
                                         {/if}
-                                        {else}
-                                            No project yet
-                                        {/else}
-                                        <!-- end col-->
+                                    </ul>
+                                    <div class="project-members m-b-20">
+                                        <span class="m-r-5 font-600">Team :</span>
+                                        <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Mat Helme">
+                                            <img src="{echo CDN}theme/images/users/avatar-1.jpg" class="img-circle thumb-sm" alt="friend" />
+                                        </a>
                                     </div>
-                                </div>
-
-                                <div class="tab-pane" id="files">
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <button type="button" data-toggle="modal" data-target="#myModal2" class="btn btn-purple btn-rounded w-md waves-effect waves-light m-b-20">hehe Project</button>
+                                    <p class="font-600 m-b-5">Progress
+                                        <span class="text-success pull-right">{$p->progress}%</span>
+                                    </p>
+                                    <div class="progress progress-bar-success-alt progress-sm m-b-5">
+                                        <div class="progress-bar progress-bar-success progress-animated wow animated animated" role="progressbar" aria-valuenow="{$p->progress}" aria-valuemin="0" aria-valuemax="100" style="width: {$p->progress}%; visibility: visible; animation-name: animationProgress;">
                                         </div>
-                                        <div class="col-sm-8">
-                                            <div class="project-sort pull-right">
-                                                <div class="project-sort-item">
-                                                    <form class="form-inline">
-                                                        <div class="form-group">
-                                                            <label>Phase :</label>
-                                                            <select class="form-control input-sm">
-                                                                <option>All Projects(6)</option>
-                                                                <option>Complated</option>
-                                                                <option>Progress</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Sort :</label>
-                                                            <select class="form-control input-sm">
-                                                                <option>Date</option>
-                                                                <option>Name</option>
-                                                                <option>End date</option>
-                                                                <option>Start Date</option>
-                                                            </select>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- end col-->
+                                        <!-- /.progress-bar .progress-bar-danger -->
                                     </div>
+                                    <!-- /.progress .no-rounded -->
                                 </div>
                             </div>
+                            {script $i++} {/foreach} {/if} {else} No project yet {/else}
+                        </form>
+                        <!-- end col-->
+                    </div>
+                </div>
+                <div class="tab-pane" id="tasks">
+                    <div style="margin-top: -20px;">
+                        <div class="row project-sort pull-right">
+                            <div class="project-sort-item" style="margin-right: 10px">
+                                <form class="form-inline">
+                                    <button type="button" data-toggle="modal" data-target="#upload" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create Task</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="50%">Simple</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="padding-lg">
+                                            <div class="list-group">
+                                                <a href="index.html#" class="list-group-item">
+                                                    <span class="badge badge-primary">5</span>
+                                                    Cras justo odio
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="files">
+                    <div style="margin-top: -20px;">
+                        <div class="row project-sort pull-right">
+                            <div class="project-sort-item" style="margin-right: 10px">
+                                <form class="form-inline">
+                                    <button type="button" data-toggle="modal" data-target="#upload" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Upload</button>
+                                    <button type="button" data-toggle="modal" data-target="#upload" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create New Folder</button>
+                                    <div class="form-group">
+                                        <label>Action :</label>
+                                        <select class="form-control input-sm">
+                                            <option>All Projects(6)</option>
+                                            <option>Complated</option>
+                                            <option>In Progress</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="50%">Simple</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="padding-lg">
+                                            <div class="list-group">
+                                                <a href="index.html#" class="list-group-item">
+                                                    <span class="badge badge-primary">5</span>
+                                                    Cras justo odio
+                                                </a>
+                                                <a href="index.html#" class="list-group-item">
+                                                    <span class="badge badge-info">14</span>
+                                                    Dapibus ac facilisis in
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- container -->
 </div>
-
+<!-- container -->
+</div>
 <!-- Modal -->
-<div class="modal fade" id="myModal2" aria-labelledby="myModalLabel">
+<div class="modal fade" id="create_project" aria-labelledby="myModalLabel" style="z-index:1011">
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width: 500px">
             <div class="modal-header">
@@ -221,46 +262,71 @@
                 </button>
                 <h4 class="modal-title" id="myModalLabel">Create Project</h4>
             </div>
-            <form method="post"> 
+            <form method="post">
+                <input type="hidden" name="token" value="{echo $__token}">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Name:</label>
+                        <label class="col-sm-3 control-label">Name:</label>
                         <div class="col-sm-6">
-                            <input type="name" class="form-control" name="name" placeholder="Project Name" required="">
+                            <input type="name" class="form-control" name="name" placeholder="Project Name" required="" style="width:220px">
                         </div>
                     </div>
-                    <br><br><br><br>
+                    <br>
+                    <br>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Assignees:</label>
-                        <div class="col-sm-5">
+                        <div class="col-sm-6">
                             <select name="team[]" class="selectpicker" title="Choose..." required="" multiple="">
                                 {foreach $m in $members}
-                                    <option value="{$m->id}">{$m->full_name}</option>
-                                    <option value="sdsd">sdsd</option>
+                                <option value="{$m->id}">{$m->full_name}</option>
+                                <option value="sdsd">sdsd</option>
                                 {/foreach}
                             </select>
                         </div>
                     </div>
-                    <br><br><br>
+                    <br>
+                    <br>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Head:</label>
+                        <label class="col-sm-3 control-label">Head:</label>
                         <div class="col-sm-6">
                             <select name="head" class="selectpicker" required="" title="Select Team Head...">
                                 {foreach $m in $members}
-                                    <option value="{$m->id}">{$m->full_name}</option>
+                                <option value="{$m->id}">{$m->full_name}</option>
                                 {/foreach}
                             </select>
                         </div>
                     </div>
-                    <br><br><br>
+                    <br>
+                    <br>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Details:</label>
+                        <label class="col-sm-3 control-label">Details:</label>
                         <div class="col-sm-6">
-                            <textarea name="desc" class="form-control" style="resize: none" placeholder="Details of the project..."></textarea>
+                            <textarea name="details" class="form-control" style="resize: none" placeholder="Details of the project..."></textarea>
                         </div>
                     </div>
-                    <br><br>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Due Date:</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="due_date" class="form-control datepicker add-ranges" data-format="D, dd MM yyyy" id="date" style="z-index: 1000" placeholder="Due Date...">
+                        </div>
                     </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Type:</label>
+                        <div class="col-sm-6">
+                            <select name="status" class="selectpicker" required="" title="Select Team Head...">
+                                <option>Normal</option>
+                                <option>Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                </div>
                 <div class="modal-footer">
                     <button type="submit" name="action" value="create_project" class="btn btn-success">Create</button>
                 </div>
@@ -268,9 +334,65 @@
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="upload" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 500px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Upload a file</h4>
+            </div>
+            <form method="post">
+                <input type="hidden" name="token" value="{echo $__token}">
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action" value="create_project" class="btn btn-success">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="status" aria-labelledby="myModalLabel" style="margin-top: 200px; margin-left: 50px">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 500px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Progress</h4>
+            </div>
+            <form method="post">
+                <input type="hidden" name="token" value="{echo $__token}">
+                <div class="modal-body" style="height: 60px">
+                    <div class="form-group" style="margin-left: 10px; margin-top: 10px">
+                        <label class="col-sm-3 control-label"></label>
+                        <div class="col-sm-6">
+                            <div class="slider" data-postfix="%" data-min="0" data-max="100" data-value="23" data-fill="#sample-field"></div>
+                            <input type="hidden" class="form-control" id="sample-field" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action" value="create_project" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- ============================================================== -->
 <!-- End Right content here -->
 <!-- ============================================================== -->
-
 <script src="{echo CDN}js/select2/select2.min.js" id="script-resource-8"></script>
+<script type="text/javascript">
+function submitform(a) {
+    $('#s_button' + a).click();
+}
+jQuery(document).ready(function($) {
+    $('#date').datepicker({
+        format: "D, dd MM yyyy",
+        autoclose: true
+    });
+});
+</script>

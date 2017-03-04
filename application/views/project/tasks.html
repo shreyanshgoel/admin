@@ -1,0 +1,84 @@
+<div class="col-md-6">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th width="50%">Simple</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="padding-lg">
+                    <div class="list-group">
+                        <a href="index.html#" class="list-group-item active">
+                            <span class="badge badge-primary">5</span>
+                            Cras justo odio
+                        </a>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-info">14</span>
+                            Dapibus ac facilisis in
+                        </a>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-danger">11</span>
+                            Morbi leo risus
+                        </a>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-success">3</span>
+                            Porta ac consectetur ac
+                        </a>
+                        <a href="index.html#" class="list-group-item">
+                            <span class="badge badge-warning">7</span>
+                            Vestibulum at eros
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="col-md-6">
+    <div class="panel panel-primary" data-collapsed="0">
+        <!-- panel head -->
+        <div class="panel-heading" style="height: 50px">
+            <div class="panel-title">Info Panel</div>
+            <div class="form-group" style="position: absolute; margin-left: 100px; margin-top: 7px">
+                <div>
+                    <div class="input-group">
+                        <input type="text" class="form-control datepicker add-ranges" data-format="D, dd MM yyyy" id="date">
+                        <div class="input-group-addon">
+                            <a href="index.html#">
+                                <i class="entypo-calendar"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-options">
+                <a href="index.html#sample-modal" data-toggle="modal" data-target="#sample-modal-dialog-1" class="bg">
+                    <i class="entypo-cog"></i>
+                </a>
+                <a href="index.html#" data-rel="reload">
+                    <i class="entypo-arrows-ccw"></i>
+                </a>
+                <a href="index.html#" data-rel="close">
+                    <i class="entypo-cancel"></i>
+                </a>
+            </div>
+        </div>
+        <!-- panel body -->
+        <div class="panel-body" style="height: 400px">
+            <p>Article evident arrived express highest men did boy. Mistress sensible entirely am so. Quick can manor smart money hopes worth too. Comfort produce husband boy her had hearing. Law others theirs passed but wishes. You day real less till dear read. Considered use dispatched melancholy sympathize discretion led. Oh feel if up to till like.</p>
+            <div style="margin-top: 200px;margin-left: -15px; margin-right: -15px; background-color: #ebebeb; height:117px">
+                <hr style="">
+                <textarea class="form-control" rows="5" cols="5" style="resize: none; width: 200px; height: 80px; margin-left: 250px" placeholder="Write a comment..."></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+        $('#date').datepicker({
+            format: "D, dd MM yyyy",
+            autoclose: true
+        });
+ });
+</script>

@@ -19,15 +19,6 @@ class Project extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type text
-     * 
-     * @label like web or android etc
-     */
-    protected $_type;
-
-    /**
-     * @column
-     * @readwrite
      * @type array
      * 
      * @validate required
@@ -61,7 +52,7 @@ class Project extends \Shared\Model {
      * 
      * @label deadline
      */
-    protected $_deadline;
+    protected $_due_date;
 
     /**
      * @column
@@ -82,7 +73,25 @@ class Project extends \Shared\Model {
      * @label project made by
      */
     protected $_created_by;
-    
-    
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
+     * @validate required
+     * @label normal/inprogress or urgent or completed
+     */
+    protected $_status = [];
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @validate required
+     * @label normal/inprogress or urgent or completed
+     */
+    protected $_progress = 0;
 
 }

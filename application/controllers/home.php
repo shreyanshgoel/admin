@@ -13,6 +13,15 @@ class Home extends Controller {
     public function index() {
 
         $this->setLayout('layouts/empty');
+        
+        // $models = Shared\Markup::models();
+
+        // foreach ($models as $key => $value) {
+        //     $m = 'models\\' . $value;
+        //     $m::deleteAll();
+        // }
+        
+
         /*
 
         $i = 0;

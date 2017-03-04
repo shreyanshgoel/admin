@@ -49,6 +49,12 @@
                         <span class="title">My Projects</span>
                     </a>
                 </li>
+                <li {if isset($projects)} class="active" {/if}>
+                    <a href="/users/projects">
+                        <i class="entypo-book-open"></i>
+                        <span class="title">My Files</span>
+                    </a>
+                </li>
                 <li {if isset($profile)} class="active" {/if}>
                     <a href="/users/members">
                         &nbsp;<i class="fa fa-users"></i>
@@ -74,7 +80,7 @@
                         {/foreach}
                     {/if}
                     {else}
-                        <a href="">
+                        <a>
                             <span class="title" style="margin-left: 40px">No Departments Yet</span>
                         </a>
                     {/else}
@@ -129,7 +135,7 @@
                             <input type="text" class="form-control" name="name" placeholder="Jane Doe" style="margin-left: 30px; width: 300px" required="">
                         </div>
                         <br><br>
-                        <div class="form-group" style="margin-left: 40px">
+                        <div class="form-group" style="margin-left: 44px">
                             <label>Head: </label>
                             <select class="form-control" name="head" style="margin-left: 30px; width: 300px" required="">
                                 <option value="">Select the head</option>
@@ -139,10 +145,9 @@
                             </select>
                         </div>
                         <br><br>
-                        <div class="form-group" style="margin-left: 40px">
+                        <div class="form-group" style="margin-left: 10px">
                             <label>Description: </label>
-                            <textarea class="form-control" name="desc" placeholder="About the Department" style="margin-left: 30px; width: 300px; resize: none">
-                            </textarea>
+                            <textarea class="form-control" name="desc" placeholder="About the Department" style="margin-left: 30px; width: 300px; resize: none"></textarea>
                         </div>
                         <br><br>
                     </div>
@@ -162,7 +167,7 @@
                     <!-- Profile Info -->
                     <li class="profile-info dropdown">
                         <!-- add class "pull-right" if you want to place this from right -->
-                        <a href="/users/dashboard">
+                        <a href="/users/profile">
                             {script $name = ucfirst($user->full_name)} {if !empty($user->logo_ext)}
                             <img src="{echo CDN}uploads/logo/{$user->id}.{$user->logo_ext}" class="img-circle" style="height: 44px; width: 44px" alt="" /> {/if} {else}
                             <img src="{echo CDN}images/anonymous.png" alt="" class="img-circle" width="44"> {/else} {$name}
