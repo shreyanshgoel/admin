@@ -82,6 +82,23 @@ class Ajax extends Controller {
     /**
     * @before _secure
     */
+    public function calendar_date_change(){
+
+        $date = RequestMethods::post('date');
+        $id = RequestMethods::post('id');
+
+        $calendar = models\Calendar::first([
+            'id' => $id,
+            'user_id' => $this->user->id
+            ]);
+
+        $calendar->start_date = $date;
+        $calendar->save();
+    }
+
+    /**
+    * @before _secure
+    */
     public function check_email() {
         $view = $this->getActionView();
 

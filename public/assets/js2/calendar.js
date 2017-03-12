@@ -6,24 +6,12 @@ $('#calendar').fullCalendar({
     editable: true,
 
     drop: function( date, jsEvent, ui, resourceI) { 
-
-        var obj = JSON.parse(this.getAttribute("data-event"));
-
-        var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-
-        if (month.length < 2) month = '0' + month;
-        if (day.length < 2) day = '0' + day;
-
-        var date2 =  [year, month, day].join('-');        
+      
+        var obj = JSON.parse(this.getAttribute("data-event"));     
+        date2 = date.format();
 
         Request.post({ action: "ajax/calendar_save/", data: {date: date2, title: obj.title, color: obj.color} }, function(data) {
-
         });
-
-
     },
 
     eventClick: function(event, jsEvent, view) {
@@ -48,10 +36,12 @@ $('#calendar').fullCalendar({
        }
     },
     
-    eventDrop: function(event, delta, revertFunc) {
+    eventDrop: function(event, jsEvent, ui, view) {
+      var date = new Date(event._start._d);
+      date = date.toISOString().slice(0,10);
 
-        alert(event.id);
-
+      Request.post({ action: "ajax/calendar_date_change/", data: {date: date, id: event.id} }, function(data) {
+      });
     }
 
 });

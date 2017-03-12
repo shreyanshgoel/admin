@@ -26,35 +26,38 @@
                     </a>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="extras-taskdetail.html#">Action</a>
+                            <a href="">Edit</a>
                         </li>
                         <li>
-                            <a href="extras-taskdetail.html#">Another action</a>
+                            <a href="/project/tasks/{$p->id}">View Tasks</a>
                         </li>
                         <li>
-                            <a href="extras-taskdetail.html#">Something else here</a>
+                            <a href="/project/info/{$p->id}">See Details</a>
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="extras-taskdetail.html#">Separated link</a>
+                            <a href="#" data-toggle="modal" data-target="#status">Change status</a>
+                        </li>
+                        <li>
+                            <a href="#">Mark Complete</a>
+                        </li>
+                        <li class="divider"></li>
+                        <button type="submit" hidden="" name="delete" id="s_button"></button>
+                        <li>
+                            <a href="#" onclick="submitform({$i})"> Delete </a>
                         </li>
                     </ul>
                 </div>
                 <div class="media m-b-20">
                     <div class="media-body">
                         <h4 class="media-heading m-b-0">{echo ucfirst($project->name)}</h4>
-                        {script $temp = $project->status}
-                        {script $status = $temp[0]}            
-                        {if $status == 'completed'}
-                            <span class="label label-success" style="margin-top: 10px">Completed</span>
-                        {/if}
-                        {else}
-                            {if $status == 'urgent'}
-                                <span class="label label-danger" style="margin-top: 10px">Urgent</span>
-                            {/if}{else}
-                                <span class="label label-info" style="margin-top: 10px">In Progress</span>
-                            {/else}
-                        {/else}
+                        {script $temp = $project->status} {script $status = $temp[0]} {if $status == 'completed'}
+                        <span class="label label-success" style="margin-top: 10px">Completed</span>
+                        {/if} {else} {if $status == 'urgent'}
+                        <span class="label label-danger" style="margin-top: 10px">Urgent</span>
+                        {/if}{else}
+                        <span class="label label-info" style="margin-top: 10px">In Progress</span>
+                        {/else} {/else}
                     </div>
                 </div>
                 <p class="text-muted">
@@ -76,10 +79,10 @@
                     {/if}
                 </ul>
                 <div class="clearfix"></div>
-                <div class="task-tags m-t-20">
+                <!-- <div class="task-tags m-t-20">
                     <h5 class="font-600">Tags</h5>
                     <input type="text" value="Amsterdam,Washington,Sydney" data-role="tagsinput" placeholder="add tags" />
-                </div>
+                </div> -->
                 <div class="assign-team m-t-30">
                     <h5 class="font-600 m-b-5">Assign to</h5>
                     <div>
@@ -140,26 +143,6 @@
         <!-- end col -->
         <div class="col-md-4">
             <div class="card-box">
-                <div class="dropdown pull-right">
-                    <a href="extras-taskdetail.html#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
-                        <i class="zmdi zmdi-more-vert"></i>
-                    </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a href="extras-taskdetail.html#">Action</a>
-                        </li>
-                        <li>
-                            <a href="extras-taskdetail.html#">Another action</a>
-                        </li>
-                        <li>
-                            <a href="extras-taskdetail.html#">Something else here</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a href="extras-taskdetail.html#">Separated link</a>
-                        </li>
-                    </ul>
-                </div>
                 <h4 class="header-title m-t-0 m-b-30">Comments (6)</h4>
                 <div>
                     <div class="media m-b-10">
@@ -187,21 +170,6 @@
                                 <a href="extras-taskdetail.html" class="text-primary">@Michael</a>
                                 Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio.
                             </p>
-                            <a href="extras-taskdetail.html" class="text-success font-13">Reply</a>
-                            <div class="media">
-                                <div class="media-left">
-                                    <a href="extras-taskdetail.html#">
-                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-3.jpg"> </a>
-                                </div>
-                                <div class="media-body">
-                                    <h4 class="media-heading">Nested media heading</h4>
-                                    <p class="font-13 text-muted m-b-0">
-                                        <a href="extras-taskdetail.html" class="text-primary">@Michael</a>
-                                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odiot.
-                                    </p>
-                                    <a href="extras-taskdetail.html" class="text-success font-13">Reply</a>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div class="media m-b-10">
@@ -229,32 +197,22 @@
                                 <a href="extras-taskdetail.html" class="text-primary">@Michael</a>
                                 Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio.
                             </p>
-                            <a href="extras-taskdetail.html" class="text-success font-13">Reply</a>
-                            <div class="media">
-                                <div class="media-left">
-                                    <a href="extras-taskdetail.html#">
-                                        <img class="media-object img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-3.jpg"> </a>
-                                </div>
-                                <div class="media-body">
-                                    <h4 class="media-heading">Nested media heading</h4>
-                                    <p class="font-13 text-muted m-b-0">
-                                        <a href="extras-taskdetail.html" class="text-primary">@Michael</a>
-                                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odiot.
-                                    </p>
-                                    <a href="extras-taskdetail.html" class="text-success font-13">Reply</a>
-                                </div>
-                            </div>
                         </div>
                     </div>
+                    <hr>
+                    <form method="post">
                     <div class="media">
                         <div class="media-left">
                             <a href="extras-taskdetail.html#">
                                 <img class="media-object img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-1.jpg"> </a>
                         </div>
                         <div class="media-body">
-                            <input type="text" class="form-control input-sm" placeholder="Some text value...">
+                            <textarea name="comment" style="resize: none" class="form-control" placeholder="Some text value..."></textarea>
+                            <br>
+                            <button type="submit" class="btn btn-info pull-right">Comment</button>
                         </div>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -263,3 +221,8 @@
     <!-- end row -->
     <!-- container -->
 </div>
+<script type="text/javascript">
+function submitform(a) {
+    $('#s_button' + a).click();
+}
+</script>

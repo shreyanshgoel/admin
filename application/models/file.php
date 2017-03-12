@@ -19,6 +19,15 @@ class File extends \Shared\Model {
     /**
      * @column
      * @readwrite
+     * @type text
+     * 
+     * @label project id /null means private 
+     */
+    protected $_project_id;
+
+    /**
+     * @column
+     * @readwrite
      * @type mongoid
      * 
      * @validate required

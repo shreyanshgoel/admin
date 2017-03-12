@@ -19,8 +19,8 @@
     .modal-backdrop {
         z-index: 100;
     }
-
-    .active .tabs{
+    
+    .active .tabs {
         color: lightgreen;
     }
     </style>
@@ -33,7 +33,7 @@
             <!-- panel head -->
             <ul style="list-style: none; color:red; margin-left: -40px">
                 <li style="float: left;" class="active">
-                    <a href="#projects" class="tabs"  data-toggle="tab">Projects</a>
+                    <a href="#projects" class="tabs" data-toggle="tab">Projects</a>
                 </li>
                 <li style="float: left; margin-left: 10px">
                     <a href="#tasks" class="tabs" data-toggle="tab">Tasks</a>
@@ -78,7 +78,7 @@
                     <div class="row">
                         <form method="post">
                             {if $projects} {script $i = 1}{foreach $p in $projects}
-                            <div class="col-lg-4" style="height: 260px">
+                            <div class="col-lg-4">
                                 <div class="card-box">
                                     <div class="dropdown pull-right">
                                         <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" style="margin-right: -10px; margin-top: 3px;">
@@ -108,19 +108,15 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    {script $temp = $p->status}
-                                    {script $status = $temp[0]}
-                                    {if $status == 'urgent'}
+                                    {script $temp = $p->status} {script $status = $temp[0]} {if $status == 'urgent'}
                                     <div class="label label-danger pull-right">Urgent</div>
                                     {/if}
                                     <h4 class="m-t-0 m-b-5">
                                         <a href="/project/info/{$p->id}" class="text-inverse">{echo ucfirst($p->name)}</a>
                                     </h4>
-                                    {if $p->details}
-                                    <p class="text-muted font-13">{$p->details}
-                                        <a href="extras-projects.html#" class="font-600 text-muted">view more</a>
+                                    <p class="text-muted font-13" style="margin-top: 15px; margin-bottom: -10px; height: 40px">
+                                    {echo substr($p->details, 0 , 80)}{if $p->details}...{/if}
                                     </p>
-                                    {/if}
                                     <ul class="list-inline">
                                         <li>
                                             <h3 class="m-b-0">0</h3>
@@ -262,7 +258,7 @@
                 </button>
                 <h4 class="modal-title" id="myModalLabel">Create Project</h4>
             </div>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="token" value="{echo $__token}">
                 <div class="modal-body">
                     <div class="form-group">
@@ -279,7 +275,6 @@
                             <select name="team[]" class="selectpicker" title="Choose..." required="" multiple="">
                                 {foreach $m in $members}
                                 <option value="{$m->id}">{$m->full_name}</option>
-                                <option value="sdsd">sdsd</option>
                                 {/foreach}
                             </select>
                         </div>
@@ -322,6 +317,14 @@
                                 <option>Normal</option>
                                 <option>Urgent</option>
                             </select>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Attach Files:</label>
+                        <div class="col-sm-5">
+                            <input type="file" name="files" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" /> 
                         </div>
                     </div>
                     <br>
