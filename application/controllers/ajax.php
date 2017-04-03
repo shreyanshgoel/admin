@@ -6,7 +6,7 @@
  * @author Shreyansh Goel
  */
 use Shared\Controller as Controller;
-use Framework\RequestMethods as RequestMethods;
+use Framework\RequestMethods as RM;
 use Framework\Registry as Registry;
 
 class Ajax extends Controller {
@@ -24,10 +24,25 @@ class Ajax extends Controller {
     /**
     * @before _secure
     */
+    public function edit_project() {
+        $this->JSONview();
+        $view = $this->getActionView();
+        
+        $d_ids = array_keys(models\Department::all(['company_id' => $this->company->id], ['_id']));
+        $project = models\Project::first(['id' => RM::post('project_id'), 'department_id' => ['$in' => $d_ids]]);
+
+        if ($project) {
+            $view->set('project',$project);
+        }
+    }
+
+    /**
+    * @before _secure
+    */
     public function calendar_save($id = -1) {
-        $start_date = RequestMethods::post('date');
-        $title = RequestMethods::post('title');
-        $color = RequestMethods::post('color');
+        $start_date = RM::post('date');
+        $title = RM::post('title');
+        $color = RM::post('color');
 
         $calendar = new models\Calendar(array(
             'title' => $title,
@@ -43,9 +58,9 @@ class Ajax extends Controller {
     * @before _secure
     */
     public function calendar_edit($id = -1) {
-        $start_date = RequestMethods::post('date');
-        $title = RequestMethods::post('title');
-        $color = RequestMethods::post('color');
+        $start_date = RM::post('date');
+        $title = RM::post('title');
+        $color = RM::post('color');
 
         $calendar = new models\Calendar(array(
             'title' => $title,
@@ -84,8 +99,8 @@ class Ajax extends Controller {
     */
     public function calendar_date_change(){
 
-        $date = RequestMethods::post('date');
-        $id = RequestMethods::post('id');
+        $date = RM::post('date');
+        $id = RM::post('id');
 
         $calendar = models\Calendar::first([
             'id' => $id,
@@ -103,7 +118,7 @@ class Ajax extends Controller {
         $view = $this->getActionView();
 
         $check = models\User::all(array(
-            'email = ?' => RequestMethods::post('email')
+            'email = ?' => RM::post('email')
             ));
         if(!empty($check)){
             $view->set(array(1));

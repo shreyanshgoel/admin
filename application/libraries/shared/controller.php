@@ -11,7 +11,7 @@ namespace Shared {
     use Framework\Events as Events;
     use Framework\Router as Router;
     use Framework\Registry as Registry;
-    use Framework\RequestMethods as RequestMethods;
+    use Framework\RequestMethods as RM;
 
     class Controller extends \Framework\Controller {
 
@@ -145,7 +145,7 @@ namespace Shared {
 
                 if(move_uploaded_file($file["tmp_name"], $path . $filename)){
 
-                    return $extension;
+                    return $filename;
                 }
             }
             echo "something went wrong";
@@ -268,18 +268,23 @@ namespace Shared {
         }
 
         public function layoutFunction($token = null) {
-            if(RequestMethods::post('action') == 'add_dept'){
+            if(RM::post('action') == 'add_dept'){
                 $dept = new \models\Department([
-                    'name' => RequestMethods::post('name'),
+                    'name' => RM::post('name'),
                     'company_id' => $this->company->id,
                     'created_by' => $this->user->id,
-                    'head_id' => RequestMethods::post('head'),
-                    'description' => RequestMethods::post('desc')
+                    'head_id' => RM::post('head'),
+                    'description' => RM::post('desc')
                     ]);
 
                 if($dept->validate()){
                     $dept->save();
                 }
+            }
+            if(RM::get('theme')){
+                $this->user->theme_color = RM::get('theme');
+                $this->user->save();
+                $this->redirect(URL2);
             }
         }
 

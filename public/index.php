@@ -3,6 +3,9 @@ ob_start();
 define("DEBUG", true);
 define("APP_PATH", str_replace(DIRECTORY_SEPARATOR, "/", dirname(dirname(__FILE__))));
 define("URL", "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+$url_parts = parse_url(URL);
+$url = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'];
+define("URL2", $url);
 define("CDN", "//$_SERVER[HTTP_HOST]/assets/");
 date_default_timezone_set('Asia/Kolkata');
 

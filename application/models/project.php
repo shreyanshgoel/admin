@@ -57,7 +57,7 @@ class Project extends \Shared\Model {
     /**
      * @column
      * @readwrite
-     * @type mongoid
+     * @type array
      * 
      * @validate required
      * @label state name

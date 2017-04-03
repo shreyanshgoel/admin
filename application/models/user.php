@@ -134,6 +134,15 @@ class User extends \Shared\Model {
     protected $_company_ids = [];
 
     /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label company id
+     */
+    protected $_profile;
+
+    /**
     * @column
     * @readwrite
     * @type boolean

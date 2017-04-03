@@ -8,16 +8,9 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
     <style type="text/css">
     .btn-default {
         background-color: white;
-    }
-    
-    .modal-backdrop {
-        z-index: 100;
     }
     
     .active .tabs {
@@ -31,7 +24,8 @@
         <div class="col-md-12" style="width: 100%">
             <!-- setting the attribute data-collapsed="1" will collapse the panel -->
             <!-- panel head -->
-            <ul style="list-style: none; color:red; margin-left: -40px">
+            <h3 style="float: left; margin-top: -5px; margin-right: 10px">{$dept->name}</h3>
+            <ul style="list-style: none; color:red; margin-left: 35%">
                 <li style="float: left;" class="active">
                     <a href="#projects" class="tabs" data-toggle="tab">Projects</a>
                 </li>
@@ -48,24 +42,24 @@
                         <div class="row project-sort pull-right">
                             <div class="project-sort-item" style="margin-right: 10px">
                                 <form class="form-inline">
-                                    <button type="button" data-toggle="modal" data-target="#create_project" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create Project</button>
+                                    <button type="button" class="create_project btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create Project</button>
                                     <div class="form-group">
                                         <label>Phase :</label>
-                                        <select class="form-control input-sm">
-                                            <option {if isset($all)} selected="" {/if}>All Projects(6)</option>
-                                            <option {if isset($completed)} selected="" {/if}>Completed</option>
-                                            <option {if isset($inprogress)} selected="" {/if}>In Progress</option>
+                                        <select class="form-control input-sm" name="phase" onchange="submitform(0,'s')">
+                                            <option value="all" {if isset($all)} selected="" {/if}>All Projects ({$c_all})</option>
+                                            <option value="completed" {if isset($completed)} selected="" {/if}>Completed ({$c_complete})</option>
+                                            <option {if isset($inprogress)} selected="" {/if}>In Progress ({$c_inprogress})</option>
                                         </select>
                                     </div>
                                     <div class="form-group" style="margin-left: 5px">
                                         <label>Sort :</label>
                                         <select class="form-control input-sm">
-                                            <option>Date</option>
-                                            <option>Name</option>
-                                            <option>End date</option>
                                             <option>Start Date</option>
+                                            <option>Due Date</option>
+                                            <option>Name</option>
                                         </select>
                                     </div>
+                                    <button type="submit" id="s_button0" hidden=""></button>
                                 </form>
                             </div>
                         </div>
@@ -80,13 +74,14 @@
                             {if $projects} {script $i = 1}{foreach $p in $projects}
                             <div class="col-lg-4">
                                 <div class="card-box">
+                                {script $temp = $p->status} {script $status = $temp[0]} 
                                     <div class="dropdown pull-right">
                                         <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" style="margin-right: -10px; margin-top: 3px;">
                                             <i class="glyphicon glyphicon-option-vertical" style="font-size: 15px"></i>
                                         </a>
                                         <ul class="dropdown-menu" role="menu">
                                             <li>
-                                                <a href="">Edit</a>
+                                                <a class="pointer" onclick="edit_project('{$p->id}')">Edit</a>
                                             </li>
                                             <li>
                                                 <a href="/project/tasks/{$p->id}">View Tasks</a>
@@ -96,20 +91,37 @@
                                             </li>
                                             <li class="divider"></li>
                                             <li>
-                                                <a href="#" data-toggle="modal" data-target="#status">Change status</a>
+                                                <a class="pointer" data-toggle="modal" data-target="#status">Change status</a>
                                             </li>
+
                                             <li>
-                                                <a href="#">Mark Complete</a>
+                                                <button type="submit" hidden="" name="mark_urgent" value="{$p->id}" id="urgent_button{$i}"></button>
+                                                <a class="pointer" onclick="submitform({$i}, 'urgent')">Mark Urgent</a>
                                             </li>
+
+                                            {if $status != 'completed'}
+                                            <li>
+                                                <button type="submit" hidden="" name="mark_complete" value="{$p->id}" id="complete_button{$i}"></button>
+                                                <a class="pointer" onclick="submitform({$i}, 'complete')">Mark Complete</a>
+                                            </li>
+                                            {/if}{else}
+                                            <li>
+                                                <button type="submit" hidden="" name="mark_incomplete" value="{$p->id}" id="incomplete_button{$i}"></button>
+                                                <a class="pointer" onclick="submitform({$i}, 'incomplete')">Mark Incomplete</a>
+                                            </li>
+                                            {/else}
                                             <li class="divider"></li>
-                                            <button type="submit" hidden="" name="delete" value="{$p->id}" id="s_button{$i}"></button>
                                             <li>
-                                                <a href="#" onclick="submitform({$i})"> Delete </a>
+                                                <button type="submit" hidden="" name="delete" value="{$p->id}" id="delete_button{$i}"></button>
+                                                <a href="#" onclick="submitform({$i}, 'delete')"> Delete </a>
                                             </li>
                                         </ul>
                                     </div>
-                                    {script $temp = $p->status} {script $status = $temp[0]} {if $status == 'urgent'}
+                                    {if $status == 'urgent'}
                                     <div class="label label-danger pull-right">Urgent</div>
+                                    {/if}
+                                    {if $status == 'completed'}
+                                    <div class="label label-success pull-right">Complete</div>
                                     {/if}
                                     <h4 class="m-t-0 m-b-5">
                                         <a href="/project/info/{$p->id}" class="text-inverse">{echo ucfirst($p->name)}</a>
@@ -132,7 +144,10 @@
                                     <div class="project-members m-b-20">
                                         <span class="m-r-5 font-600">Team :</span>
                                         <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Mat Helme">
-                                            <img src="{echo CDN}theme/images/users/avatar-1.jpg" class="img-circle thumb-sm" alt="friend" />
+                                        {foreach $t in $p->team}
+                                            {script $temp = models\User::first(['id' => $t])}
+                                            <img src="{echo CDN}uploads/profile/{$temp->profile}" class="img-circle thumb-sm" alt="friend" />
+                                        {/foreach}
                                         </a>
                                     </div>
                                     <p class="font-600 m-b-5">Progress
@@ -156,7 +171,7 @@
                         <div class="row project-sort pull-right">
                             <div class="project-sort-item" style="margin-right: 10px">
                                 <form class="form-inline">
-                                    <button type="button" data-toggle="modal" data-target="#upload" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create Task</button>
+                                    <button type="button" data-toggle="modal" data-target="#create_task" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create Task</button>
                                 </form>
                             </div>
                         </div>
@@ -247,7 +262,6 @@
     </div>
 </div>
 <!-- container -->
-</div>
 <!-- Modal -->
 <div class="modal fade" id="create_project" aria-labelledby="myModalLabel" style="z-index:1011">
     <div class="modal-dialog" role="document">
@@ -256,15 +270,16 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">Create Project</h4>
+                <h4 class="modal-title" id="project_label">Create Project</h4>
             </div>
             <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="token" value="{echo $__token}">
+                <input type="hidden" name="edit_project_id" id="edit_project_id">
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Name:</label>
                         <div class="col-sm-6">
-                            <input type="name" class="form-control" name="name" placeholder="Project Name" required="" style="width:220px">
+                            <input type="name" class="form-control" name="name" id="p_name" placeholder="Project Name" required="" style="width:220px">
                         </div>
                     </div>
                     <br>
@@ -272,9 +287,9 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Assignees:</label>
                         <div class="col-sm-6">
-                            <select name="team[]" class="selectpicker" title="Choose..." required="" multiple="">
+                            <select name="team[]" class="selectpicker" id="p_team" title="Choose..." required="" multiple="">
                                 {foreach $m in $members}
-                                <option value="{$m->id}">{$m->full_name}</option>
+                                <option value="{$m->id}" selected="">{$m->full_name}</option>
                                 {/foreach}
                             </select>
                         </div>
@@ -284,7 +299,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Head:</label>
                         <div class="col-sm-6">
-                            <select name="head" class="selectpicker" required="" title="Select Team Head...">
+                            <select name="head" class="selectpicker" id="p_head" required="" title="Select Team Head...">
                                 {foreach $m in $members}
                                 <option value="{$m->id}">{$m->full_name}</option>
                                 {/foreach}
@@ -296,7 +311,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Details:</label>
                         <div class="col-sm-6">
-                            <textarea name="details" class="form-control" style="resize: none" placeholder="Details of the project..."></textarea>
+                            <textarea name="details" id="p_details" class="form-control" style="resize: none" placeholder="Details of the project..."></textarea>
                         </div>
                     </div>
                     <br>
@@ -305,7 +320,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Due Date:</label>
                         <div class="col-sm-6">
-                            <input type="text" name="due_date" class="form-control datepicker add-ranges" data-format="D, dd MM yyyy" id="date" style="z-index: 1000" placeholder="Due Date...">
+                            <input type="text" id="p_duedate" name="due_date" class="form-control datepicker add-ranges" data-format="yyyy-mm-dd" id="date" style="z-index: 1000" placeholder="Due Date...">
                         </div>
                     </div>
                     <br>
@@ -313,7 +328,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Type:</label>
                         <div class="col-sm-6">
-                            <select name="status" class="selectpicker" required="" title="Select Team Head...">
+                            <select name="status" class="selectpicker" id="p_type" required="">
                                 <option>Normal</option>
                                 <option>Urgent</option>
                             </select>
@@ -324,14 +339,14 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Attach Files:</label>
                         <div class="col-sm-5">
-                            <input type="file" name="files" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" /> 
+                            <input type="file" id="p_type" name="files" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" /> 
                         </div>
                     </div>
                     <br>
                     <br>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" name="action" value="create_project" class="btn btn-success">Create</button>
+                    <button type="submit" name="action" value="create_project" class="btn btn-success" id="p_button">Create</button>
                 </div>
             </form>
         </div>
@@ -357,7 +372,27 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="status" aria-labelledby="myModalLabel" style="margin-top: 200px; margin-left: 50px">
+<div class="modal fade" id="create_task" aria-labelledby="myModalLabel" style="padding-top: 200px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 500px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Crreate Task</h4>
+            </div>
+            <form method="post">
+                <input type="hidden" name="token" value="{echo $__token}">
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action" value="create_project" class="btn btn-success">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="status" aria-labelledby="myModalLabel" style="padding-top: 100px; padding-left: 50px">
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width: 500px">
             <div class="modal-header">
@@ -389,8 +424,8 @@
 <!-- ============================================================== -->
 <script src="{echo CDN}js/select2/select2.min.js" id="script-resource-8"></script>
 <script type="text/javascript">
-function submitform(a) {
-    $('#s_button' + a).click();
+function submitform(a, b) {
+    $('#' + b + '_button' + a).click();
 }
 jQuery(document).ready(function($) {
     $('#date').datepicker({

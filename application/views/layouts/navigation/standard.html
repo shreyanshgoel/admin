@@ -55,7 +55,7 @@
                         <span class="title" style="margin-left: 3px">My Files</span>
                     </a>
                 </li>
-                <li {if isset($profile)} class="active" {/if}>
+                <li {if isset($members_tab)} class="active" {/if}>
                     <a href="/users/members">
                         &nbsp;<i class="fa fa-users"></i>
                         <span class="title" style="margin-left: 3px">Members</span>
@@ -168,8 +168,8 @@
                     <li class="profile-info dropdown">
                         <!-- add class "pull-right" if you want to place this from right -->
                         <a href="/users/profile">
-                            {script $name = ucfirst($user->full_name)} {if !empty($user->logo_ext)}
-                            <img src="{echo CDN}uploads/logo/{$user->id}.{$user->logo_ext}" class="img-circle" style="height: 44px; width: 44px" alt="" /> {/if} {else}
+                            {script $name = ucfirst($user->full_name)} {if $user->profile}
+                            <img src="{echo CDN}uploads/profile/{$user->profile}" class="img-circle" style="height: 44px; width: 44px" alt="" /> {/if} {else}
                             <img src="{echo CDN}images/anonymous.png" alt="" class="img-circle" width="44"> {/else} {$name}
                         </a>
                     </li>
@@ -446,7 +446,7 @@
                         </a>
                         <ul class="dropdown-menu pull-right">
                             <li>
-                                <a href="/users/dashboard?theme=default">
+                                <a href="{echo URL2}?theme=default">
                                     <div style="background: #303641;" class="circle"></div>
                                     &nbsp;&nbsp;
                                     <span>Default</span>

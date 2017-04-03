@@ -2,8 +2,8 @@
     <header class="row">
         <div class="col-sm-2">
             <a href="index#" class="profile-picture">
-                {if !empty($user->logo_ext)}
-                    <img src="{echo CDN}uploads/logo/{$user->id}.{$user->logo_ext}" class="img-responsive img-circle" style="width:130px; height: 130px" alt="" /> 
+                {if $user->profile}
+                    <img src="{echo CDN}uploads/profile/{$user->profile}" class="img-responsive" style="width:130px; height: 130px" alt="" /> 
                 {/if}
                 {else}
                     <img src="{echo CDN}images/anonymous.png" width="120" alt="" />
@@ -78,7 +78,7 @@
                 Email Already Exists
             </div>
             {/if}
-            <form action="/users/profile" class="form-horizontal" method="post">
+            <form action="/users/profile" class="form-horizontal" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label class="col-sm-2 control-label">
                         <sup style="color:red">*</sup> Full Name</label>

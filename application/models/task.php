@@ -21,6 +21,33 @@ class Task extends \Shared\Model {
      * @readwrite
      * @type text
      * 
+     * @label task title
+     */
+    protected $_details;
+
+    /**
+     * @column
+     * @readwrite
+     * @type text
+     * 
+     * @label normal/urgent
+     */
+    protected $_type;
+
+    /**
+     * @column
+     * @readwrite
+     * @type datetime
+     * 
+     * @label task title
+     */
+    protected $_due_date;
+
+    /**
+     * @column
+     * @readwrite
+     * @type array
+     * 
      * @validate required
      * @label project id
      */

@@ -19,12 +19,6 @@ class Users extends Controller {
         $lview->set('dashboard', 1);
 
         $view = $this->getActionView();
-
-        if(RM::get('theme')){
-            $this->user->theme_color = RM::get('theme');
-            $this->user->save();
-            $this->redirect('/users/dashboard');
-        }
     }
 
     /**
@@ -34,6 +28,14 @@ class Users extends Controller {
     	$lview = $this->getLayoutView();
     	$lview->set("seo", Framework\Registry::get("seo"));
     	$lview->set('taskboard', 1);
+        $view = $this->getActionView();
+
+        $d_ids = array_keys(models\Department::all(['company_id' => $this->company->id], ['_id']));
+        $p_ids = array_keys(models\Project::all(['id' => $id, 'department_id' => ['$in' => $d_ids]], ['_id']));
+
+        $tasks = models\Project::all(['id' => $id, 'project_id' => ['$in' => $p_ids]]);
+
+        $view->set('tasks', $tasks);
     }
 
     /**
@@ -51,7 +53,7 @@ class Users extends Controller {
     public function members() {
     	$lview = $this->getLayoutView();
     	$lview->set("seo", Framework\Registry::get("seo"));
-        $lview->set('members', 1);
+        $lview->set('members_tab', 1);
 
     	$view = $this->getActionView();
 
@@ -133,6 +135,8 @@ class Users extends Controller {
 
                 $user->full_name = RM::post('full_name');
                 $user->status = RM::post('status');
+
+                $user->profile = $this->_upload('profile', 'profile', ['extension' => 'jpe?g|png', 'size' => '6000000']);
 
                 // if(RM::post('change_email')){
 

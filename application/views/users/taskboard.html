@@ -1,4 +1,7 @@
-<div class="col-md-6">
+<div class="col-md-14" style="margin-bottom: 10px;">
+    <button type="button" data-toggle="modal" data-target="#create_task" class="btn btn-info">Create Task</button>
+</div>
+<div id="tasks">
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -9,25 +12,16 @@
             <tr>
                 <td class="padding-lg">
                     <div class="list-group">
-                        <a href="index.html#" class="list-group-item active">
+                        <input class="list-group-item form-control" id="createt" type="text" onclick="showDetail()" name="" placeholder="Create New Task">
+                        {if $tasks} {foreach $t in $tasks}
+                        <a class="list-group-item" style="cursor: pointer;" onclick="showDetail()">
                             <span class="badge badge-primary">5</span>
-                            Cras justo odio
+                            {$t->title}
                         </a>
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-info">14</span>
-                            Dapibus ac facilisis in
-                        </a>
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-danger">11</span>
-                            Morbi leo risus
-                        </a>
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-success">3</span>
-                            Porta ac consectetur ac
-                        </a>
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-warning">7</span>
-                            Vestibulum at eros
+                        {/foreach} {/if}
+                        <a class="list-group-item" style="cursor: pointer;" onclick="showDetail()">
+                            <span class="badge badge-primary">5</span>
+                            hey
                         </a>
                     </div>
                 </td>
@@ -35,7 +29,7 @@
         </tbody>
     </table>
 </div>
-<div class="col-md-6">
+<div class="col-md-6" style="display: none" id="taskdetail">
     <div class="panel panel-primary" data-collapsed="0">
         <!-- panel head -->
         <div class="panel-heading" style="height: 50px">
@@ -43,7 +37,7 @@
             <div class="form-group" style="position: absolute; margin-left: 100px; margin-top: 7px">
                 <div>
                     <div class="input-group">
-                        <input type="text" class="form-control datepicker add-ranges" data-format="D, dd MM yyyy" id="date">
+                        <input type="text" class="form-control datepicker add-ranges date" data-format="yyyy-mm-dd" placeholder="Set Due Date">
                         <div class="input-group-addon">
                             <a href="index.html#">
                                 <i class="entypo-calendar"></i>
@@ -53,13 +47,7 @@
                 </div>
             </div>
             <div class="panel-options">
-                <a href="index.html#sample-modal" data-toggle="modal" data-target="#sample-modal-dialog-1" class="bg">
-                    <i class="entypo-cog"></i>
-                </a>
-                <a href="index.html#" data-rel="reload">
-                    <i class="entypo-arrows-ccw"></i>
-                </a>
-                <a href="index.html#" data-rel="close">
+                <a onclick="hideDetail()" style="cursor: pointer;">
                     <i class="entypo-cancel"></i>
                 </a>
             </div>
@@ -74,11 +62,80 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="create_task" aria-labelledby="myModalLabel" style="padding-top: 50px; padding-left: 50px; z-index:1011">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 500px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Create Task</h4>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="token" value="{echo $__token}">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Title:</label>
+                        <div class="col-sm-6">
+                            <input type="name" class="form-control" name="name" placeholder="Task Name" required="" style="width:220px">
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Details:</label>
+                        <div class="col-sm-6">
+                            <textarea name="details" class="form-control" style="resize: none" placeholder="Details of the task..."></textarea>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Due Date:</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="due_date" class="form-control datepicker add-ranges date" data-format="D, dd MM yyyy" style="z-index: 1000" placeholder="Due Date...">
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Type:</label>
+                        <div class="col-sm-6">
+                            <select name="status" class="selectpicker" required="">
+                                <option>Normal</option>
+                                <option>Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action" value="create_project" class="btn btn-success">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
+function showDetail() {
+    document.getElementById('tasks').classList.add("col-md-6");
+    document.getElementById('taskdetail').style.display = 'block';
+}
+
+function hideDetail() {
+    document.getElementById('tasks').classList.remove("col-md-6");
+    document.getElementById('taskdetail').style.display = 'none';
+
+}
+
 jQuery(document).ready(function($) {
-        $('#date').datepicker({
-            format: "D, dd MM yyyy",
-            autoclose: true
-        });
- });
+    $('.date').datepicker({
+        format: "D, dd MM yyyy",
+        autoclose: true
+    }).on('changeDate', function(e) {
+        alert('hey');
+    });;
+});
 </script>
