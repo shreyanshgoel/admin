@@ -23,13 +23,13 @@ class Department extends Controller {
 
 		if(RM::post('delete')){
 			$project = models\Project::first(['id' => RM::post('delete'), 'department_id' => $id]);
-
-			if($project){ $project->delete(); }
+			if ($project) { 
+				$project->delete(); 
+			}
 		}
 
 		if(RM::post('mark_urgent')){
 			$project = models\Project::first(['id' => RM::post('mark_urgent'), 'department_id' => $id]);
-
 			if($project){
 				$project->status = 'urgent';
 				$project->save();
@@ -39,7 +39,6 @@ class Department extends Controller {
 
 		if(RM::post('mark_incomplete')){
 			$project = models\Project::first(['id' => RM::post('mark_incomplete'), 'department_id' => $id]);
-
 			if($project){
 				$project->status = 'normal';
 				$project->save();
@@ -49,7 +48,6 @@ class Department extends Controller {
 
 		if(RM::post('mark_complete')){
 			$project = models\Project::first(['id' => RM::post('mark_complete'), 'department_id' => $id]);
-
 			if($project){
 				$project->status = 'completed';
 				$project->save();
@@ -57,43 +55,103 @@ class Department extends Controller {
 			$this->redirect(URL);
 		}
 
+		$tab = 'projects';
+
 		$token = RM::post('token', '');
-		if(RM::post('action') == 'edit_project' && $this->verifyToken($token)){
+		if($this->verifyToken($token)){
+			switch (RM::post('action')) {
+				case 'create_project':
+					$p = new models\Project([
+						"name" => RM::post('name'),
+						"team" => RM::post('team'),
+						"head" => RM::post('head'),
+						"details" => RM::post('details'),
+						"status" => strtolower(RM::post('status')),
+						"due_date" => RM::post('due_date'),
+						"department_id" => $id,
+						"created_by" => $this->user->id
+						]);
+					if($p->validate()){
+						$p->save();
+					}
 
-			$p = models\Project::first(["id" => RM::post('edit_project_id')]);
+					$this->redirect(URL);
+					break;
+
+				case 'edit_project':
+					$p = models\Project::first(["id" => RM::post('edit_project_id')]);
 			
-			$p->name = RM::post('name');
-			$p->team = RM::post('team');
-			$p->head = RM::post('head');
-			$p->details = RM::post('details');
-			$p->status = RM::post('status');
-			$p->due_date = RM::post('due_date');
-			$p->department_id = $id;
-			$p->created_by = $this->user->id;
+					$p->name = RM::post('name');
+					$p->team = RM::post('team');
+					$p->head = RM::post('head');
+					$p->details = RM::post('details');
+					$p->status = RM::post('status');
+					$p->due_date = RM::post('due_date');
+					$p->department_id = $id;
+					$p->created_by = $this->user->id;
 
-			if($p->validate()){
-				$p->save();
+					if($p->validate()){
+						$p->save();
+					}
+					$this->redirect(URL);
+					break;
+
+				case 'create_folder':
+					$exist = models\Folder::first([
+						'name' => RM::post('name'),
+						'department_id' => $id,
+						'user_id' => $this->user->id
+						]);
+					if(!$exist){
+						$f = new models\Folder([
+							'name' => RM::post('name'),
+							'department_id' => $id,
+							'user_id' => $this->user->id
+							]);
+						if($f->validate()){
+							$f->save();
+							$tab = 'files';
+						}
+					}
+					break;
+
+				case 'upload':
+					$files = $_FILES['file_upload'];
+					for ($i=0; $i < count($files['name']); $i++) { 
+						$multiple['name']=$files['name'][$i];
+						$multiple['size']=$files['size'][$i];
+						$multiple['tmp_name']=$files['tmp_name'][$i];
+
+						$temp = $this->_upload('', 'files', ['size' => '6000000'], $multiple);
+						$name = explode('.', $multiple['name']);
+						if($temp){
+							$j = '';
+							while (1) {
+								$testname = $name[0].$j.'.'.$name[1];
+								$exist = models\File::first([
+									'name' => $testname,
+									'department_id' => $id,
+									'user_id' => $this->user->id
+									]);
+								if(!$exist){
+									break;
+								}
+								$j = (int) $j;
+								$j++;
+							}
+
+							$new = new models\File([
+								'server_name' => $temp,
+								'name' =>  $testname,
+								'department_id' => $id,
+								'user_id' => $this->user->id
+								]);
+							$new->save();
+						}
+					}
+					$tab = 'files';
+					break;
 			}
-			$this->redirect(URL);
-		}
-
-		if(RM::post('action') == 'create_project' && $this->verifyToken($token)){
-
-			$p = new models\Project([
-				"name" => RM::post('name'),
-				"team" => RM::post('team'),
-				"head" => RM::post('head'),
-				"details" => RM::post('details'),
-				"status" => strtolower(RM::post('status')),
-				"due_date" => RM::post('due_date'),
-				"department_id" => $id,
-				"created_by" => $this->user->id
-				]);
-			if($p->validate()){
-				$p->save();
-			}
-
-			$this->redirect(URL);
 		}
 
 		switch (RM::get('phase')) {
@@ -124,8 +182,17 @@ class Department extends Controller {
 		$c_complete = models\Project::count(['department_id' => ['$in' => [$id]],'status' => 'completed']);
 		$c_inprogress = models\Project::count(['department_id' => ['$in' => [$id]],'status' => ['$ne' => 'completed']]);
 		$c_all = $c_complete+$c_inprogress;
-
-		$view->set('projects', $projects)->set('c_complete', $c_complete)->set('c_inprogress', $c_inprogress)->set('c_all', $c_all);
+		$home_folders = models\Folder::all(['department_id' => $id, 'user_id' => $this->user->id, 'parent_folder_id' => null]);
+		$home_files = models\File::all(['department_id' => $id, 'user_id' => $this->user->id, 'folder_id' => null]);
+		$view->set([
+			'projects' => $projects,
+			'c_complete' => $c_complete,
+			'c_inprogress' => $c_inprogress,
+			'c_all' => $c_all,
+			'home_folders' => $home_folders,
+			'home_files' => $home_files,
+			'tab' => $tab
+			]);
 	}
 
 	/**

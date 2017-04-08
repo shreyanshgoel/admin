@@ -4236,11 +4236,11 @@ hr + .calendar-env {
 .calendar-env .calendar-sidebar .events-list li a.color-green:hover {
   background: #008d45;
 }
-.calendar-env .calendar-sidebar .events-list li a.color-primary {
+.calendar-env .calendar-sidebar .events-list li a.color-black {
   background: #303641;
   color: #fff;
 }
-.calendar-env .calendar-sidebar .events-list li a.color-primary:hover {
+.calendar-env .calendar-sidebar .events-list li a.color-black:hover {
   background: #252a32;
 }
 .calendar-env .calendar-sidebar .events-list li a.color-orange {
@@ -4558,11 +4558,11 @@ fieldset[disabled] .calendar-env .calendar-body .fc-header .fc-button.focus {
 .calendar-env .calendar-body .fc-content .fc-view .fc-event.color-green:hover {
   background: #008d45;
 }
-.calendar-env .calendar-body .fc-content .fc-view .fc-event.color-primary {
+.calendar-env .calendar-body .fc-content .fc-view .fc-event.color-black {
   background: #303641;
   color: #fff;
 }
-.calendar-env .calendar-body .fc-content .fc-view .fc-event.color-primary:hover {
+.calendar-env .calendar-body .fc-content .fc-view .fc-event.color-black:hover {
   background: #252a32;
 }
 .calendar-env .calendar-body .fc-content .fc-view .fc-event.color-orange {
@@ -5132,11 +5132,11 @@ fieldset[disabled] .calendar-env .calendar-body .fc-content .fc-view table tbody
 .calendar-env .fc .fc-view-container .fc-view table tbody .fc-event.color-green:hover {
   background: #008d45;
 }
-.calendar-env .fc .fc-view-container .fc-view table tbody .fc-event.color-primary {
+.calendar-env .fc .fc-view-container .fc-view table tbody .fc-event.color-black {
   background: #303641;
   color: #fff;
 }
-.calendar-env .fc .fc-view-container .fc-view table tbody .fc-event.color-primary:hover {
+.calendar-env .fc .fc-view-container .fc-view table tbody .fc-event.color-black:hover {
   background: #252a32;
 }
 .calendar-env .fc .fc-view-container .fc-view table tbody .fc-event.color-orange {

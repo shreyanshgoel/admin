@@ -2522,16 +2522,16 @@ fieldset[disabled] .btn-danger.focus {
   -webkit-box-shadow: 0 0 0 2px rgba(209.5,209.5,209.5,.1);
   box-shadow: 0 0 0 2px rgba(209.5,209.5,209.5,.1);
 }
-.checkbox-replace.color-primary .cb-wrapper,
-.radio-replace.color-primary .cb-wrapper {
+.checkbox-replace.color-black .cb-wrapper,
+.radio-replace.color-black .cb-wrapper {
   border: 1px solid #303641;
 }
-.checkbox-replace.color-primary .cb-wrapper .checked,
-.radio-replace.color-primary .cb-wrapper .checked {
+.checkbox-replace.color-black .cb-wrapper .checked,
+.radio-replace.color-black .cb-wrapper .checked {
   background: #303641;
 }
-.checkbox-replace.color-primary:hover .cb-wrapper,
-.radio-replace.color-primary:hover .cb-wrapper {
+.checkbox-replace.color-black:hover .cb-wrapper,
+.radio-replace.color-black:hover .cb-wrapper {
   -moz-box-shadow: 0 0 0 2px rgba(48,54,65,.1);
   -webkit-box-shadow: 0 0 0 2px rgba(48,54,65,.1);
   box-shadow: 0 0 0 2px rgba(48,54,65,.1);

@@ -4,17 +4,7 @@
  * @author Shreyansh Goel
  */
 namespace models;
-class File extends \Shared\Model {
-
-    /**
-     * @column
-     * @readwrite
-     * @type text
-     * 
-     * @validate required
-     * @label file name + extension
-     */
-    protected $_server_name;
+class Folder extends \Shared\Model {
 
     /**
      * @column
@@ -31,9 +21,18 @@ class File extends \Shared\Model {
      * @readwrite
      * @type mongoid
      * 
-     * @label folder id /null means home
+     * @label project id /null means private 
      */
-    protected $_folder_id = 'home';
+    protected $_department_id;
+
+    /**
+     * @column
+     * @readwrite
+     * @type mongoid
+     * 
+     * @label project id /null means private 
+     */
+    protected $_parent_folder_id = 'home';
 
     /**
      * @column
@@ -43,15 +42,6 @@ class File extends \Shared\Model {
      * @label project id /null means private 
      */
     protected $_project_id;
-
-    /**
-     * @column
-     * @readwrite
-     * @type mongoid
-     * 
-     * @label project id /null means private 
-     */
-    protected $_department_id;
 
     /**
      * @column

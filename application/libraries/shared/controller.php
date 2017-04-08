@@ -111,45 +111,58 @@ namespace Shared {
          * @param string $name
          * @param string $type files or images
          */
-        protected function _upload($name, $type = "images", $opts = []) {
-            if (isset($_FILES[$name])) {
-
+        protected function _upload($name=null, $type = "images", $opts = [], $multiple = null) {
+            if (!empty($multiple)) {
+                $process = $this->_uploadProcess($multiple, $type, $opts);
+                return $process;
+            }elseif (isset($_FILES[$name])) {
                 $file = $_FILES[$name];
-                $path = APP_PATH . "/public/assets/uploads/{$type}/";
-                $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
-                $size = $file["size"];
-
-                if (isset($opts['extension'])) {
-                    $ex = $opts['extension'];
-
-                    if (!preg_match("/^".$ex."$/", $extension)) {
-                        echo "extension doesnt match";
-                        return false;
-                    }
-                }
-
-                 if (isset($opts['size'])) {
-                    $s = $opts['size'];
-
-                    if ($size > $s) {
-                        echo "size is big";
-                        return false;
-                    }
-                }
-
-                if (isset($opts['name'])) {
-                    $filename = $opts['name'] . ".{$extension}";
-                } else {
-                    $filename = uniqid() . ".{$extension}";
-                }
-
-                if(move_uploaded_file($file["tmp_name"], $path . $filename)){
-
-                    return $filename;
-                }
+                
+                $details['name'] = $file['name'];
+                $details['size'] = $file['size'];
+                $details['tmp_name'] = $file['tmp_name'];
+                
+                $process = $this->_uploadProcess($details, $type, $opts);
+                return $process;
             }
             echo "something went wrong";
             return FALSE;
+        }
+
+        protected function _uploadProcess($details = [], $type="images", $opts = []){
+
+            $path = APP_PATH . "/public/assets/uploads/{$type}/";
+            $extension = pathinfo($details["name"], PATHINFO_EXTENSION);
+            $size = $details["size"];
+
+            if (isset($opts['extension'])) {
+                $ex = $opts['extension'];
+
+                if (!preg_match("/^".$ex."$/", $extension)) {
+                    echo "extension doesnt match";
+                    return false;
+                }
+            }
+
+             if (isset($opts['size'])) {
+                $s = $opts['size'];
+
+                if ($size > $s) {
+                    echo "size is big";
+                    return false;
+                }
+            }
+
+            if (isset($opts['name'])) {
+                $filename = $opts['name'] . ".{$extension}";
+            } else {
+                $filename = uniqid() . ".{$extension}";
+            }
+
+            if(move_uploaded_file($details["tmp_name"], $path . $filename)){
+
+                return $filename;
+            }
         }
 
         public function __construct($options = array()) {

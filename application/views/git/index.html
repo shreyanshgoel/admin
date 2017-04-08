@@ -11,27 +11,11 @@
                 <td class="padding-lg">
                     <div class="list-group">
                         {foreach $r in $all_repos}
-                            <a href="index.html#" class="list-group-item active">
+                            <a class="pointer list-group-item">
                                 <span class="badge badge-primary">5</span>
                                 {$r->name}
                             </a>
                         {/foreach}
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-info">14</span>
-                            Dapibus ac facilisis in
-                        </a>
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-danger">11</span>
-                            Morbi leo risus
-                        </a>
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-success">3</span>
-                            Porta ac consectetur ac
-                        </a>
-                        <a href="index.html#" class="list-group-item">
-                            <span class="badge badge-warning">7</span>
-                            Vestibulum at eros
-                        </a>
                     </div>
                 </td>
             </tr>
@@ -70,11 +54,3 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-jQuery(document).ready(function($) {
-    $('#date').datepicker({
-        format: "D, dd MM yyyy",
-        autoclose: true
-    });
-});
-</script>

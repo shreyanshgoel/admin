@@ -26,18 +26,18 @@
             <!-- panel head -->
             <h3 style="float: left; margin-top: -5px; margin-right: 10px">{$dept->name}</h3>
             <ul style="list-style: none; color:red; margin-left: 35%">
-                <li style="float: left;" class="active">
+                <li style="float: left;" {if $tab !='files' }class="active" {/if}>
                     <a href="#projects" class="tabs" data-toggle="tab">Projects</a>
                 </li>
                 <li style="float: left; margin-left: 10px">
                     <a href="#tasks" class="tabs" data-toggle="tab">Tasks</a>
                 </li>
-                <li style="float: left; margin-left: 10px">
+                <li style="float: left; margin-left: 10px" {if $tab=='files' }class="active" {/if}>
                     <a href="#files" class="tabs" data-toggle="tab">Files</a>
                 </li>
             </ul>
             <div class="tab-content" style="border: none">
-                <div class="tab-pane active" id="projects">
+                <div class="tab-pane {if $tab != 'files'}active{/if}" id="projects">
                     <div style="margin-top: -20px;">
                         <div class="row project-sort pull-right">
                             <div class="project-sort-item" style="margin-right: 10px">
@@ -74,7 +74,7 @@
                             {if $projects} {script $i = 1}{foreach $p in $projects}
                             <div class="col-lg-4">
                                 <div class="card-box">
-                                {script $temp = $p->status} {script $status = $temp[0]} 
+                                    {script $temp = $p->status} {script $status = $temp[0]}
                                     <div class="dropdown pull-right">
                                         <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" style="margin-right: -10px; margin-top: 3px;">
                                             <i class="glyphicon glyphicon-option-vertical" style="font-size: 15px"></i>
@@ -93,12 +93,10 @@
                                             <li>
                                                 <a class="pointer" data-toggle="modal" data-target="#status">Change status</a>
                                             </li>
-
                                             <li>
                                                 <button type="submit" hidden="" name="mark_urgent" value="{$p->id}" id="urgent_button{$i}"></button>
                                                 <a class="pointer" onclick="submitform({$i}, 'urgent')">Mark Urgent</a>
                                             </li>
-
                                             {if $status != 'completed'}
                                             <li>
                                                 <button type="submit" hidden="" name="mark_complete" value="{$p->id}" id="complete_button{$i}"></button>
@@ -119,15 +117,14 @@
                                     </div>
                                     {if $status == 'urgent'}
                                     <div class="label label-danger pull-right">Urgent</div>
-                                    {/if}
-                                    {if $status == 'completed'}
+                                    {/if} {if $status == 'completed'}
                                     <div class="label label-success pull-right">Complete</div>
                                     {/if}
                                     <h4 class="m-t-0 m-b-5">
                                         <a href="/project/info/{$p->id}" class="text-inverse">{echo ucfirst($p->name)}</a>
                                     </h4>
                                     <p class="text-muted font-13" style="margin-top: 15px; margin-bottom: -10px; height: 40px">
-                                    {echo substr($p->details, 0 , 80)}{if $p->details}...{/if}
+                                        {echo substr($p->details, 0 , 80)}{if $p->details}...{/if}
                                     </p>
                                     <ul class="list-inline">
                                         <li>
@@ -144,10 +141,8 @@
                                     <div class="project-members m-b-20">
                                         <span class="m-r-5 font-600">Team :</span>
                                         <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Mat Helme">
-                                        {foreach $t in $p->team}
-                                            {script $temp = models\User::first(['id' => $t])}
-                                            <img src="{echo CDN}uploads/profile/{$temp->profile}" class="img-circle thumb-sm" alt="friend" />
-                                        {/foreach}
+                                            {foreach $t in $p->team} {script $temp = models\User::first(['id' => $t])}
+                                            <img src="{echo CDN}uploads/profile/{$temp->profile}" class="img-circle thumb-sm" alt="friend" /> {/foreach}
                                         </a>
                                     </div>
                                     <p class="font-600 m-b-5">Progress
@@ -170,9 +165,6 @@
                     <div style="margin-top: -20px;">
                         <div class="row project-sort pull-right">
                             <div class="project-sort-item" style="margin-right: 10px">
-                                <form class="form-inline">
-                                    <button type="button" data-toggle="modal" data-target="#create_task" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create Task</button>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -186,14 +178,14 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th width="50%">Simple</th>
+                                        <th width="50%"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td class="padding-lg">
                                             <div class="list-group">
-                                                <a href="index.html#" class="list-group-item">
+                                                <a class="pointer list-group-item">
                                                     <span class="badge badge-primary">5</span>
                                                     Cras justo odio
                                                 </a>
@@ -205,13 +197,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="files">
+                <div class="tab-pane {if $tab == 'files'}active{/if}" id="files">
                     <div style="margin-top: -20px;">
                         <div class="row project-sort pull-right">
                             <div class="project-sort-item" style="margin-right: 10px">
                                 <form class="form-inline">
                                     <button type="button" data-toggle="modal" data-target="#upload" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Upload</button>
-                                    <button type="button" data-toggle="modal" data-target="#upload" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create New Folder</button>
+                                    <button type="button" data-toggle="modal" data-target="#createfolder" class="btn btn-purple btn-rounded btn-sm w-md waves-effect waves-light" style="margin-right: 10px">Create New Folder</button>
                                     <div class="form-group">
                                         <label>Action :</label>
                                         <select class="form-control input-sm">
@@ -234,21 +226,31 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th width="50%">Simple</th>
+                                        <th width="50%">Home folder</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td class="padding-lg">
                                             <div class="list-group">
-                                                <a href="index.html#" class="list-group-item">
+                                                {script $flag = 0}
+                                                {if $home_folders} {script $flag = 1}{foreach $f in $home_folders}
+                                                <a class="pointer list-group-item entypo-folder">
                                                     <span class="badge badge-primary">5</span>
-                                                    Cras justo odio
+                                                    {$f->name}
                                                 </a>
-                                                <a href="index.html#" class="list-group-item">
-                                                    <span class="badge badge-info">14</span>
-                                                    Dapibus ac facilisis in
+                                                {/foreach} {/if}
+                                                {if $home_files} {script $flag = 1}{foreach $f in $home_files}
+                                                <a class="pointer list-group-item">
+                                                    <i class="fa fa-file-text" style="margin-left: 2px"></i>
+                                                    <span style="margin-left: 3px">{$f->name}</span>
                                                 </a>
+                                                {/foreach} {/if}
+                                                {if $flag == 0}
+                                                <a class="list-group-item">
+                                                    No files yet
+                                                </a>
+                                                {/if}
                                             </div>
                                         </td>
                                     </tr>
@@ -339,7 +341,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Attach Files:</label>
                         <div class="col-sm-5">
-                            <input type="file" id="p_type" name="files" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" /> 
+                            <input type="file" id="p_type" name="files" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
                         </div>
                     </div>
                     <br>
@@ -361,12 +363,51 @@
                 </button>
                 <h4 class="modal-title" id="myModalLabel">Upload a file</h4>
             </div>
+            <div class="modal-body" style="height: 300px">
+                <form method="post" enctype="multipart/form-data" style="margin-top: 50px">
+                    <input type="hidden" name="token" value="{echo $__token}">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Multiple files</label>
+                        <div class="col-sm-5">
+                            <input type="file" name="file_upload[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" /> </div>
+                            <button type="submit" name="action" value="upload" class="btn btn-success">Upload</button>
+                    </div>
+                </form>
+                <hr style="margin-top: 50px">
+                <form method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="token" value="{echo $__token}">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Upload all files within a folder</label>
+                        <div class="col-sm-5">
+                            <input type="file" name="file_upload[]" webkitdirectory="" directory="" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" /> </div>
+                            <button type="submit" name="action" value="upload" class="btn btn-success">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createfolder" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 500px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Create New Folder</h4>
+            </div>
             <form method="post">
-                <input type="hidden" name="token" value="{echo $__token}">
-                <div class="modal-body">
+                <div class="modal-body" style="height: 80px">
+                    <input type="hidden" name="token" value="{echo $__token}">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Folder Name</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="name" class="form-control">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" name="action" value="create_project" class="btn btn-success">Create</button>
+                    <button type="submit" name="action" value="create_folder" class="btn btn-success">Create</button>
                 </div>
             </form>
         </div>
@@ -379,7 +420,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">Crreate Task</h4>
+                <h4 class="modal-title" id="myModalLabel">Create Task</h4>
             </div>
             <form method="post">
                 <input type="hidden" name="token" value="{echo $__token}">

@@ -122,9 +122,13 @@ class Users extends Controller {
 
         if(RM::post('profile_update')){
 
-            $user = models\User::first(array(
-                'id = ?' => $this->user->id
-                ));
+            $user = models\User::first([
+                'id' => $this->user->id
+                ]);
+
+            $company = models\Company::first([
+                'id' => $this->company->id
+                ]);
 
             // $exist = models\User::first(array(
             //     'id = ?' => ['$ne' => $this->user->id],
@@ -135,8 +139,10 @@ class Users extends Controller {
 
                 $user->full_name = RM::post('full_name');
                 $user->status = RM::post('status');
-
-                $user->profile = $this->_upload('profile', 'profile', ['extension' => 'jpe?g|png', 'size' => '6000000']);
+                $company->location = RM::post('location');
+                if(!empty($_FILES['profile']['name'])){
+                    $user->profile = $this->_upload('profile', 'profile', ['extension' => 'jpe?g|png', 'size' => '6000000']);
+                }
 
                 // if(RM::post('change_email')){
 
@@ -154,6 +160,7 @@ class Users extends Controller {
                 if($user->validate()){
 
                     $user->save();
+                    $company->save();
 
                     //mail the url to confirm the email
 
@@ -207,7 +214,15 @@ class Users extends Controller {
         $lview->set('notes',1);
 
         $view = $this->getActionView();
-
+        if(RM::post('delete_particular')){
+            $temp = models\Note::first([
+                'note_id' => RM::post('delete_particular'),
+                'user_id = ?' => $this->user->id
+                ]);
+            $temp->delete();
+            $this->redirect('/users/notes');
+        }
+    
         switch ($id) {
             case 'new':
                 if(RM::post('action') == 'save'){

@@ -1,60 +1,66 @@
 <form method="post">
     <ol class="breadcrumb bc-3">
-        <li> <a href="/users/dashboard"><i class="fa fa-home"></i>Home</a> </li>
-        <li class="active"> <strong>Notes</strong> </li>
+        <li>
+            <a href="/users/dashboard">
+                <i class="fa fa-home"></i>Home</a>
+        </li>
+        <li class="active">
+            <strong>Notes</strong>
+        </li>
     </ol>
     <div class="notes-env">
         <div class="notes-header">
             <h2>Notes</h2>
             <div class="right">
-                <button type="submit" name="action" value="save" class="btn btn-success btn-icon icon-left"> 
+                <button type="submit" name="action" value="save" class="btn btn-success btn-icon icon-left">
                     <i class="entypo-check"></i> Save
                 </button>
-                
-                <button type="submit" name="action" value="delete" class="btn btn-danger btn-icon icon-left"> 
+                <button type="submit" name="action" value="delete" class="btn btn-danger btn-icon icon-left">
                     <i class="entypo-cancel"></i> Delete
                 </button>
-                
-                <a href="/users/notes/new" class="btn btn-primary btn-icon icon-left"> 
+                <a href="/users/notes/new" class="btn btn-primary btn-icon icon-left">
                     <i class="entypo-plus"></i> New Note
                 </a>
             </div>
         </div>
         <div class="notes-list">
-            <ul class="list-of-notes">
-                <!-- predefined notes -->
-                {if isset($note)}
-                    <li class="current">
-                        <!-- class "current" will set as current note on Write Pad -->
-                        <a href="/users/notes/{$note->note_id}"> <strong>{$note->title}</strong> <span>{$note->text}</span> </a>
-                        <button name="delete_particular" value="{$note->note_id}"  class="note-close">&times;</button>
-                    </li>
-                {/if}
-
-                {foreach $n in $all_notes}
-
-                    {if $n->note_id != $note->note_id}
-                    
-                        <li>
-                            <!-- class "current" will set as current note on Write Pad -->
-                            <a href="/users/notes/{$n->note_id}"> <strong>{$n->title}</strong> <span>{$n->text}</span> </a>
-                            <button name="delete_particular" value="{$note->note_id}" class="note-close">&times;</button>
-                        </li>
-
-                    {/if}
-
-                {/foreach}
-                <!-- this will be automatically hidden when there are notes in the list -->
-                <li class="no-notes">
-                    There are no notes yet!
-                </li>
-            </ul>
-
             <div class="write-pad">
-
                 <input type="text" class="form-control" name="title" placeholder="TITLE" style="width:300px; text-align: center; margin: 0 auto;" {if isset($note)} value="{$note->title}" {/if} required="">
                 <textarea class="form-control" name="text" style="resize: none">{if isset($note)}{$note->text} {/if}</textarea>
             </div>
+        </form>
+            <form method="post">
+                <ul class="list-of-notes">
+                    <!-- predefined notes -->
+                    {if isset($note)}
+                    <li class="current">
+                        <!-- class "current" will set as current note on Write Pad -->
+                        <a href="/users/notes/{$note->note_id}">
+                            <strong>{$note->title}</strong>
+                            <span>{$note->text}</span>
+                        </a>
+                        <button type="submit" name="delete_particular" value="{$note->note_id}" class="note-close">&times;</button>
+                    </li>
+                    {/if} 
+                    {foreach $n in $all_notes} 
+
+                    {if $n->note_id != @$note->note_id}
+                    <li>
+                        <!-- class "current" will set as current note on Write Pad -->
+                        <a href="/users/notes/{$n->note_id}">
+                            <strong>{$n->title}</strong>
+                            <span>{$n->text}</span>
+                        </a>
+                        <button type="submit" name="delete_particular" value="{$n->note_id}" class="note-close">&times;</button>
+                    </li>
+                    {/if} 
+
+                    {/foreach}
+                    <!-- this will be automatically hidden when there are notes in the list -->
+                    <li class="no-notes">
+                        There are no notes yet!
+                    </li>
+                </ul>
+            </form>
         </div>
     </div>
-</form>

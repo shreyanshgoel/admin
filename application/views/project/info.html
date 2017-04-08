@@ -86,14 +86,11 @@
                 <div class="assign-team m-t-30">
                     <h5 class="font-600 m-b-5">Assign to</h5>
                     <div>
+                        {foreach $t in $project->team} {script $temp = models\User::first(['id' => $t])}
                         <a href="extras-taskdetail.html#">
-                            <img class="img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-2.jpg"> </a>
-                        <a href="extras-taskdetail.html#">
-                            <img class="img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-3.jpg"> </a>
-                        <a href="extras-taskdetail.html#">
-                            <img class="img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-5.jpg"> </a>
-                        <a href="extras-taskdetail.html#">
-                            <img class="img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-8.jpg"> </a>
+                            <img src="{echo CDN}uploads/profile/{$temp->profile}" class="img-circle thumb-sm" alt="friend" />
+                        </a>
+                        {/foreach}
                         <a href="extras-taskdetail.html#">
                             <span class="add-new-plus">
                                 <i class="zmdi zmdi-plus"></i>
@@ -201,17 +198,17 @@
                     </div>
                     <hr>
                     <form method="post">
-                    <div class="media">
-                        <div class="media-left">
-                            <a href="extras-taskdetail.html#">
-                                <img class="media-object img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-1.jpg"> </a>
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="extras-taskdetail.html#">
+                                    <img class="media-object img-circle thumb-sm" alt="64x64" src="{echo CDN}theme/images/users/avatar-1.jpg"> </a>
+                            </div>
+                            <div class="media-body">
+                                <textarea name="comment" style="resize: none" class="form-control" placeholder="Some text value..."></textarea>
+                                <br>
+                                <button type="submit" class="btn btn-info pull-right">Comment</button>
+                            </div>
                         </div>
-                        <div class="media-body">
-                            <textarea name="comment" style="resize: none" class="form-control" placeholder="Some text value..."></textarea>
-                            <br>
-                            <button type="submit" class="btn btn-info pull-right">Comment</button>
-                        </div>
-                    </div>
                     </form>
                 </div>
             </div>

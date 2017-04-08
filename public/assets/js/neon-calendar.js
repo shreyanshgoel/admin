@@ -99,7 +99,7 @@ var neonCalendar = neonCalendar || {};
 				if(text.val().length == 0)
 					return false;
 
-				var classes = ['', 'color-green', 'color-blue', 'color-orange', 'color-primary', ''],
+				var classes = ['', 'color-green', 'color-blue', 'color-orange', 'color-black', ''],
 					_class = classes[ Math.floor(classes.length * Math.random()) ],
 					$event = $('<li><a href="#"></a></li>');
 
