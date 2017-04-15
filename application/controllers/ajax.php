@@ -39,6 +39,20 @@ class Ajax extends Controller {
     /**
     * @before _secure
     */
+    public function edit_department() {
+        $this->JSONview();
+        $view = $this->getActionView();
+        
+        $dept = models\Department::first(['id' => RM::post('department_id'), 'company_id' => $this->company->id]);
+
+        if ($dept) {
+            $view->set('dept',$dept);
+        }
+    }
+
+    /**
+    * @before _secure
+    */
     public function calendar_save($id = -1) {
         $start_date = RM::post('date');
         $title = RM::post('title');

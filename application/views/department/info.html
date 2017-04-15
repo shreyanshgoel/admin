@@ -76,7 +76,7 @@
                                 <div class="card-box">
                                     {script $temp = $p->status} {script $status = $temp[0]}
                                     <div class="dropdown pull-right">
-                                        <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" style="margin-right: -10px; margin-top: 3px;">
+                                        <a class="pointer dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" style="margin-right: -10px; margin-top: 3px;">
                                             <i class="glyphicon glyphicon-option-vertical" style="font-size: 15px"></i>
                                         </a>
                                         <ul class="dropdown-menu" role="menu">
@@ -111,7 +111,7 @@
                                             <li class="divider"></li>
                                             <li>
                                                 <button type="submit" hidden="" name="delete" value="{$p->id}" id="delete_button{$i}"></button>
-                                                <a href="#" onclick="submitform({$i}, 'delete')"> Delete </a>
+                                                <a class="pointer" onclick="submitform({$i}, 'delete')"> Delete </a>
                                             </li>
                                         </ul>
                                     </div>
@@ -140,7 +140,7 @@
                                     </ul>
                                     <div class="project-members m-b-20">
                                         <span class="m-r-5 font-600">Team :</span>
-                                        <a href="extras-projects.html#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Mat Helme">
+                                        <a class="pointer" data-toggle="tooltip" data-placement="top" title="" data-original-title="Mat Helme">
                                             {foreach $t in $p->team} {script $temp = models\User::first(['id' => $t])}
                                             <img src="{echo CDN}uploads/profile/{$temp->profile}" class="img-circle thumb-sm" alt="friend" /> {/foreach}
                                         </a>
@@ -236,7 +236,7 @@
                                                 {script $flag = 0}
                                                 {if $home_folders} {script $flag = 1}{foreach $f in $home_folders}
                                                 <a class="pointer list-group-item entypo-folder">
-                                                    <span class="badge badge-primary">5</span>
+                                                    <span class="badge badge-primary">0</span>
                                                     {$f->name}
                                                 </a>
                                                 {/foreach} {/if}

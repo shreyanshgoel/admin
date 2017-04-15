@@ -26,7 +26,7 @@
                     </a>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="">Edit</a>
+                            <a class="pointer" onclick="edit_project('{$project->id}')">Edit</a>
                         </li>
                         <li>
                             <a href="/project/tasks/{$p->id}">View Tasks</a>
@@ -217,6 +217,96 @@
     </div>
     <!-- end row -->
     <!-- container -->
+</div>
+<!-- Modal -->
+<div class="modal fade" id="create_project" aria-labelledby="myModalLabel" style="z-index:1011">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 500px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="project_label">Edit Project</h4>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="token" value="{echo $__token}">
+                <input type="hidden" name="edit_project_id" id="edit_project_id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Name:</label>
+                        <div class="col-sm-6">
+                            <input type="name" class="form-control" name="name" id="p_name" placeholder="Project Name" required="" style="width:220px">
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Assignees:</label>
+                        <div class="col-sm-6">
+                            <select name="team[]" class="selectpicker" id="p_team" title="Choose..." required="" multiple="">
+                                {foreach $m in $members}
+                                <option value="{$m->id}" selected="">{$m->full_name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Head:</label>
+                        <div class="col-sm-6">
+                            <select name="head" class="selectpicker" id="p_head" required="" title="Select Team Head...">
+                                {foreach $m in $members}
+                                <option value="{$m->id}">{$m->full_name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Details:</label>
+                        <div class="col-sm-6">
+                            <textarea name="details" id="p_details" class="form-control" style="resize: none" placeholder="Details of the project..."></textarea>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Due Date:</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="p_duedate" name="due_date" class="form-control datepicker add-ranges" data-format="yyyy-mm-dd" id="date" style="z-index: 1000" placeholder="Due Date...">
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Type:</label>
+                        <div class="col-sm-6">
+                            <select name="status" class="selectpicker" id="p_type" required="">
+                                <option>Normal</option>
+                                <option>Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Attach Files:</label>
+                        <div class="col-sm-5">
+                            <input type="file" id="p_type" name="files" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action" value="edit_project" class="btn btn-success" id="p_button">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <script type="text/javascript">
 function submitform(a) {

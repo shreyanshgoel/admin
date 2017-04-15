@@ -79,19 +79,19 @@ class Department extends Controller {
 					break;
 
 				case 'edit_project':
-					$p = models\Project::first(["id" => RM::post('edit_project_id')]);
-			
-					$p->name = RM::post('name');
-					$p->team = RM::post('team');
-					$p->head = RM::post('head');
-					$p->details = RM::post('details');
-					$p->status = RM::post('status');
-					$p->due_date = RM::post('due_date');
-					$p->department_id = $id;
-					$p->created_by = $this->user->id;
+					$p = models\Project::first(["id" => RM::post('edit_project_id'), 'department_id' => ['$in' => [$id]]]);
+					if($p){
+						$p->name = RM::post('name');
+						$p->team = RM::post('team');
+						$p->head = RM::post('head');
+						$p->details = RM::post('details');
+						$p->status = strtolower(RM::post('status'));
+						$p->due_date = RM::post('due_date');
+						$p->created_by = $this->user->id;
 
-					if($p->validate()){
-						$p->save();
+						if($p->validate()){
+							$p->save();
+						}
 					}
 					$this->redirect(URL);
 					break;

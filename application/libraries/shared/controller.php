@@ -281,19 +281,40 @@ namespace Shared {
         }
 
         public function layoutFunction($token = null) {
-            if(RM::post('action') == 'add_dept'){
-                $dept = new \models\Department([
-                    'name' => RM::post('name'),
-                    'company_id' => $this->company->id,
-                    'created_by' => $this->user->id,
-                    'head_id' => RM::post('head'),
-                    'description' => RM::post('desc')
-                    ]);
+            
+            switch (RM::post('action')) {
+                case 'create_dept':
+                    $dept = new \models\Department([
+                        'name' => RM::post('name'),
+                        'company_id' => $this->company->id,
+                        'created_by' => $this->user->id,
+                        'head_id' => RM::post('head'),
+                        'description' => RM::post('desc')
+                        ]);
 
-                if($dept->validate()){
-                    $dept->save();
-                }
+                    if($dept->validate()){
+                        $dept->save();
+                    }
+                    break;
+                
+                case 'edit_dept':
+                    $dept = \models\Department::first([
+                        'id' => RM::post('dept_edit'),
+                        'company_id' => $this->company->id,
+                        ]);
+
+                    if($dept){
+                        $dept->name = RM::post('name');
+                        $dept->head_id = RM::post('head');
+                        $dept->description = RM::post('desc');
+
+                        if($dept->validate()){
+                            $dept->save();
+                        }
+                    }
+                    break;
             }
+
             if(RM::get('theme')){
                 $this->user->theme_color = RM::get('theme');
                 $this->user->save();

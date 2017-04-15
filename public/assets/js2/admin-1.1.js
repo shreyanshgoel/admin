@@ -1,46 +1,5 @@
 $(document).ready(function() {
 
-    $('#check_email_btn').on('click', function() {
-
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('cross_sign').style.display = 'none';
-        document.getElementById('check_sign').style.display = 'none';
-
-        var v = $('#check_email').val();
-
-        Request.post({ action: "ajax/check_email", data: { email: v } }, function(data) {
-
-            $.each(data, function(index, value) {
-
-                if (value == 1) {
-
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('cross_sign').style.display = 'none';
-                    document.getElementById('check_sign').style.display = 'block';
-
-                    document.getElementById('details').style.display = 'none';
-
-                    $('.required').attr('required', false);
-
-                }
-
-                if (value == 0) {
-
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('cross_sign').style.display = 'block';
-                    document.getElementById('check_sign').style.display = 'none';
-
-                    document.getElementById('details').style.display = 'block';
-
-                    $('.required').attr('required', true);
-
-                }
-            });
-
-        });
-
-    });
-
     $('.create_project').on('click', function() {
 
         $('#project_label').html('Create Project');
@@ -54,12 +13,20 @@ $(document).ready(function() {
         $('#p_button').attr('value', 'create_project');
         $('#p_button').html('Create');
         $('#create_project').modal('toggle');
-
     });
 
+    $('.create_dept').on('click', function() {
+
+       $('#dept_label').html('Create New Department');
+        $('#dept_name').removeAttr('value');
+        $('#dept_head').selectpicker('val', 'deselectAll');
+        $('#dept_desc').html('');
+        
+        $('#dept_button').attr('value', 'create_dept');
+        $('#dept_button').html('Create');
+        $('#create_dept').modal('toggle');
+    });
 });
-
-
 
 function edit_project(id) {
     Request.post({ action: "ajax/edit_project", data: { project_id: id } }, function(data) {
@@ -78,4 +45,20 @@ function edit_project(id) {
     });
 
     $('#create_project').modal('toggle');
+}
+
+function edit_department(id) {
+    Request.post({ action: "ajax/edit_department", data: { department_id: id } }, function(data) {
+
+        $('#dept_label').html('Edit Department');
+        $('#dept_name').attr('value', data.dept._name);
+        $('#dept_edit').attr('value', data.dept.__id);
+        $('#dept_head').selectpicker('val', data.dept._head_id);
+        $('#dept_desc').html(data.dept._description);
+        
+        $('#dept_button').attr('value', 'edit_dept');
+        $('#dept_button').html('Edit');
+    });
+
+    $('#create_dept').modal('toggle');
 }

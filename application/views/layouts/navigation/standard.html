@@ -39,7 +39,8 @@
                 </li>
                 <li {if isset($taskboard)} class="active" {/if}>
                     <a href="/users/taskboard">
-                        &nbsp;<i class="fa fa-tasks"></i>
+                        &nbsp;
+                        <i class="fa fa-tasks"></i>
                         <span class="title" style="margin-left: 3px">My Taskboard</span>
                     </a>
                 </li>
@@ -51,13 +52,15 @@
                 </li>
                 <li {if isset($projects)} class="active" {/if}>
                     <a href="/users/projects">
-                        &nbsp;<i class="fa fa-briefcase"></i>
+                        &nbsp;
+                        <i class="fa fa-briefcase"></i>
                         <span class="title" style="margin-left: 3px">My Files</span>
                     </a>
                 </li>
                 <li {if isset($members_tab)} class="active" {/if}>
                     <a href="/users/members">
-                        &nbsp;<i class="fa fa-users"></i>
+                        &nbsp;
+                        <i class="fa fa-users"></i>
                         <span class="title" style="margin-left: 3px">Members</span>
                     </a>
                 </li>
@@ -65,24 +68,22 @@
                     <a>
                         <i class="entypo-book-open"></i>
                         <span class="title">Departments</span>
-                        <span data-toggle="modal" data-target="#myModal" style="cursor: pointer; float:right;">
+                        <span class="create_dept" style="cursor: pointer; float:right;">
                             <i class="entypo-plus" style="color: white"></i>
                         </span>
                     </a>
                 </li>
                 <li style="">
-                    {script $depts = models\Department::all(['company_id' => $company->id])}
-                    {if $depts}
-                        {foreach $dept in $depts}
-                            <a href="/department/info/{$dept->id}">
-                                <span class="title" style="margin-left: 40px">{$dept->name}</span>
-                            </a>
-                        {/foreach}
-                    {/if}
-                    {else}
-                        <a>
-                            <span class="title" style="margin-left: 40px">No Departments Yet</span>
-                        </a>
+                    {script $depts = models\Department::all(['company_id' => $company->id])} {if $depts} {foreach $dept in $depts}
+                    <a>
+                        <span class="pointer" class="title" onclick="openwindow('/department/info/{$dept->id}')" style="margin-left: 40px; width: 200px;">{$dept->name}</span>
+                        <i class="fa fa-trash-o pointer" style="float: right; margin-left: 5px"></i>
+                        <i class="fa fa-pencil pointer" onclick="edit_department('{$dept->id}')" style="float: right"></i>
+                    </a>
+                    {/foreach} {/if} {else}
+                    <a>
+                        <span class="title" style="margin-left: 40px">No Departments Yet</span>
+                    </a>
                     {/else}
                 </li>
                 <li>
@@ -106,7 +107,8 @@
                 </li>
                 <li {if isset($calendar_tab)} class="active" {/if}>
                     <a href="/users/calendar">
-                        &nbsp;<i class="fa fa-calendar-plus-o"></i>
+                        &nbsp;
+                        <i class="fa fa-calendar-plus-o"></i>
                         <span class="title" style="margin-left: 3px">Calendar</span>
                     </a>
                 </li>
@@ -116,43 +118,58 @@
                         <span class="title">Personal Notes</span>
                     </a>
                 </li>
+                <li {if isset($notes)} class="active" {/if}>
+                    <a href="/users/notes">
+                        <i class="entypo-pencil"></i>
+                        <span class="title">Notifications</span>
+                    </a>
+                </li>
+                <li {if isset($notes)} class="active" {/if}>
+                    <a href="/users/notes">
+                        <i class="entypo-pencil"></i>
+                        <span class="title">Chats</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
     <!-- Modal -->
-    <div id="myModal" class="modal fade" role="dialog">
+    <div id="create_dept" class="modal fade" role="dialog">
         <div class="modal-dialog" style="width: 500px">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Create New Department</h4>
+                    <h4 class="modal-title" id="dept_label">Create New Department</h4>
                 </div>
                 <form class="form-inline" method="post">
+                    <input type="hidden" name="dept_edit" id="dept_edit">
                     <div class="modal-body">
                         <div class="form-group" style="margin-left: 40px">
                             <label>Name: </label>
-                            <input type="text" class="form-control" name="name" placeholder="Jane Doe" style="margin-left: 30px; width: 300px" required="">
+                            <input type="text" id="dept_name" class="form-control" name="name" placeholder="Jane Doe" style="margin-left: 30px; width: 300px" required="">
                         </div>
-                        <br><br>
+                        <br>
+                        <br>
                         <div class="form-group" style="margin-left: 44px">
-                            <label>Head: </label>
-                            <select class="form-control" name="head" style="margin-left: 30px; width: 300px" required="">
-                                <option value="">Select the head</option>
+                            <label style="margin-right: 30px;">Head: </label>
+                            <select class="selectpicker" name="head" title="Select The Head..." data-width="300px" required="" id="dept_head">
                                 {foreach $m in $members}
-                                    <option value="{$m->id}">{$m->full_name}</option>
+                                <option value="{$m->id}">{$m->full_name}</option>
                                 {/foreach}
                             </select>
                         </div>
-                        <br><br>
+                        <br>
+                        <br>
                         <div class="form-group" style="margin-left: 10px">
                             <label>Description: </label>
-                            <textarea class="form-control" name="desc" placeholder="About the Department" style="margin-left: 30px; width: 300px; resize: none"></textarea>
+                            <textarea class="form-control" name="desc" placeholder="About the Department" style="margin-left: 30px; width: 300px; resize: none" id="dept_desc"></textarea>
                         </div>
-                        <br><br>
+                        <br>
+                        <br>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" name="action" value="add_dept" class="btn btn-default">Add</button>
+                        <button type="submit" name="action" value="create_dept" id="dept_button" class="btn btn-default">Create</button>
                     </div>
                 </form>
             </div>
@@ -659,3 +676,8 @@
         </li>
     </ul>
 </div>
+<script type="text/javascript">
+function openwindow(href) {
+    window.location.assign(href);
+}
+</script>
