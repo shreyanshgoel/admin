@@ -68,6 +68,12 @@ namespace Framework {
         protected $_defaultContentType = "text/html";
 
         /**
+         * @readwrite
+         * @var Container\Request Store the current request state
+         */
+        protected $_request = null;
+
+        /**
          * It defines the location of the layout template, which is passed to the new View instance, which is then passed into the setLayoutView() setter method.
          * It gets the controller/action names from the router. It gets the router instance from the registry, and uses getters for the names.
          * It then builds a path from the controller/action names, to a template it can render.
@@ -85,21 +91,44 @@ namespace Framework {
                     $this->defaultExtension = $router->getExtension();
                     break;
 
-                default:
+                case "csv":
+                    $this->defaultContentType = "text/csv";
+                    $this->defaultExtension = $router->getExtension();
                     break;
             }
 
             $this->setLayout();
 
+            if (!$this->request) {
+                $this->request = new Container\Request();
+            }
+
             Events::fire("framework.controller.construct.after", array($this->name));
+        }
+
+        protected function setView($viewFile = null) {
+        	$router = Registry::get("router");
+            $controller = strtolower($this->name);
+            if ($viewFile) {
+            	$action = $viewFile;
+            } else {
+            	$action = $router->action;
+            }
+
+            $view = new View(array(
+                "file" => APP_PATH . "/{$this->defaultPath}/{$controller}/{$action}.{$this->defaultExtension}"
+            ));
+            $data = $this->actionView->getData();
+            $view->data = $data;
+            $this->actionView = $view;
         }
 
         protected function setLayout($layout = "layouts/standard") {
             $this->defaultLayout = $layout;
+            $defaultPath = $this->defaultPath;
+            $defaultExtension = $this->defaultExtension;
             if ($this->willRenderLayoutView) {
-                $defaultPath = $this->defaultPath;
                 $defaultLayout = $this->defaultLayout;
-                $defaultExtension = $this->defaultExtension;
 
                 $view = new View(array(
                     "file" => APP_PATH . "/{$defaultPath}/{$defaultLayout}.{$defaultExtension}"
@@ -132,6 +161,37 @@ namespace Framework {
             return new Exception\Implementation("{$method} method not implemented");
         }
 
+        protected function renderJSONFields($data) {
+            $obj = array();
+            foreach ($data as $key => $value) {
+                switch (gettype($value)) {
+                    case 'object':
+                        if (get_class($value) === "stdClass") {
+                            $obj[$key] = $value;
+                        } else if (is_a($value, 'Framework\Model')) {
+                            $obj[$key] = $value->getJsonData();
+                        } else {
+                            $obj[$key] = $value;
+                        }
+                        break;
+
+                    case 'array':
+                        $obj[$key] = $this->renderJSONFields($value);
+                        break;
+
+                    case 'string':
+                    case 'integer':
+                    case 'boolean':
+                    case 'float':
+                    default:
+                        $obj[$key] = $value;
+                        break;
+
+                }
+            }
+            return $obj;
+        }
+
         public function render() {
             Events::fire("framework.controller.render.before", array($this->name));
 
@@ -144,62 +204,28 @@ namespace Framework {
             try {
                 if ($doAction) {
                     $view = $this->actionView;
-
-                    $headers = getallheaders();
-                    if ($this->defaultExtension == "json") {
-                        $obj = array();
-                        $data = $view->data;
-
+                    $data = $view->data;
+                    
+                    $api = $this->request->header('x-json-api', false);
+                    if ($this->defaultExtension == "json" && strtolower($api) == 'swiftmvc') {
                         if ($data) {
-                            foreach ($data as $keys => $values) {
-                                switch (gettype($values)) {
-                                    case 'object':
-                                        if (get_class($values) == "stdClass") {
-                                            $obj[$keys] = $values;
-                                        } elseif (is_a($values, 'Framework\Model')) {
-                                            $obj[$keys] = $values->getJsonData();
-                                        } else {
-                                            $obj[$keys] = $values;
-                                        }
-                                        break;
-                                    case 'array':
-                                        foreach ($values as $key => $value) {
-                                            if (gettype($value) == "object") {
-                                                if (get_class($value) == "stdClass") {
-                                                    $obj[$keys][] = $value;
-                                                } elseif (is_a($value, 'Framework\Model')) {
-                                                    $obj[$keys][] = $value->getJsonData();
-                                                } else {
-                                                    $obj[$keys][] = $value;
-                                                }
-                                            } else{
-                                                $obj[$keys] = $values;
-                                            }
-                                        }
-                                        break;
-
-                                    case 'string':
-                                    case 'integer':
-                                    case 'boolean':
-                                        $obj[$keys] = $values;
-                                        break;
-
-                                    default:
-                                        break;
-
-                                }
-                            }
+                            $obj = $this->renderJSONFields($data);
+                        } else {
+                        	$obj = array();
                         }
-                        echo json_encode($obj, JSON_PRETTY_PRINT);
+                        echo json_encode($obj);
+                    } else if ($this->defaultExtension == "json") {
+                        $parsed = parse_url(URL);
+                        $path = explode(".", $parsed['path'] ?? '/')[0];
+                        header("Location: $path");
+                        exit();
+                    } else if ($this->defaultExtension == "csv") {
+                        // parse the data
+                        $csv = new Writer\Csv($data);
+                        $csv->write();
                     }
-
                     $results = $view->render();
-
-                    $this
-                            ->actionView
-                            ->template
-                            ->implementation
-                            ->set("action", $results);
+                    $this->actionView->template->implementation->set("action", $results);
                 }
 
                 if ($doLayout) {

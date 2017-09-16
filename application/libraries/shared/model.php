@@ -7,20 +7,30 @@
  */
 
 namespace Shared {
-    use Framework\Registry as Registry;
+    use JsonSerializable;
+    use Framework\{Registry, StringMethods, TimeZone};
     use \Shared\Services\Db as Db;
 
-    class Model extends \Framework\Model {
+    class Model extends \Framework\Model implements JsonSerializable {
+        const TASKS = [];
+        
+        /**
+         * @readwrite
+         * @var boolean
+         */
+        protected $_allowNull = false;
+
         /**
          * @read
          */
-        protected $_types = array("autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array");
+        protected $_types = ["autonumber", "text", "integer", "decimal", "boolean", "datetime", "date", "time", "mongoid", "array"];
 
         /**
          * @column
          * @readwrite
          * @primary
          * @type autonumber
+         * @label ID
          */
         protected $__id = null;
 
@@ -36,6 +46,7 @@ namespace Shared {
          * @column
          * @readwrite
          * @type datetime
+         * @label Created
          */
         protected $_created = null;
 
@@ -52,6 +63,77 @@ namespace Shared {
          * @type array
          */
         protected $_meta = [];
+
+        public function load() {
+            
+        }
+
+        public function __toString() {
+            echo json_encode($this);
+        }
+
+        public function jsonSerialize() {
+            $fields = static::fields();
+            $arr = [];
+            foreach ($fields as $f) {
+                $arr[$f] = $this->$f;
+            }
+            $arr['id'] = $this->getId();
+            return $arr;
+        }
+
+        public function getTaskInfo($taskName = '') {
+            if (!array_key_exists($taskName, static::TASKS)) {
+                return '';
+            }
+            $task = \Task::first(['object' => get_class($this), 'object_id' => $this->_id, 'name' => $taskName]);
+            if (!$task) return '';
+
+            $dt = TimeZone::zoneConverter($task->execution_time);
+            $dateOnly = $dt->format('F j\, o');
+            $timeOnly = $dt->format('g\:i a');
+            return sprintf("%s %s at %s", static::TASKS[$taskName]['info'], $dateOnly, $timeOnly);
+        }
+
+        public function createTask($name, $time = null, $org = null) {
+            if (!array_key_exists($name, static::TASKS)) {
+                throw new \Exception("Task does not exists!!");
+            }
+
+            // First check if task already exists
+            $search = ['name' => $name, 'object' => get_class($this), 'object_id' => $this->_id];
+            $task = \Task::first($search);
+            if ($task) {
+                return false;
+            }
+            return $search;
+        }
+
+        public function deleteTask($name = '') {
+            if (!$name) {
+                return false;
+            }
+            $task = \Task::first(['object' => get_class($this), 'object_id' => $this->_id, 'name' => $name]);
+            $task->delete();
+            return true;
+        }
+
+        public static function fields($exclude = []) {
+            $model = get_called_class();
+            $cl = "\\" . $model;
+            $m = new $cl;
+            $columns = $m->getColumns();
+            $fields = array_keys($columns);
+
+            $ans = [];
+            foreach ($fields as $f) {
+                if (!in_array($f, $exclude)) {
+                    $ans[] = $f;    
+                }
+            }
+
+            return $ans;
+        }
 
         public function setLive($val) {
             $this->_live = (boolean) $val;
@@ -71,18 +153,25 @@ namespace Shared {
             return $arr;
         }
 
+        public static function modifyQuery($query, $extra = []) {
+            $fields = static::fields();
+            foreach ($extra as $key => $value) {
+                if (in_array($key, $fields)) {
+                    $query[$key] = $value;  
+                }
+            }
+            return $query;
+        }
+
         public static function displayImg($name = '', $folder = "images") {
-            $file = CDN . 'uploads/' . $folder . '/' . $name;
-            return $file;
+            return Utils::media($name, 'display');
         }
 
         public function &getMeta() {
-            if (property_exists($this, '_meta')) {
-                return $this->_meta;
-            } else if (property_exists($this, 'meta')) {
-                return $this->meta;
+            if (is_null($this->_meta)) {
+                $this->_meta = [];
             }
-            return [];
+            return $this->_meta;
         }
 
         /**
@@ -97,21 +186,37 @@ namespace Shared {
                 $newArr[] = $arr;
                 $arr = $newArr;
             }
-
+            if (count($fields) === 0) {
+                $fields = static::fields();
+            }
+            
             $results = [];
             foreach ($arr as $key => $a) {
                 $data = [];
                 foreach ($fields as $f) {
                     $convert = $opts['convert'] ?? true;
-                    if ($convert && is_object($a->$f) && is_a($a->$f, 'DateTime')) {
-                        $data[$f] = $a->$f->format('Y-m-d');
+                    $convertProp = $a->$f ?? null;
+                    if ($convert && $convertProp && is_object($a->$f) && is_a($a->$f, 'DateTime')) {
+                        $dtObject = TimeZone::zoneConverter($a->$f, $opts);
+                        $dateTime = $opts['date_time'] ?? false;
+                        if ($dateTime) {
+                            $data[$f] = $dtObject->format('Y-m-d H:i:s');
+                        } else {
+                            $data[$f] = $dtObject->format('Y-m-d');
+                        }
                     } else {
-                        $data[$f] = $a->$f;
+                        $data[$f] = $a->$f ?? null;
                     }
                 }
+                if (!isset($data['id'])) $data['id'] = $a->_id ?? null;
 
+                $appConfig = Utils::getAppConfig();
+                $unsetId = $opts['unset_id'] ?? $appConfig->model->object->unsetId;
+                if ($unsetId) unset($data['id']);
+                
+                $includeKey = $opts['include_key'] ?? true;
                 $obj = (object) $data;
-                if ($a->_id === $key) {
+                if (@($a->_id === $key) && $includeKey) {
                     $results[$key] = $obj;
                 } else {
                     $results[] = $obj;
@@ -135,31 +240,37 @@ namespace Shared {
         public function save() {
             $primary = $this->getPrimaryColumn();
             $raw = $primary["raw"];
-            $collection = $this->getTable();
+            $collection = $this->getCollection();
 
             $doc = []; $columns = $this->getColumns();
             foreach ($columns as $key => $value) {
                 $field = $value['raw'];
                 $current = $this->$field;
                 
-                if ((!is_array($current) && !isset($current)) || is_null($current)) {
-                    continue;
-                }
                 $v = $this->_convertToType($current, $value['type']);
                 $checkEmpty = $this->_preventEmpty($v, $value['type']);
-                // dont save empty fields when creating a record
-                if (is_null($checkEmpty) && is_null($this->__id)) {
-                    continue;
-                } else { // allow empty values when updating
+                
+                $allowNull = !is_null($this->__id) || $this->_allowNull;
+                if (is_null($checkEmpty)) {
+                    // check when to save null values
+                    if ($allowNull) {
+                        $doc[$key] = null;
+                    }
+                } else {
+                    $this->$field = $v;
                     $doc[$key] = $v;
                 }
             }
-            if (isset($doc['_id'])) {
-                unset($doc['_id']);
-            }
+            unset($doc['_id']); // this step is necessary
 
             if (empty($this->$raw)) {
-                if (!array_key_exists('created', $doc)) {
+                if (isset($doc['created'])) {
+                    if (Db::isType($doc['created'], 'date')) {
+                        $this->_created = $doc['created'];
+                    } else if (is_string($doc['created'])) {
+                        $this->_created = $doc['created'] = Db::time($doc['created']);
+                    }
+                } else {
                     $this->_created = $doc['created'] = Db::time();
                 }
 
@@ -176,15 +287,7 @@ namespace Shared {
             // being serialized and store into the session
             foreach ($columns as $key => $value) {
                 $raw = "_{$key}"; $val = $this->$raw;
-
-                if (Db::isType($val, 'id')) {
-                    $this->$raw = Utils::getMongoID($val);
-                } else if (Db::isType($val, 'date')) {
-                    $tz = new \DateTimeZone('Asia/Kolkata');
-                    $v = $val->toDateTime();
-                    $v->settimezone($tz);
-                    $this->$raw = $v;
-                }
+                $this->$raw = Db::simplifyValue($val);
             }
         }
 
@@ -213,6 +316,12 @@ namespace Shared {
                         $value = null;
                     }
                     break;
+
+                case 'mongoid':
+                    if (is_string($value) && strlen(trim($value)) === 0) {
+                        $value = null;
+                    }
+                    break;
             }
             return $value;
         }
@@ -230,7 +339,9 @@ namespace Shared {
 
             switch ($type) {
                 case 'text':
-                    $value = (string) $value;
+                    if (!is_null($value)) {
+                        $value = (string) $value;   
+                    }
                     break;
 
                 case 'integer':
@@ -238,7 +349,11 @@ namespace Shared {
                     break;
 
                 case 'boolean':
-                    $value = (boolean) $value;
+                    if (is_array($value)) {
+                        // don't do anything
+                    } else {
+                        $value = (boolean) $value;
+                    }
                     break;
 
                 case 'decimal':
@@ -250,14 +365,15 @@ namespace Shared {
                     if (is_array($value)) {
                         break;
                     } else if (is_object($value)) {
-                        $date = $value;
                         if (Db::isType($value, 'date')) {
                            break;
                         } else if (is_a($value, 'DateTime')) {
-                            $date = $value->format('Y-m-d');
+                            $dt = TimeZone::zoneConverter($value, ['zone' => 'Europe/London']);
+                            $value = Db::time($dt->getTimestamp());
+                        } else {
+                            $value = Db::time();
                         }
-                        $value = Db::time($date);
-                    } else {
+                    } else if (is_string($value)) {
                         $value = Db::time($value);
                     }
                     break;
@@ -291,11 +407,10 @@ namespace Shared {
 
         /**
          * @getter
-         * @override
-         * @return \MongoCollection
+         * @return \MongoDB\Collection Collection object of MongoDB
          */
-        public function getTable() {
-            $table = parent::getTable();
+        public function getCollection() {
+            $table = $this->getTable();
             $collection = Registry::get("MongoDB")->$table;
             return $collection;
         }
@@ -366,15 +481,15 @@ namespace Shared {
          * @param int $limit
          * @return array
          */
-        public static function all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
+        public static function all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_all($where, $fields, $order, $direction, $limit, $page);
         }
 
-        protected function _all($where = array(), $fields = array(), $order = null, $direction = null, $limit = null, $page = null) {
-            $collection = $this->getTable();
+        protected function _all($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
+            $collection = $this->getCollection();
 
             $opts = Db::opts($fields, $order, $direction, $limit, $page);
 
@@ -400,15 +515,15 @@ namespace Shared {
          * @param int $limit
          * @return \Shared\Model object | null
          */
-        public static function first($where = array(), $fields = array(), $order = null, $direction = null) {
+        public static function first($where = [], $fields = [], $order = null, $direction = null) {
             $model = new static();
             $where = $model->_updateQuery($where);
             $fields = $model->_updateFields($fields);
             return $model->_first($where, $fields, $order, $direction);
         }
 
-        protected function _first($where = array(), $fields = array(), $order = null, $direction = null) {
-            $collection = $this->getTable();
+        protected function _first($where = [], $fields = [], $order = null, $direction = null) {
+            $collection = $this->getCollection();
             $record = null;
 
             if ($order && $direction) {
@@ -447,22 +562,7 @@ namespace Shared {
                     continue;
                 }
                 $raw = "_{$key}";
-
-                if (is_object($value)) {
-                    if (Db::isType($value, 'id')) {
-                        $c->$raw = $this->getMongoID($value);
-                    } else if (Db::isType($value, 'date')) {
-                        $v = $value->toDateTime();
-                        $v->settimezone((new \DateTimeZone('Asia/Kolkata')));
-                        $c->$raw = $v;
-                    } else if (Db::isType($value, 'document')) {
-                        $c->$raw = Utils::toArray($value);
-                    } else {    // fallback case
-                        $c->$raw = (object) $value;
-                    }
-                } else {
-                    $c->$raw = $value;
-                }
+                $c->$raw = Db::simplifyValue($value);
             }
             
             return $c;
@@ -491,7 +591,7 @@ namespace Shared {
         }
 
         public function delete() {
-            $collection = $this->getTable();
+            $collection = $this->getCollection();
 
             $query = $this->_updateQuery(['_id' => $this->__id]);
             $return = $collection->deleteOne($query);
@@ -500,7 +600,7 @@ namespace Shared {
         public static function deleteAll($query = []) {
             $instance = new static();
             $query = $instance->_updateQuery($query);
-            $collection = $instance->getTable();
+            $collection = $instance->getCollection();
 
             $return = $collection->deleteMany($query);
         }
@@ -512,10 +612,32 @@ namespace Shared {
         }
 
         protected function _count($query = []) {
-            $collection = $this->getTable();
+            $collection = $this->getCollection();
 
             $count = $collection->count($query);
             return $count;
+        }
+
+        public static function cacheFirst($where = [], $fields = [], $order = null, $direction = null) {
+            $cacheKey = static::getCacheKey($where, $fields);
+            $foundCache = Utils::getCache($cacheKey, false);
+
+            if ($foundCache === false) {
+                $foundCache = static::first($where, $fields, $order, $direction);
+                Utils::setCache($cacheKey, $foundCache);
+            }
+            return $foundCache;
+        }
+
+        public static function cacheAll($where = [], $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
+            $cacheKey = static::getCacheKey($where, $fields);
+            $foundCache = Utils::getCache($cacheKey, false);
+
+            if ($foundCache === false) {
+                $foundCache = static::all($where, $fields, $order, $direction, $limit, $page);
+                Utils::setCache($cacheKey, $foundCache);
+            }
+            return $foundCache;
         }
     }
 }

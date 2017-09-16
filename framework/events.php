@@ -34,6 +34,18 @@ namespace Framework {
         }
 
         /**
+         * Adds the provided $callback to the $_callbacks array, so that it can be executed when any $type  events happen.
+         * @param type $type
+         * @param type $callback
+         */
+        public static function addUnique($type, $callback) {
+            if (!isset(self::$_callbacks[$type])) {
+                self::$_callbacks[$type] = array();
+                self::$_callbacks[$type][] = $callback;
+            }
+        }
+
+        /**
          * Emits/triggers an event. If you provide an optional $parameters array, 
          * this array will be available to all the callbacks executed.
          * @param type $type

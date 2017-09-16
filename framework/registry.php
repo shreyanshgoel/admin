@@ -20,9 +20,9 @@ namespace Framework {
         /**
          * Searches the private storage for an instance with a matching key. 
          * If it finds an instance, it will return it, or default to the value supplied with the $default parameter.
-         * @param type $key
-         * @param type $default
-         * @return type
+         * @param string $key
+         * @param mixed $default
+         * @return mixed
          */
         public static function get($key, $default = null) {
             if (isset(self::$_instances[$key])) {
@@ -33,8 +33,8 @@ namespace Framework {
         
         /**
          * Used to “store” an instance with a specified key in the registry’s private storage
-         * @param type $key
-         * @param type $instance
+         * @param string $key
+         * @param mixed $instance
          */
         public static function set($key, $instance = null) {
             self::$_instances[$key] = $instance;
@@ -42,12 +42,10 @@ namespace Framework {
 
         /**
          * Useful for removing an instance at a certain key.
-         * @param type $key
+         * @param string $key
          */
         public static function erase($key) {
             unset(self::$_instances[$key]);
         }
-
     }
-    
 }

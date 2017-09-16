@@ -42,31 +42,31 @@ class Account extends Controller {
 
 			if (empty($exist)){
 
-					if($user->validate() && !empty(RM::post('company'))){
-						$user->save();
-						
-						$git_folder_name = uniqid();
-						$company = new models\Company([
-				        	"name" => RM::post('company'),
-				        	"founder_id" => $user->id,
-				        	"git_folder_name" => $git_folder_name,
-				            "live" => true
-				        ]);
-						$company->save();
-						shell_exec('mkdir ' . APP_PATH . '/public/assets/uploads/bare-repositories/' . $git_folder_name);
-						shell_exec('mkdir ' . APP_PATH . '/public/assets/uploads/clone-repositories/' . $git_folder_name);
+				if($user->validate() && !empty(RM::post('company'))){
+					$user->save();
+					
+					$git_folder_name = uniqid();
+					$company = new models\Company([
+			        	"name" => RM::post('company'),
+			        	"founder_id" => $user->id,
+			        	"git_folder_name" => $git_folder_name,
+			            "live" => true
+			        ]);
+					$company->save();
+					shell_exec('mkdir ' . APP_PATH . '/public/assets/uploads/bare-repositories/' . $git_folder_name);
+					shell_exec('mkdir ' . APP_PATH . '/public/assets/uploads/clone-repositories/' . $git_folder_name);
 
-						$user->company_ids = [$company->id];
-						$user->designations = [$company->id => ["founder"]];
-						$user->permissions = [$company->id => 1];
+					$user->company_ids = [$company->id];
+					$user->designations = [$company->id => ["founder"]];
+					$user->permissions = [$company->id => 1];
 
-						$user->save();
+					$user->save();
 
-						//mail te password to the user
+					//mail te password to the user
 
-						$this->redirect("/account/register_success/$pass");
+					$this->redirect("/account/register_success/$pass");
 
-					}else echo "<script>alert('validation not good')</script>";
+				}else echo "<script>alert('validation not good')</script>";
 
 			}else{
 				$added = models\User::all([

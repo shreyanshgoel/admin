@@ -1,19 +1,32 @@
 <?php
 namespace Shared\Services;
-use Framework\Registry;
+
+use MongoDB\Driver\ReadPreference;
 use Shared\Utils as Utils;
+use Framework\{Registry, ArrayMethods};
 
 class Db {
+	const ID = 'MongoDB\BSON\ObjectID';
+	const DATE = 'MongoDB\BSON\UTCDateTime';
+	const REGEX = 'MongoDB\BSON\Regex';
+	const DOCUMENT = 'MongoDB\BSON\Document';
+	const REGISTRY = "MongoDB";
+	
+	/**
+	 * Constants for Read Preference
+	 */
+	const READ_PRIMARY = ReadPreference::RP_PRIMARY;
+	const READ_PRIMARY_PREFERRED = ReadPreference::RP_PRIMARY_PREFERRED;
+	const READ_SECONDARY = ReadPreference::RP_SECONDARY;
+	const READ_SECONDARY_PREFERRED = ReadPreference::RP_SECONDARY_PREFERRED;
+
 	public static function connect() {
-		$mongoDB = Registry::get("MongoDB");
+		$mongoDB = Registry::get(static::REGISTRY);
 		if (!$mongoDB) {
-		    require_once APP_PATH . '/application/libraries/vendor/autoload.php';
 		    $configuration = Registry::get("configuration");
 
 		    try {
 		        $dbconf = $configuration->parse("configuration/database")->database->mongodb;
-		        //$mongo = new \MongoDB\Client("mongodb://" . $dbconf->dbuser . ":" . $dbconf->password . "@" . $dbconf->url."/" . $dbconf->dbname . "?replicaSet=" . $dbconf->replica . "&ssl=true");
-
 		        $mongo = new \MongoDB\Client("mongodb://" .$dbconf->url.":27017/" . $dbconf->dbname);
 
 		        $mongoDB = $mongo->selectDatabase($dbconf->dbname);
@@ -21,9 +34,29 @@ class Db {
 		        throw new \Framework\Database\Exception("DB Error");   
 		    }
 
-		    Registry::set("MongoDB", $mongoDB);
+		    Registry::set(static::REGISTRY, $mongoDB);
 		}
 		return $mongoDB;
+	}
+
+	/**
+	 * All the read operations following this command will be done such that data is
+	 * read from secondary instance whenever possible
+	 */
+	public static function readPreference($readPref = ReadPreference::RP_SECONDARY_PREFERRED) {
+		$db = Registry::get(static::REGISTRY);
+		$pref = new ReadPreference($readPref);
+	    $uriOpts = ['readPreference' => $pref];
+		$newDb = $db->withOptions($uriOpts);
+		Registry::set(static::REGISTRY, $newDb);
+	}
+
+	public static function generateId($str = true) {
+		$id = new \MongoDB\BSON\ObjectID();
+		if ($str) {
+			$id = self::simplifyValue($id);
+		}
+		return $id;
 	}
 
 	public static function getCount($cursor) {
@@ -36,6 +69,10 @@ class Db {
 		return [
 			'count' => $count, 'result' => $result
 		];
+	}
+
+	public static function getCacheKey($table, $query = [], $fields = []) {
+		return sprintf("%s__%s__%s", $table, ArrayMethods::arraySig($query), json_encode($fields));
 	}
 
 	public static function convertType($value, $type = 'id') {
@@ -65,11 +102,18 @@ class Db {
 		}
 	}
 
+	/**
+	 * Converts the Time given to MongoDB UTC DateTime
+	 * @param  string|int|null $date Date that can be passed to strtotime or time in seconds
+	 * @return object       MongoDB\BSON\UTCDateTime
+	 */
 	public static function time($date = null) {
-		if ($date) {
+		if (is_string($date)) {
 			$time = strtotime($date);
+		} else if (is_numeric($date)) {
+			$time = $date;
 		} else {
-			$time = strtotime('now');
+			$time = round(microtime(true), 3);
 		}
 
 		return new \MongoDB\BSON\UTCDateTime($time * 1000);
@@ -84,10 +128,10 @@ class Db {
 	public static function isType($value, $type = '') {
 		switch ($type) {
 			case 'id':
-				return is_object($value) && is_a($value, 'MongoDB\BSON\ObjectID');
+				return is_object($value) && is_a($value, Db::ID);
 
 			case 'regex':
-				return is_object($value) && is_a($value, 'MongoDB\BSON\Regex');
+				return is_object($value) && is_a($value, Db::REGEX);
 
 			case 'document':
 				return (is_object($value) && (
@@ -99,10 +143,10 @@ class Db {
 			case 'date':
 			case 'datetime':
 			case 'time':
-				return is_object($value) && is_a($value, 'MongoDB\BSON\UTCDateTime');
+				return is_object($value) && is_a($value, Db::DATE);
 
 			default:
-				return is_object($value) && is_a($value, 'MongoDB\BSON\ObjectID');
+				return is_object($value) && is_a($value, Db::ID);
 		}
 	}
 
@@ -188,7 +232,7 @@ class Db {
 		$model = "\\$model";
 		$m = new $model;
 
-		return $m->getTable();
+		return $m->getCollection();
 	}
 
 	/**
@@ -217,6 +261,37 @@ class Db {
 	}
 
 	/**
+	 * Wrapper for database findOne which also converts the returned records to simple objects
+	 * @return array 	Array of objects
+	 */
+	public static function first($model, $query, $fields = [], $order = null, $direction = null) {
+		$cursor = self::query($model, $query, $fields, $order, $direction, 1);
+		$result = null;
+		foreach ($cursor as $c) {
+			$obj = self::simplifyDoc($c);
+			$id = $obj->_id ?? null;
+
+			// to maintain backwards compatibility with SQL syntax
+			if (!property_exists($obj, 'id')) {
+				$obj->id = $id;
+			}
+			$result = $obj;
+		}
+		return $result;
+	}
+
+	public static function cacheFirst($model, $query, $fields = [], $order = null, $direction = null) {
+		$cacheKey = static::getCacheKey($model, $query, $fields);
+		$foundCache = Utils::getCache($cacheKey, false);
+
+		if ($foundCache === false) {
+			$foundCache = static::first($model, $query, $fields, $order, $direction);
+			Utils::setCache($cacheKey, $foundCache);
+		}
+		return $foundCache;
+	}
+
+	/**
 	 * Simplify the database document (Equivalent Term => Mysql Row) to an object
 	 * containing properties and values
 	 * @param  mixed $doc Document provided
@@ -242,7 +317,6 @@ class Db {
 		        $raw = Utils::getMongoID($value);
 		    } else if (self::isType($value, 'date')) {
 		        $v = $value->toDateTime();
-		        $v->settimezone((new \DateTimeZone('Asia/Kolkata')));
 		        $raw = $v;
 		    } else if (self::isType($value, 'document')) {
 		        $raw = Utils::toArray($value);
@@ -282,6 +356,11 @@ class Db {
 		} else {	// When we need to sum all the records by grouping
 			$group['count'] = ['$sum' => 1];
 		}
+		/***** @todo - See this grouping *******/
+		$groupByDate = $extra['groupByDate'] ?? false;
+		if ($groupByDate) {
+			$group['_id'][$groupByDate] = ['$dateToString' => ['format' => "%Y-%m-%d", 'date' => sprintf("$%s", $groupByDate)]];
+		}
 
 		$aggQuery = [
 			['$match' => $query],
@@ -300,6 +379,10 @@ class Db {
 		if ($limit) {
 			$aggQuery[] = ['$limit' => (int) $limit];
 		}
+
+		if (\Framework\Registry::get("DEBUG")) {
+			var_dump($aggQuery);
+		}
 		return self::collection($model)->aggregate($aggQuery);
 	}
 
@@ -314,7 +397,7 @@ class Db {
 	}
 
 	protected static function _query($model, $where, $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
-		$collection = $model->getTable();
+		$collection = $model->getCollection();
 
 		$opts = self::opts($fields, $order, $direction, $limit, $page);
 		return $collection->find($where, $opts);
@@ -325,7 +408,22 @@ class Db {
 		$m = new $model;
 		$where = $m->_updateQuery($query);
 
-		$collection = $m->getTable();
+		$collection = $m->getCollection();
 		return $collection->count($where);
+	}
+
+	public static function cacheAll($model, $query, $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
+		return static::cacheQuery($model, $query, $fields, $order, $direction, $limit, $page);
+	}
+
+	public static function cacheQuery($model, $query, $fields = [], $order = null, $direction = null, $limit = null, $page = null) {
+		$cacheKey = static::getCacheKey($model, $query, $fields);
+		$foundCache = Utils::getCache($cacheKey, false);
+
+		if ($foundCache === false) {
+			$foundCache = static::findAll($model, $query, $fields, $order, $direction, $limit, $page);
+			Utils::setCache($cacheKey, $foundCache);
+		}
+		return $foundCache;
 	}
 }

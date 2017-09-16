@@ -13,6 +13,7 @@ namespace Framework {
     use Framework\Registry as Registry;
     use Framework\Inspector as Inspector;
     use Framework\StringMethods as StringMethods;
+    use Framework\ArrayMethods as ArrayMethods;
     use Framework\Model\Exception as Exception;
 
     class Model extends Base {
@@ -72,6 +73,23 @@ namespace Framework {
         public function __construct($options = array()) {
             parent::__construct($options);
             $this->load();
+
+            if (!defined('static::EVENT_PREFIX')) {
+        		return false;
+        	}
+        	// Register the events for the MODEL
+        	if (!Registry::get(static::EVENT_PREFIX)) {
+        		static::addEvents();
+        		Registry::set(static::EVENT_PREFIX, true);
+        	}
+        }
+
+        public static function getCacheKey($query = [], $fields = []) {
+        	return sprintf("Model_%s_%s_%s", get_called_class(), ArrayMethods::arraySig($query), json_encode($fields));
+        }
+
+        public static function addEvents() {
+        	
         }
 
         /**
@@ -97,6 +115,16 @@ namespace Framework {
                     }
                 }
             }
+        }
+
+        public function getLabledCols() {
+        	$arr = [];
+        	foreach ($this->getColumns() as $key => $value) {
+        		if (isset($value['label'])) {
+        			$arr[$key] = $value['label'];
+        		}
+        	}
+        	return $arr;
         }
 
         /**
@@ -190,12 +218,7 @@ namespace Framework {
             } $rows = array();
             $class = get_class($this);
             foreach ($query->all() as $row) {
-                $r = new $class($row);
-                if ($r->id) {
-                    $rows[$r->id] = $r;    
-                } else {
-                    $rows[] = $r;
-                }
+                $rows[] = new $class($row);
             }
             return $rows;
         }
@@ -208,8 +231,9 @@ namespace Framework {
          * @param type $direction
          * @return type
          */
-        public static function first($where = array(), $fields = array("*"), $order = null, $direction = null) {
+        public static function first($where = array(), $fields = array(), $order = null, $direction = null) {
             $model = new static();
+            var_dump($model);
             return $model->_first($where, $fields, $order, $direction);
         }
 
@@ -266,9 +290,8 @@ namespace Framework {
          */
         public function getTable() {
             if (empty($this->_table)) {
-                $name = explode("\\", get_class($this));
-                $name = array_pop($name);
-                $this->_table = strtolower(StringMethods::plural($name));
+                $this->_table = strtolower(StringMethods::plural(get_class($this)));
+                $this->_table = str_replace('models\\', "", $this->_table);
             } return $this->_table;
         }
 
@@ -329,7 +352,6 @@ namespace Framework {
                                 break;
                         }
                         $index = !empty($propertyMeta["@index"]);
-                        $uindex = !empty($propertyMeta["@uindex"]);
                         $readwrite = !empty($propertyMeta["@readwrite"]);
                         $read = !empty($propertyMeta["@read"]) || $readwrite;
                         $write = !empty($propertyMeta["@write"]) || $readwrite;
@@ -348,7 +370,6 @@ namespace Framework {
                             "type" => $type,
                             "length" => $length,
                             "index" => $index,
-                            "uindex" => $uindex,
                             "read" => $read,
                             "write" => $write,
                             "validate" => $validate,
@@ -390,9 +411,37 @@ namespace Framework {
             } return $this->_primary;
         }
 
+        /**
+         * If Validation fails this should return false else true (i.e. validation passes)
+         * @param  mixed $value The value which is to be checked
+         * @return boolean        true (success) | false (failure)
+         */
         protected function _validateRequired($value) {
-            $value = (string) $value;
-            return (boolean) strlen($value);
+            switch (gettype($value)) {
+                case 'array':
+                    $value = (count($value) !== 0);
+                    break;
+
+                case 'object':
+                    $value = (count(get_object_vars($value)) !== 0);
+                    break;
+
+                case 'integer':
+                    $v = (int) $value;
+                    $value = ($v !== 0);
+                    break;
+
+                case 'float':
+                    $v = (float) $value;
+                    $value = ($v !== 0.0 || $v !== 0);
+                    break;
+                
+                default:
+                    $value = (string) $value;
+                    $value = (strlen($value) > 0);
+                    break;
+            }
+            return (boolean) $value;
         }
 
         protected function _validateAlpha($value) {
@@ -423,7 +472,7 @@ namespace Framework {
          * @return type
          * @throws Exception\Validation
          */
-        public function validate() {
+        public function validate($opts = []) {
             $this->_errors = array();
             foreach ($this->columns as $column) {
                 if ($column["validate"]) {
@@ -457,8 +506,7 @@ namespace Framework {
 
                         $template = $defined[$function];
 
-                        $response = call_user_func_array(array($this, $template["handler"]), $arguments);
-                        if ($response === false || $response === null) {
+                        if (!call_user_func_array(array($this, $template["handler"]), $arguments)) {
                             $replacements = array_merge(array(
                                 $label ? $label : $raw
                                     ), $arguments);
@@ -478,7 +526,8 @@ namespace Framework {
                     }
                 }
             }
-            return !sizeof($this->_errors);
+
+            return !sizeof($this->errors);
         }
 
         public function getJsonData() {
@@ -491,6 +540,11 @@ namespace Framework {
             }
             return $var;
         }
+
+        public function getAllProperties() {
+            $this->removeProperty($this);
+            return (array) get_object_vars($this);
+        }
         
         public function removeProperty() {
             unset($this->_connector);
@@ -500,6 +554,10 @@ namespace Framework {
             unset($this->_primary);
             unset($this->_validators);
             unset($this->_errors);
+            unset($this->_inspector);
         }
+        
+
     }
+
 }

@@ -33,7 +33,7 @@ namespace Shared {
             }
             $this->layoutView->set("seo", $seo);
         }
-
+        
         /**
          * @protected
          */
@@ -111,58 +111,94 @@ namespace Shared {
          * @param string $name
          * @param string $type files or images
          */
-        protected function _upload($name=null, $type = "images", $opts = [], $multiple = null) {
-            if (!empty($multiple)) {
-                $process = $this->_uploadProcess($multiple, $type, $opts);
-                return $process;
-            }elseif (isset($_FILES[$name])) {
+        protected function _upload($name, $type = "images", $opts = []) {
+            if (isset($_FILES[$name])) {
+
                 $file = $_FILES[$name];
+                $path = "/var/www/pm/public/assets/uploads/{$type}/";
+                $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
+                $size = $file["size"];
+
+                if (isset($opts['extension'])) {
+                    $ex = $opts['extension'];
+
+                    if (!preg_match("/^".$ex."$/i", $extension)) {
+                        echo "extension doesnt match";
+                        return false;
+                    }
+                }
                 
-                $details['name'] = $file['name'];
-                $details['size'] = $file['size'];
-                $details['tmp_name'] = $file['tmp_name'];
-                
-                $process = $this->_uploadProcess($details, $type, $opts);
-                return $process;
+                if (isset($opts['size'])) {
+                    $s = $opts['size'];
+
+                    if ($size > $s) {
+                        echo "size is big";
+                        return false;
+                    }
+                }
+
+                if (isset($opts['name'])) {
+                    $filename = $opts['name'] . ".{$extension}";
+                } else {
+                    $filename = uniqid() . ".{$extension}";
+                }
+
+                $image = new \Imagick($file['tmp_name']);
+                $this->autoRotateImage($image);
+                if($image->writeImage($path . $filename)){
+                    return $filename;
+                }
             }
             echo "something went wrong";
             return FALSE;
         }
 
-        protected function _uploadProcess($details = [], $type="images", $opts = []){
+        /**
+         * The method checks whether a file has been uploaded. If it has, the method attempts to move the file to a permanent location.
+         * @param string $name
+         * @param string $type files or images
+         */
+        protected function _mupload($details = [], $type = "images", $opts = []) {
+            $names = [];
+            for ($i=0; $i < count($details['name']); $i++) { 
+                if (!empty($details['name'][$i])) {
 
-            $path = APP_PATH . "/public/assets/uploads/{$type}/";
-            $extension = pathinfo($details["name"], PATHINFO_EXTENSION);
-            $size = $details["size"];
+                    $path = "/var/www/pm/public/assets/uploads/{$type}/";
+                    $extension = pathinfo($details["name"][$i], PATHINFO_EXTENSION);
+                    $size = $details["size"][$i];
 
-            if (isset($opts['extension'])) {
-                $ex = $opts['extension'];
+                    if (isset($opts['extension'])) {
+                        $ex = $opts['extension'];
 
-                if (!preg_match("/^".$ex."$/", $extension)) {
-                    echo "extension doesnt match";
-                    return false;
+                        if (!preg_match("/^".$ex."$/i", $extension)) {
+                            echo "extension doesnt match";
+                            return false;
+                        }
+                    }
+
+                     if (isset($opts['size'])) {
+                        $s = $opts['size'];
+
+                        if ($size > $s) {
+                            echo "size is big";
+                            return false;
+                        }
+                    }
+
+                    if (isset($opts['name'])) {
+                        $filename = $opts['name'] . ".{$extension}";
+                    } else {
+                        $filename = uniqid() . ".{$extension}";
+                    }
+
+                    $image = new \Imagick($details['tmp_name'][$i]);
+                    $this->autoRotateImage($image);
+                    if($image->writeImage($path . $filename)){
+                        array_push($names, $filename);
+                    }
                 }
             }
-
-             if (isset($opts['size'])) {
-                $s = $opts['size'];
-
-                if ($size > $s) {
-                    echo "size is big";
-                    return false;
-                }
-            }
-
-            if (isset($opts['name'])) {
-                $filename = $opts['name'] . ".{$extension}";
-            } else {
-                $filename = uniqid() . ".{$extension}";
-            }
-
-            if(move_uploaded_file($details["tmp_name"], $path . $filename)){
-
-                return $filename;
-            }
+            return $names;
         }
 
         public function __construct($options = array()) {
@@ -170,7 +206,6 @@ namespace Shared {
 
             Services\Db::connect();
 
-            // schedule: load user from session           
             Events::add("framework.router.beforehooks.before", function($name, $parameters) {
                 $session = Registry::get("session");
                 $controller = Registry::get("controller");
@@ -255,31 +290,6 @@ namespace Shared {
             parent::render();
         }
 
-        /**
-         * @protected
-         */
-
-        public function _csrfToken() {
-            $session = Registry::get("session");
-        
-            $csrf_token = \Framework\StringMethods::uniqueRandomString(44);
-            $session->set('Auth\Request:$token', $csrf_token);
-
-            if ($this->actionView) {
-                $this->actionView->set('__token', $csrf_token);
-            }
-        }
-
-        public function verifyToken($token = null) {
-            $session = Registry::get("session");
-            $csrf = $session->get('Auth\Request:$token');
-
-            if ($csrf && $csrf === $token) {
-                return true;
-            }
-            return false;
-        }
-
         public function layoutFunction($token = null) {
             
             switch (RM::post('action')) {
@@ -322,7 +332,49 @@ namespace Shared {
             }
         }
 
+        /**
+         * @protected
+         */
+        public function _csrfToken() {
+            $session = Registry::get("session");
+        
+            $csrf_token = \Framework\StringMethods::uniqRandString(44);
+            $session->set('Auth\Request:$token', $csrf_token);
 
+            if ($this->actionView) {
+                $this->actionView->set('__token', $csrf_token);
+            }
+        }
+
+        public function verifyToken($token = null) {
+            $session = Registry::get("session");
+            $csrf = $session->get('Auth\Request:$token');
+
+            if ($csrf && $csrf === $token) {
+                return true;
+            }
+            return false;
+        }
+
+        public function autoRotateImage($image) { 
+            $orientation = $image->getImageOrientation(); 
+
+            switch($orientation) { 
+                case \imagick::ORIENTATION_BOTTOMRIGHT: 
+                    $image->rotateimage("#000", 180); // rotate 180 degrees 
+                break; 
+
+                case \imagick::ORIENTATION_RIGHTTOP: 
+                    $image->rotateimage("#000", 90); // rotate 90 degrees CW 
+                break; 
+
+                case \imagick::ORIENTATION_LEFTBOTTOM: 
+                    $image->rotateimage("#000", -90); // rotate 90 degrees CCW 
+                break; 
+            } 
+
+            // Now that it's auto-rotated, make sure the EXIF data is correct in case the EXIF gets saved with the image! 
+            $image->setImageOrientation(\imagick::ORIENTATION_TOPLEFT); 
+        } 
     }
-
 }

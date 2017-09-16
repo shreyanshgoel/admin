@@ -204,21 +204,32 @@ namespace Framework {
             return $result;
         }
 
-        public static function datetime_to_text($datetime = "") {
-            if ($datetime == '0000-00-00 00:00:00') {
+        public static function dateTimeDiff($start, $end) {
+            $day_1 = date_create($start);
+            $day_2 = date_create($end);
+
+            $interval = date_diff($day_1, $day_2);
+            return $interval->format('%a');
+        }
+
+        public static function datetime_to_text($datetime = "", $user = null) {
+            if (is_object($datetime) && is_a($datetime, 'DateTime')) {
+                if (is_object($user)) {
+                    $datetime = $user->timeZone($datetime);
+                }
+                return $datetime->format('F j\, o \a\t g\:i a');
+            } else if ($datetime == '0000-00-00 00:00:00') {
                 return "Not Specified";
             } else {
                 $unixdatetme = strtotime($datetime);
-                return strftime("%B %d, %Y at %I:%M %p", $unixdatetme);
+                return strftime("%B %d %Y at %I:%M %p", $unixdatetme);
             }
         }
 
-        public static function only_time($datetime = "") {
-            $unixdatetme = strtotime($datetime);
-            return strftime("%I:%M %p", $unixdatetme);
-        }
-
         public static function only_date($datetime = "") {
+            if (is_object($datetime) && is_a($datetime, 'DateTime')) {
+                $datetime = date('Y-m-d H:i:s', $datetime->getTimestamp());
+            }
             if ($datetime == '0000-00-00 00:00:00') {
                 return 'Not Specified';
             } else {
@@ -234,22 +245,9 @@ namespace Framework {
         }
 
         /**
-         * Gives a month's start and ending date
+         * Generates Unique Random string
          */
-        public static function month_se() {
-            $start = date('Y-m-01 00:00:00', strtotime('this month'));
-            $end = date('Y-m-t 00:00:00', strtotime('this month'));
-
-            return array(
-                'start' => $start,
-                'end' => $end
-            );
-        }
-
-        /**
-         * Generates Unique string
-         */
-        public static function uniqueRandomString($length = 22) {
+        public static function uniqRandString($length = 22) {
             $unique_random_string = md5(uniqid(mt_rand(), true));
             $base64_string = base64_encode($unique_random_string);
             $modified_base64_string = str_replace('+', '.', $base64_string);
@@ -258,28 +256,12 @@ namespace Framework {
             return $salt;
         }
 
-        /**
-         * Encrypts the string using blowfish algorithm
-         */
-        public static function encrypt($string) {
-            $hash_format = "$2y$10$";  //tells PHP to use Blowfish with a "cost" of 10
-            $salt = self::uniqueRandomString();
-            $format_and_salt = $hash_format . $salt;
-            $hash = crypt($string, $format_and_salt);
-            return $hash;
+        public static function utcDateTime($date, $dt) {
+            return TimeZone::utcDateTime($date, $dt);
         }
 
-        /**
-         * Checks hashed password
-         */
-        public static function checkHash($new, $old) {
-            $hash = crypt($new, $old);
-            if ($hash == $old) {
-                return true;
-            } else {
-                return false;
-            }
+        public static function tzConverter($dt, $extra = []) {
+            return TimeZone::zoneConverter($dt, $extra);
         }
-
     }
 }

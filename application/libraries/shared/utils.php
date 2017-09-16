@@ -2,11 +2,41 @@
 namespace Shared;
 
 use WebBot\Core\Bot as Bot;
-use Framework\Registry as Registry;
-use Framework\ArrayMethods as ArrayMethods;
-use Framework\RequestMethods as RequestMethods;
+use Framework\{Registry, ArrayMethods, RequestMethods};
 
 class Utils {
+	/**
+	 * Check whether the User is Accessing the webapp from a fixed IP
+	 * @param string $ip Current IP of the connecting User
+	 * @param  mixed $var Variable to be debuged
+	 * @return boolean      if IP is debugging IP
+	 */
+	public static function debugMode($ip, $var = null) {
+		if (in_array($ip, ['14.139.251.107', '14.141.173.170', '103.201.126.209'])) {
+			if (!is_null($var)) {
+				var_dump($var);	
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Get Class of an object
+	 * @param  object  $obj  Any object
+	 * @param  boolean $full Whether full name is required (with namespace as prefix)
+	 * @return string        Name of the class of the object
+	 */
+	public static function getClass($obj, $full = false) {
+		$cl = get_class($obj);
+
+		if (!$full) {
+			$parts = explode("\\", $cl);
+			$cl = array_pop($parts);
+		}
+		return $cl;
+	}
+
 	/**
 	 * Converts the object to string by using 'sprintf'
 	 * @param  mixed $field Can be any thing which is needed in string format
@@ -22,6 +52,29 @@ class Utils {
 	}
 
 	/**
+	 * Capture the output of var_dump in a string and return it
+	 * !!!!!! Use CAREFULLY !!!!!!
+	 * @param  mixed $var Variable to be debuged
+	 * @return string
+	 */
+	public static function debugVar($var) {
+		ob_start();
+		var_dump($var);
+		$result = ob_get_clean();
+		return $result;
+	}
+
+	/**
+	 * Set a message to Session that will only be displayed once
+	 * @param  string $msg Message to display
+	 * @return null
+	 */
+	public static function flashMsg($msg) {
+		$session = Registry::get("session");
+		$session->set('$flashMessage', $msg);
+	}
+
+	/**
 	 * Converts the string to a valid BSON ObjectID of 24 characters or if $id -> string
 	 * else if $id -> array recursively converts each id to bson objectId
 	 * 
@@ -30,20 +83,26 @@ class Utils {
 	 */
 	public static function mongoObjectId($id) {
 		$result = "";
-		if (is_array($id)) {
-			$result = [];
-			foreach ($id as $i) {
-				$result[] = self::mongoObjectId($i);
-			}
-		} else if (!Services\Db::isType($id, 'id')) {
-			if (strlen($id) === 24) {
-				$result = new \MongoDB\BSON\ObjectID($id);	
-			} else {
-				$result = "";
-			}
-        } else {
-        	$result = $id;
-        }
+		try {
+			if (is_array($id)) {
+				$result = [];
+				foreach ($id as $i) {
+					$result[] = self::mongoObjectId($i);
+				}
+			} else if (!Services\Db::isType($id, 'id')) {
+				if (strlen($id) === 24) {
+					$result = new \MongoDB\BSON\ObjectID($id);	
+				} else if (is_null($id)) {
+					$result = null;
+				} else {
+					$result = "";
+				}
+	        } else {
+	        	$result = $id;
+	        }
+		} catch (\Exception $e) {
+			$result = "";
+		}
         return $result;
 	}
 
@@ -74,14 +133,19 @@ class Utils {
 			return false;
 		}
 		
-		if (!preg_match('/^jpe?g|gif|bmp|png|tif$/', $extension)) {
+		$allowedExtension = $opts['extension'] ?? 'jpe?g|gif|bmp|png|tif';
+		if (!preg_match('/^'.$allowedExtension.'$/', $extension)) {
 			return false;
 		}
 
 		$path = APP_PATH . '/public/assets/uploads/images/';
-		$img = uniqid() . ".{$extension}";
+		if (isset($opts['name'])) {
+			$img = $opts['name'];
+		} else {
+			$img = uniqid() . ".{$extension}";
+		}
 
-		$str = file_get_contents($url);
+		$str = @file_get_contents($url);
 		if ($str === false) {
 			return false;
 		}
@@ -178,8 +242,17 @@ class Utils {
         return $data;
 	}
 
-	public static function randomPass() {
+	/**
+	 * @deprecated should not be used
+	 * @param  boolean $numbers Whether numbers are required in the string
+	 * @return string           [a-zA-Z0-9]+
+	 */
+	public static function randomPass($numbers = true) {
 		$alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+
+		if (!$numbers) {
+			$alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		}
         $pass = array(); //remember to declare $pass as an array
         $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
         for ($i = 0; $i < 8; $i++) {
@@ -208,29 +281,45 @@ class Utils {
 	 */
 	public static function dateQuery($dateQ, $endDate = null) {
 		if (!is_array($dateQ)) {
-			$opts = ['start' => $dateQ, 'end' => $endDate];
-		} else {
-			$opts = $dateQ;
-		}
-		$start = strtotime("-1 day");
-		$end = strtotime("+1 day");
+            $opts = ['start' => $dateQ, 'end' => $endDate];
+        } else {
+            $opts = $dateQ;
+        }
+        $org = Registry::get("session")->get("org");
+        $startDt = new \DateTime(); $endDt = new \DateTime();
 
-		if (isset($opts['start'])) {
-			$start = (int) strtotime($opts['start'] . ' 00:00:00');	// this returns in seconds
-		}
-		$start = $start * 1000;	// we need time in milliseconds
+        if (is_object($org) && is_a($org, 'Organization')) {
+            $tz = new \DateTimeZone($org->getZone());
+            $startDt->setTimezone($tz);
+            $endDt->setTimezone($tz);
+        }
 
-		if (isset($opts['end'])) {
-			$end = (int) strtotime($opts['end'] . ' 23:59:59');
-		}
-		$end = ($end * 1000) + 999;
+        $start = strtotime("-1 day"); $end = strtotime("+1 day");
+        if (isset($opts['start'])) {
+            $start = (int) strtotime($opts['start'] . ' 00:00:00'); // this returns in seconds
+        }
 
-		return [
-			'start' => new \MongoDB\BSON\UTCDateTime($start),
-			'end' => new \MongoDB\BSON\UTCDateTime($end)
-		];
+        if (isset($opts['end'])) {
+            $end = (int) strtotime($opts['end'] . ' 23:59:59');
+        }
+
+        $startDt->setTimestamp($start - $startDt->getOffset());
+        $endDt->setTimestamp($end - $endDt->getOffset());
+
+        $startTimeStamp = $startDt->getTimestamp() * 1000;
+        $endTimeStamp = $endDt->getTimestamp() * 1000 + 999;
+
+        return [
+            'start' => new \MongoDB\BSON\UTCDateTime($startTimeStamp),
+            'end' => new \MongoDB\BSON\UTCDateTime($endTimeStamp)
+        ];
 	}
 
+	/**
+	 * Convert an object to array recursively
+	 * @param  object $object Object derived from simple class that can be used as array in foreach
+	 * @return array         Final Array
+	 */
 	public static function toArray($object) {
 		$arr = [];
 		$obj = (array) $object;
@@ -257,38 +346,17 @@ class Utils {
 		return $result;
 	}
 
-	public static function getClientIp() {
-		$headers = getallheaders();
-		$ip = '';
-		if (isset($headers['Cf-Connecting-Ip'])) {
-			$ipaddr = $headers['Cf-Connecting-Ip'];
-			$ip = explode(",", $ipaddr);
-
-			$ip = $ip[0];
-		} else if (isset($headers['X-Forwarded-For'])) {
-			$ipaddr = $headers['X-Forwarded-For'];
-			$ip = explode(",", $ipaddr);
-
-			$ip = array_pop($ip);
+	/**
+	 * Returns a string if the URL has parameters or NULL if not
+	 * @return string
+	 */
+	public static function addURLParams($linkUrl, $string) {
+		if (parse_url($linkUrl, PHP_URL_QUERY)) {
+			$append = '&'.$string;
 		} else {
-			$ip = RequestMethods::server('HTTP_CLIENT_IP') ?? RequestMethods::server('REMOTE_ADDR');
+			$append = '?'.$string;
 		}
-		return $ip;
-	}
-
-	public static function encrypt($data, $key) {
-		$e = new Services\Encrypt(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
-		$hashed = $e->encrypt($data, $key);
-
-		return utf8_encode($hashed);
-	}
-
-	public static function decrypt($data, $key) {
-		$data = utf8_decode($data);
-		$e = new Services\Encrypt(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
-		$normal = $e->decrypt($data, $key);
-
-		return $normal;
+		return $append;
 	}
 
 	public static function getConfig($name, $property = null) {
@@ -300,6 +368,10 @@ class Utils {
 		return $config;
 	}
 
+	public static function getAppConfig() {
+		return static::getConfig('app')->app;
+	}
+
 	/**
 	 * Uploads the image sent by the user in $_FILES array when submitting
 	 * the form using file-upload. Assigns a name to the file and also checks
@@ -308,32 +380,47 @@ class Utils {
 	 * @return string|boolean      FALSE on failure else uploaded image name
 	 */
 	public static function uploadImage($name, $type = "images", $opts = []) {
-	    if (isset($_FILES[$name])) {
+		if (!isset($opts['extension'])) {
+			$opts['extension'] = 'jpe?g|gif|bmp|png|ico|tif';
+		}
+	    return static::_uploadFile($name, $type, $opts);
+	}
+
+	public static function uploadFileObj($file, $type, $opts) {
+		$path = APP_PATH . "/public/assets/uploads/{$type}/";
+		$extension = pathinfo($file["name"], PATHINFO_EXTENSION);
+
+		$extensionRegex = $opts['extension'];
+		if (!preg_match("/^".$extensionRegex."$/i", $extension)) {
+		    return false;
+		}
+
+		if (isset($opts['name'])) {
+		    $filename = $opts['name'];
+		} else {
+		    $filename = uniqid() . ".{$extension}";
+		}
+
+		if (move_uploaded_file($file["tmp_name"], $path . $filename)) {
+		    return $filename;
+		}
+		return false;
+	}
+
+	protected static function _uploadFile($name, $type, $opts) {
+		if (isset($_FILES[$name])) {
 	        $file = $_FILES[$name];
-	        $path = APP_PATH . "/public/assets/uploads/{$type}/";
-	        $extension = pathinfo($file["name"], PATHINFO_EXTENSION);
-
-	        if (isset($opts['extension'])) {
-	            $ex = $opts['extension'];
-
-	            if (!preg_match("/^".$ex."$/", $extension)) {
-	                return false;
-	            }
-	        }
-
-	        if (isset($opts['name'])) {
-	            $filename = $opts['name'];
-	        } else {
-	            $filename = uniqid() . ".{$extension}";
-	        }
-
-	        if (move_uploaded_file($file["tmp_name"], $path . $filename)) {
-	            return $filename;
-	        }
+	        return static::uploadFileObj($file, $type, $opts);
 	    }
 	    return false;
 	}
 
+	/**
+	 * Download Video from a URL
+	 * @param  string $url  Youtube URL
+	 * @param  array  $opts Array of Options, Keys-> ('extension', 'quality')
+	 * @return false|string       False on failure, string -> name of the newly created file
+	 */
 	public static function downloadVideo($url, $opts = []) {
 		$folder = self::media('', 'show', ['type' => 'video']);
 		$extension = $opts['extension'] ?? 'mp4';
@@ -355,33 +442,165 @@ class Utils {
 		return $name;
 	}
 
+	/**
+	 * Set Cache in Memcache
+	 * @param string  $key      Name of the Key
+	 * @param mixed  $value    The value to be stored
+	 * @param integer $duration No of seconds for which the value should be stored
+	 */
+	public static function setCache($key, $value, $duration = 300) {
+        /** @var \Framework\Cache\Driver\Memcached $memCache */
+		$memCache = Registry::get("cache");
+		return $memCache->set($key, $value, $duration);
+	}
+
+	/**
+	 * Get Cache Value from the key
+	 * @param  string $key Name of the key
+	 * @return mixed      Corresponding value in the key
+	 */
+	public static function getCache($key, $default = null) {
+	    /** @var \Framework\Cache\Driver\Memcached $memCache */
+		$memCache = Registry::get("cache");
+		return $memCache->get($key, $default);
+	}
+
+	public static function getSmartCache($date, $resourceUid) {
+		$cacheKey = sprintf("Date:%s_ID:%s", $date, $resourceUid);
+		return static::getCache($cacheKey);
+	}
+
+	public static function setSmartCache($date, $resourceUid, $resource) {
+		$cacheKey = sprintf("Date:%s_ID:%s", $date, $resourceUid);
+		static::setCache($cacheKey, $resource, 86400);
+	}
+
+	/**
+	 * Group an array of objects with a key
+	 * @param  array $objArr  Array of objects
+	 * @param  string $groupBy Group By Key
+	 * @return array          Modified Array
+	 */
+	public static function groupBy($objArr, $groupBy) {
+		$result = [];
+		try {
+			foreach ($objArr as $key => $value) {
+				if (!is_object($value)) {
+					continue;
+				}
+
+				$newKey = $value->$groupBy ?? 'Empty';
+				if (!isset($result[$newKey])) {
+					$result[$newKey] = [];
+				}
+				$result[$newKey][] = $value;
+			}
+		} catch (\Exception $e) {
+			// log the exception
+		}
+
+		return $result;
+	}
+
+	public static function uploadFile($name, $folder = "files", $opts = []) {
+		if (!isset($opts['extension'])) {
+			$opts['extension'] = 'tar|zip|pdf|csv';
+		}
+		return static::_uploadFile($name, $folder, $opts);
+	}
+
+	/**
+	 * Perform Various Media Related functions
+	 * @param  string $name Name of the file - local, remote
+	 * @param  string $task Name of the task to be performed on the file
+	 * @param  array  $opts Keys -> ('extension', 'type', 'quality')
+	 * @return mixed       Return type depending on the action performed
+	 */
 	public static function media($name, $task = 'show', $opts = []) {
 		$type = ($opts['type']) ?? 'image';
 		$folder = APP_PATH . "/public/assets/uploads/{$type}s/";
 		switch ($task) {
 			case 'remove':
+				if ($type === 'image' && $name === \Ad::NO_IMAGE) {
+					break;	// dont delete it
+				}
 				@unlink($folder . $name);
+				$filename = sprintf("%ss/%s", $type, $name);
+				$bucketObj = new \Media\Bucket\Object($filename);
+				$bucketObj->delete();
 				break;
 			
 			case 'show':
 				return $folder . $name;
 
+			case 'getType':
+				return mime_content_type($folder . $name);
+
 			case 'upload':
 				$func = "upload" . ucfirst($type);
-				$media = self::$func($name, 'images', $opts);
+				$media = self::$func($name, "{$type}s", $opts);
 				if ($media === false) {
-					$media = ' ';
+					$media = '';
+				}
+				$uploadToBucket = $opts['uploadToBucket'] ?? true;
+				if ($uploadToBucket) {
+					static::media($media, 'uploadToBucket', $opts);
 				}
 				return $media;
+
+			case 'uploadToBucket':
+				$objectName = sprintf("%ss/%s", $type, $name);
+				$filePath = static::media($name, 'show', $opts);
+				$bucketObj = new \Media\Bucket\Object($objectName);
+				$bucketObj->upload($filePath);
+				break;
 
 			case 'download':
 				$func = "download" . ucfirst($type);
 				$media = self::$func($name, $opts);
 				if ($media === false) {
-					$media = ' ';
+					$media = '';
+				}
+				$uploadToBucket = $opts['uploadToBucket'] ?? true;
+				if ($uploadToBucket) {
+					static::media($media, 'uploadToBucket', $opts);
 				}
 				return $media;
 
+			case 'display':
+				$useBucket = $opts['useBucket'] ?? true;
+				if ($useBucket) {
+					$path = sprintf("%simages/%s", GCDN, $name);
+				} else {
+					$path = sprintf("%suploads/images/%s", CDN, $name);
+				}
+				return $path;
+
+			case 'dimensions':
+				$type = static::media($name, 'getType');
+				$info = getimagesize($folder . $name);
+				if (preg_match('/image/', $type) && $info !== false) {
+					return [
+						'width' => $info[0],
+						'height' => $info[1]
+					];
+				} else {
+					return [];
+				}
+
+			case 'sendFile':
+				$file = $folder . $name;
+				$contentType = mime_content_type($file);
+				header('Content-Type: ' . $contentType);
+				header('Content-Length: ' . filesize($file));
+				$sendFile = $opts['send'] ?? false;
+				if ($sendFile) {
+					header(sprintf('Content-Disposition: attachment; filename="%s"', $name));
+					readfile($file);
+				} else {
+					echo file_get_contents($file);
+				}
+				break;
 		}
 	}
 }

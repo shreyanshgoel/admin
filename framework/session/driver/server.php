@@ -45,9 +45,7 @@ namespace Framework\Session\Driver {
         }
 
         public function __destruct() {
-            session_commit();
+             session_write_close();
         }
-
     }
-
 }

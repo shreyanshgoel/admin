@@ -41,7 +41,7 @@ namespace Framework\Cache\Driver {
 
         protected function _isValidService() {
             $isEmpty = empty($this->_service);
-            $isInstance = $this->_service instanceof \MongoClient;
+            $isInstance = $this->_service instanceof \Mongo;
             if ($this->isConnected && $isInstance && !$isEmpty) {
                 return true;
             }
@@ -55,7 +55,7 @@ namespace Framework\Cache\Driver {
          */
         public function connect($db) {
             try {
-                $this->_service = new \MongoClient();
+                $this->_service = new \Mongo();
                 $this->isConnected = true;
                 $this->db = $this->_service->selectDB($db);
             } catch (\Exception $e) {
@@ -160,4 +160,5 @@ namespace Framework\Cache\Driver {
             return $result;
         }
     }
+
 }

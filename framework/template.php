@@ -5,6 +5,7 @@
  * With utility methods to help us break down chunks of the template, separating out the tags from the text
  *
  * @author Faizan Ayubi
+ * @todo  Remove create_function deprecated in PHP7.2
  */
 
 namespace Framework {

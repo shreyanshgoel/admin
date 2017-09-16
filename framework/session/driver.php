@@ -14,7 +14,5 @@ namespace Framework\Session {
         protected function _getExceptionForImplementation($method) {
             return new Exception\Implementation("{$method} method not implemented");
         }
-
     }
-
 }

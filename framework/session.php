@@ -57,17 +57,13 @@ namespace Framework {
             Events::fire("framework.session.initialize.after", array($this->type, $this->options));
 
             switch ($this->type) {
-                case "server": {
-                        return new Session\Driver\Server($this->options);
-                        break;
-                    }
-                default: {
-                        throw new Exception\Argument("Invalid type");
-                        break;
-                    }
+                case "server":
+                	return new Session\Driver\Server($this->options);
+                
+                default:
+                	throw new Exception\Argument("Invalid type");
+                	break;
             }
         }
-
     }
-
 }

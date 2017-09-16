@@ -70,9 +70,9 @@ namespace Framework {
 
         /**
          * Get the variable defined in View instance
-         * @param type $key
-         * @param type $default
-         * @return type
+         * @param string $key
+         * @param mixed $default
+         * @return mixed
          */
         public function get($key, $default = "") {
             if (isset($this->data[$key])) {
@@ -98,8 +98,8 @@ namespace Framework {
 
         /**
          * Set the variable defined in View instance
-         * @param type $key
-         * @param type $value
+         * @param string $key
+         * @param mixed $value
          * @return \Framework\View
          */
         public function set($key, $value = null) {
@@ -120,7 +120,9 @@ namespace Framework {
          * @return \Framework\View
          */
         public function erase($key) {
-            unset($this->data[$key]);
+            $data = $this->data;
+            unset($data[$key]);
+            $this->data = $data;
             return $this;
         }
 
