@@ -110,7 +110,6 @@ class User extends \Shared\Model {
      * @readwrite
      * @type array
      * 
-     * @validate required
      * @label key is company id and points to permission (1=Admin, 2=Manager, 3=user)
      */
     protected $_permissions = [];

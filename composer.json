@@ -20,7 +20,8 @@
         "symfony/event-dispatcher": "^3.2",
         "php-http/guzzle6-adapter": "^1.1",
         "symfony/console": "^3.2",
-        "symfony/http-foundation": "^3.2"
+        "symfony/http-foundation": "^3.2",
+        "cboden/ratchet": "^0.4"
     },
     "config" : {
         "vendor-dir": "framework/vendor"

@@ -28,10 +28,13 @@ class Db {
 		    try {
 		        $dbconf = $configuration->parse("configuration/database")->database->mongodb;
 		        $mongo = new \MongoDB\Client("mongodb://" .$dbconf->url.":27017/" . $dbconf->dbname);
-
 		        $mongoDB = $mongo->selectDatabase($dbconf->dbname);
+		        if(!$mongoDB){
+		        	echo "string";
+		        }
+		        
 		    } catch (\Exception $e) {
-		        throw new \Framework\Database\Exception("DB Error");   
+		        throw new \Framework\Database\Exception("DB Error");
 		    }
 
 		    Registry::set(static::REGISTRY, $mongoDB);

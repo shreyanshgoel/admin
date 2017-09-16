@@ -8,6 +8,9 @@
 use Shared\Controller as Controller;
 use Framework\RequestMethods as RM;
 use Framework\Registry as Registry;
+use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
 
 class Account extends Controller {
 
@@ -17,6 +20,20 @@ class Account extends Controller {
 	public function register_success(){
 		$this->setLayout("layouts/empty");
 	}
+
+	public function openServer(){
+        $this->noview();
+        $server = IoServer::factory(
+            new HttpServer(
+                new WsServer(
+                    new Chat()
+                )
+            ),
+            1010
+        );
+
+        $server->run();
+    }
 
 	/**
 	* @before _session
@@ -28,7 +45,7 @@ class Account extends Controller {
 		$token = RM::post('token', '');
 
 		if(RM::post('register') && $this->verifyToken($token)){
-			$pass = \Framework\StringMethods::uniqueRandomString(10);
+			$pass = \Framework\StringMethods::uniqRandString(10);
 			$user = new models\User([
 	            "full_name" => RM::post("full_name"),
 	            "mobile" => RM::post("mobile"),

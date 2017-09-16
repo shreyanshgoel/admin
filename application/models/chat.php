@@ -14,7 +14,7 @@ class Chat extends \Shared\Model {
      * @validate required
      * @label state name
      */
-    protected $_msg;
+    protected $_message;
 
     /**
      * @column

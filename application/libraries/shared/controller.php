@@ -257,9 +257,7 @@ namespace Shared {
             /* if the user and view(s) are defined, 
              * assign the user session to the view(s)
              */
-            $members = \models\User::all([
-                "company_ids" => ['$elemMatch' => ['$eq' => $this->company->id]]
-                ]);
+            $members = [];
 
             if ($this->user) {
                 if ($this->actionView) {

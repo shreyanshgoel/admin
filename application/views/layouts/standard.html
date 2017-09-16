@@ -84,6 +84,18 @@
     <script src="{echo CDN}js/bootstrap-datepicker.js" id="script-resource-12"></script>
     <script src="{echo CDN}js/moment.min.js" id="script-resource-15"></script>
     <script src="{echo CDN}js/daterangepicker/daterangepicker.js" id="script-resource-16"></script>
+    {script $json = json_encode(['userid' => $user->id])}
+    <script type="text/javascript">
+        var conn = new WebSocket('ws://clutchstart.tk/chatserver');
+        conn.onopen = function(e) {
+            console.log("Connection established!");
+            this.send(JSON.stringify($json));
+        };
+
+        conn.onmessage = function(e) {
+            console.log(e.data);
+        };
+    </script>
 </body>
 
 </html>
